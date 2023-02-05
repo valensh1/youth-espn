@@ -1,0 +1,101 @@
+.game-card-container {
+  background-color: var(--color-whiteBackground);
+  width: 26.25vw;
+  height: 68vh;
+  border-radius: 10px;
+  position: absolute;
+  top: 3.5vw;
+  left: 1vw;
+  /* border: 2px solid green; */
+}
+
+.game-card-content {
+  position: relative;
+  width: 26.25vw;
+  margin: auto;
+  /* border: 2px solid blue; */
+}
+
+.game-headers h1 {
+  font-size: 0.65vw;
+}
+
+.game-headers h2 {
+  margin-top: -1vh;
+  color: var(--color-grayText);
+  font-size: 0.5vw;
+}
+
+.game-headers {
+  width: 98%;
+  margin: auto;
+  border-bottom: 1px solid var(--color-lightGray);
+}
+
+.game-score-content {
+  width: 24vw;
+  height: 30vh;
+  margin-top: -2vh;
+  text-align: center;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  /* border: 2px solid red; */
+}
+
+.teams {
+  margin-left: 0vw;
+  width: 8vw;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  text-align: center;
+  /* border: 2px solid purple; */
+}
+
+.game-score-content img {
+  height: 50px;
+  width: 50px;
+}
+
+.game-score-content a {
+  text-decoration: none;
+  width: 10vw;
+  padding-top: 3vh;
+}
+
+.game-score-content li {
+  display: inline-block;
+  font-size: 0.8vw;
+  color: black;
+}
+
+.gametime-period {
+  position: relative;
+  left: 4.5vw;
+  bottom: 6vh;
+}
+
+#gametime {
+  font-size: 0.5vw;
+  color: var(--color-red);
+  font-weight: 600;
+}
+
+.vertical-line {
+  background-color: var(--color-lightGray);
+  height: 15vh;
+  width: 0.05vw;
+  position: relative;
+  left: 0vw;
+}
+
+.horizontal-line {
+  height: 0.05vh;
+  width: 13vw;
+  margin-left: -0.5vw;
+  position: relative;
+  top: 3vh;
+  background-color: var(--color-lightGray);
+  color: red;
+}

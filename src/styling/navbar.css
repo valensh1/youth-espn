@@ -1,0 +1,42 @@
+#navbar-container {
+  height: 6vh;
+  display: flex;
+  align-items: center;
+  background-color: black;
+}
+
+#navbar-content {
+  width: 100vw;
+  height: 6vh;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+#navbar-content a {
+  color: white;
+  font-size: 1.3vh;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.hover-content {
+  display: none;
+  position: relative;
+  top: 0.75vh;
+}
+
+.hover-content > a {
+  display: block;
+  margin-top: 1vh;
+}
+
+.drop-down:hover .hover-content {
+  display: block;
+  margin-top: 3vh;
+  position: absolute;
+  width: 8vw;
+  height: 20vh;
+  background-color: red;
+  z-index: 100;
+}

@@ -1,0 +1,27 @@
+@import './styling/home.css';
+@import './styling/gameCard.css';
+
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+/* CSS VARIABLES */
+:root {
+  /* Higher specificity than html. Put our custom properties at highest place in document so it can be used throughout anywhere */
+  --color-lightGray: #edeef0;
+  --color-whiteBackground: white;
+  --color-grayText: darkgrey;
+  --color-red: red;
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 62.5%; /* Everything is based upon 10px with this. 10px / 16px = .625. With this 1rem will = 10px. */
+}
+
+body {
+  position: relative;
+}

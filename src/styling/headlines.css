@@ -1,0 +1,37 @@
+.headlines-container {
+  width: 23vw;
+  height: 35vh;
+  position: relative;
+  left: 70vw;
+  background-color: var(--color-whiteBackground);
+  border-radius: 8px;
+  margin-left: 0.5vw;
+}
+
+.headlines-container > h1 {
+  padding-top: 1vh;
+  padding-left: 1vw;
+  font-size: 0.8vw;
+  font-weight: 400;
+}
+
+.headlines {
+  padding-left: 1vw;
+  margin-top: 0.5vh;
+}
+
+.headlines > li > a {
+  font-size: 0.8vw;
+  text-decoration: none;
+  color: var(--color-greyText);
+  font-weight: 300;
+}
+
+li a {
+  position: relative;
+  left: -0.8vw;
+}
+
+li::marker {
+  font-size: 1.2vw;
+}
