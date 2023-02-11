@@ -1,0 +1,88 @@
+.news-card-container {
+  width: 35vw;
+  height: 46vh;
+  position: relative;
+  top: 5vh;
+  left: 5vw;
+  background-color: var(--color-whiteBackground);
+  border-radius: 15px;
+  box-shadow: 5px 5px 15px 2px var(--color-grayText);
+
+  /* border: 3px solid green; */
+}
+
+.news-card-container > a > #headline-img {
+  height: 27vh;
+  width: 33vw;
+  border-radius: 10px;
+  /* position: absolute; */
+  margin: 1.5vh 1vw;
+  box-shadow: 5px 5px 15px 2px var(--color-grayText);
+}
+
+.news-card-container .team-name,
+li {
+  list-style: none;
+  font-size: 0.75vw;
+  font-weight: 800;
+}
+
+.news-card-container .scores,
+li {
+  font-size: 1.25vw;
+}
+
+.news-card-container .loser {
+  color: var(--color-grayText);
+  font-weight: 800;
+}
+
+.news-card-container .winner {
+  font-weight: 800;
+}
+
+.news-card-container .score-section {
+  display: flex;
+  /* border: 2px solid blue; */
+}
+
+.news-card-container .team {
+  width: 12vw;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  /* border: 2px solid orange; */
+}
+
+.news-card-container .logos {
+  width: 4vw;
+  /* height: 6vh; */
+  margin-top: 1vh;
+  /* border: 3px solid yellow; */
+}
+
+.news-card-headline .timestamp-author {
+  margin-left: 3vw;
+}
+
+.news-card-headline h1 {
+  /* border: 2px solid purple; */
+  margin: 1vh 1vw;
+}
+
+.timestamp-author {
+  display: flex;
+  font-weight: 500;
+  color: var(--color-grayText);
+}
+
+.news-card-headline span {
+  font-size: 0.65vw;
+}
+
+.news-card-headline .timestamp-author #author {
+  /* border: 2px solid purple; */
+  margin-left: 1vw;
+  display: list-item;
+}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 function Navbar() {
   const navbarList = ['Basketball', 'Football', 'Baseball', 'Hockey', 'Soccer'];
@@ -18,7 +19,7 @@ function Navbar() {
         {navbarList.map((sport) => {
           return (
             <div className="drop-down">
-              <a href="">{sport}</a>
+              <Link to={`/${sport}`}>{sport}</Link>
               <div className="hover-content">
                 {sportSubCategories.map((subCategory) => {
                   return (

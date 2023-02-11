@@ -6,12 +6,17 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Test from './test/test';
 import ErrorPage from './test/error';
 import Teams from './views/Teams';
+import Hockey from './views/Hockey/hockeyHome';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
     errorElement: <ErrorPage />,
+  },
+  {
+    path: '/hockey',
+    element: <Hockey />,
   },
   {
     path: 'hockey/teams/ochc',

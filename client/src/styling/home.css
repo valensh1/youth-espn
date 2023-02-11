@@ -2,6 +2,7 @@
 @import './headlines.css';
 @import './videoCard.css';
 @import './gameCard.css';
+@import './headlineGame.css';
 
 .home-container {
   width: 100vw;
