@@ -19,7 +19,7 @@ const router = createBrowserRouter([
     element: <Hockey />,
   },
   {
-    path: 'hockey/teams/ochc',
+    path: 'hockey/teams',
     element: <Teams />,
   },
 ]);
