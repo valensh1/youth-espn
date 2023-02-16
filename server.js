@@ -39,8 +39,6 @@ app.get('/api/hockeyPlayers/teams', async (req, res) => {
         const rows = response.rows;
         logger.log(rows);
         res.json(rows);
-
-        process.exit();
       });
     }
   });
