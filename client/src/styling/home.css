@@ -1,11 +1,15 @@
 @import './navbar.css';
-@import './headlines.css';
+@import './topHeadlines.css';
 @import './videoCard.css';
-@import './gameCard.css';
 @import './headlineGame.css';
 
 .home-container {
   width: 100vw;
   height: fit-content;
   background-color: var(--color-lightGray);
+}
+
+.home-headlines-container {
+  position: relative;
+  left: 70vw;
 }

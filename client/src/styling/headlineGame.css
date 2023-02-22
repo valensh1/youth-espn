@@ -7,15 +7,19 @@
   background-color: var(--color-whiteBackground);
   border-radius: 15px;
   box-shadow: 5px 5px 15px 2px var(--color-grayText);
-
   /* border: 3px solid green; */
+}
+
+@media only screen and (min-width: 768px) {
+  .news-card-container {
+    height: 49vh;
+  }
 }
 
 .news-card-container > a > #headline-img {
   height: 27vh;
   width: 33vw;
   border-radius: 10px;
-  /* position: absolute; */
   margin: 1.5vh 1vw;
   box-shadow: 5px 5px 15px 2px var(--color-grayText);
 }
