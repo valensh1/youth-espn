@@ -1,7 +1,7 @@
 import React from 'react';
 import { homePageVideos } from '../model/homePageVideos';
 
-function video() {
+function VideoCard() {
   const currentDate = new Date();
 
   const dateDiff = (date1, date2) => {
@@ -31,4 +31,4 @@ function video() {
   );
 }
 
-export default video;
+export default VideoCard;

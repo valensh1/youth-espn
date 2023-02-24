@@ -1,9 +1,14 @@
 @import '../headlineGame.css';
 
+.hockey-home-container .game-card-container {
+  position: absolute;
+  left: 5vw;
+}
+
 .hockey-home-topHeadlines-container {
   position: relative;
   left: 70vw;
-  width: 23vw;
+  width: fit-content;
   height: 35vh;
   background-color: var(--color-whiteBackground);
   border-radius: 8px;
@@ -12,8 +17,10 @@
 }
 
 .hockey-home-headlineGame-container {
+  width: fit-content;
   position: relative;
   bottom: 41vh;
   left: 29vw;
   margin-top: 1vh;
+  z-index: -1;
 }

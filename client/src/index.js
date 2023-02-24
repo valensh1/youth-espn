@@ -5,7 +5,7 @@ import App from './App';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Test from './test/test';
 import ErrorPage from './test/error';
-import Teams from './views/Teams';
+import HockeyTeams from './views/Hockey/hockeyTeams';
 import Hockey from './views/Hockey/hockeyHome';
 
 const router = createBrowserRouter([
@@ -20,7 +20,7 @@ const router = createBrowserRouter([
   },
   {
     path: 'hockey/teams',
-    element: <Teams />,
+    element: <HockeyTeams />,
   },
 ]);
 

@@ -12,4 +12,5 @@
 .home-headlines-container {
   position: relative;
   left: 70vw;
+  width: fit-content;
 }

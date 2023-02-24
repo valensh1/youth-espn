@@ -7,13 +7,6 @@ var logger = require('tracer').console(); // Logger so you can see code line num
 var cors = require('cors');
 app.use(cors());
 
-// app.listen(5000);
-// app.get('/api/hockeyPlayers/teams', (req, res) => {
-//   console.log('Yo yo');
-//   logger.log('hello mofos!');
-//   res.status(200).json({ message: 'hello there Shaun' });
-// });
-
 app.listen(5001);
 app.get('/api/hockeyPlayers/teams', async (req, res) => {
   console.log('Yo yo');
@@ -21,8 +14,6 @@ app.get('/api/hockeyPlayers/teams', async (req, res) => {
 
   const config = {
     host: 'postgres-server-smv.postgres.database.azure.com',
-    // Do not hard code your username and password.
-    // Consider using Node environment variables.
     user: process.env.AZURE_USERNAME,
     password: process.env.AZURE_PASSWORD,
     database: process.env.AZURE_DATABASE,
@@ -43,45 +34,3 @@ app.get('/api/hockeyPlayers/teams', async (req, res) => {
     }
   });
 });
-
-// SQL CONNECTION
-// const config = {
-//   host: 'postgres-server-smv.postgres.database.azure.com',
-//   // Do not hard code your username and password.
-//   // Consider using Node environment variables.
-//   user: process.env.AZURE_USERNAME,
-//   password: process.env.AZURE_PASSWORD,
-//   database: process.env.AZURE_DATABASE,
-//   port: 5432,
-//   ssl: true,
-// };
-
-// const client = new pg.Client(config);
-
-// client.connect((err) => {
-//   if (err) throw err;
-//   else {
-//     queryDatabase();
-//   }
-// });
-
-// function queryDatabase() {
-//   console.log(`Running query to PostgreSQL server: ${config.host}`);
-
-//   const query = 'SELECT * FROM player_profiles;';
-
-//   client
-//     .query(query)
-//     .then((res) => {
-//       const rows = res.rows;
-
-//       rows.map((row) => {
-//         console.log(`Read: ${JSON.stringify(row)}`);
-//       });
-
-//       process.exit();
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// }

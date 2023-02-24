@@ -1,12 +1,14 @@
 import React from 'react';
-import TopHeadlines from '../../components/topHeadlines';
-import HeadlineGame from '../../components/headlineGame';
-import Navbar from '../../components/navbar';
+import Navbar from '../../components/Navbar';
+import TopHeadlines from '../../components/TopHeadlines';
+import HeadlineGame from '../../components/HeadlineGame';
+import GameCard from '../../components/GameCard';
 
 function hockeyHome() {
   return (
-    <div id="hockey-home-container">
+    <div className="hockey-home-container">
       <Navbar />
+      <GameCard nameforClass={'hockey-home-gameCard-container'} />
       <TopHeadlines nameforClass={'hockey-home-topHeadlines-container'} />
       <HeadlineGame nameForClass={'hockey-home-headlineGame-container'} />
       <HeadlineGame nameForClass={'hockey-home-headlineGame-container'} />

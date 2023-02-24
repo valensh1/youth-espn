@@ -1,6 +1,6 @@
 import React from 'react';
 
-function headlineGame({ nameForClass }) {
+function HeadlineGame({ nameForClass }) {
   const currentDate = new Date();
 
   const dateDiff = (date1, date2) => {
@@ -58,4 +58,4 @@ function headlineGame({ nameForClass }) {
   );
 }
 
-export default headlineGame;
+export default HeadlineGame;

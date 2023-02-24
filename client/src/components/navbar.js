@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 
 function Navbar() {
@@ -25,12 +24,10 @@ function Navbar() {
                   return (
                     <>
                       <Link
-                        to={`${sport.toLowerCase()}/${subCategory.toLowerCase()}`}
+                        to={`/${sport.toLowerCase()}/${subCategory.toLowerCase()}`}
                       >
                         {subCategory}
                       </Link>
-
-                      {/* <a href="">{subCategory}</a>; */}
                     </>
                   );
                 })}

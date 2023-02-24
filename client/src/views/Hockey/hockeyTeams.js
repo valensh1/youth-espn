@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-function Teams() {
+function HockeyTeams() {
   useEffect(() => {
     (async () => {
       try {
@@ -17,4 +17,4 @@ function Teams() {
   return <div>OCHC Hockey Club</div>;
 }
 
-export default Teams;
+export default HockeyTeams;
