@@ -11,6 +11,7 @@ function Navbar() {
     'Teams',
   ];
   const otherSports = ['Tennis', 'Boxing'];
+  const test = ''; // Need to delete this
 
   return (
     <div id="navbar-container">
