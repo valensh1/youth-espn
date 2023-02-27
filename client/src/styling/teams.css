@@ -1,0 +1,99 @@
+.all-teams-container {
+  width: 50vw;
+  height: fit-content;
+  margin: auto;
+  background-color: var(--color-whiteBackground);
+  /* border: 7px solid green; */
+}
+
+#teams-header {
+  font-size: 2vw;
+}
+
+.all-teams-content {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  width: 50vw;
+}
+
+.individual-team-container {
+  width: 17vw;
+  height: 15vh;
+  margin-top: 6vh;
+  /* margin-left: 7vw; */
+  display: flex;
+  flex-direction: column;
+}
+
+.individual-team-container > a {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.individual-team-container span {
+  text-align: center;
+  display: inline-block;
+  width: 6vw;
+  font-size: 1.2vw;
+  margin-left: -1vw;
+  position: relative;
+  bottom: 2.5vh;
+}
+
+.team-logo {
+  width: 6vw;
+  height: 10vh;
+}
+
+.team-links {
+  position: relative;
+  left: 5.5vw;
+  bottom: 3.5vh;
+  font-size: 0.8vw;
+}
+
+.team-links a {
+  margin-left: 1vw;
+  text-decoration: none;
+}
+
+.team-links a:not(:last-child)::after {
+  margin-left: 0.5vw;
+  content: '|';
+}
+
+#goldrush span {
+  position: relative;
+  bottom: 6vh;
+  left: 1vw;
+}
+
+#goldrush .team-links {
+  position: relative;
+  bottom: 11.7vh;
+  left: 7.5vw;
+}
+
+#goldrush img {
+  width: 8vw;
+  height: 18vh;
+  position: relative;
+  bottom: 4vh;
+}
+
+#reign img {
+  width: 7vw;
+}
+
+#redwings span {
+  position: relative;
+  left: 1.5vw;
+}
+
+#teams-background-image {
+  background-image: url('https://t4.ftcdn.net/jpg/00/82/70/97/360_F_82709766_w6GESN7czdExXi83LIgy3Ii3LTbjFHW1.jpg');
+  background-size: cover;
+  background-position: bottom center;
+}

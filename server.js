@@ -8,24 +8,29 @@ var cors = require('cors');
 app.use(cors());
 
 app.listen(5001);
-app.get('/api/hockeyPlayers/teams', async (req, res) => {
-  console.log('Yo yo');
-  logger.log('hello mofos!');
 
-  const config = {
-    host: 'postgres-server-smv.postgres.database.azure.com',
-    user: process.env.AZURE_USERNAME,
-    password: process.env.AZURE_PASSWORD,
-    database: process.env.AZURE_DATABASE,
-    port: 5432,
-    ssl: true,
-  };
+const config = {
+  host: 'postgres-server-smv.postgres.database.azure.com',
+  user: process.env.AZURE_USERNAME,
+  password: process.env.AZURE_PASSWORD,
+  database: process.env.AZURE_DATABASE,
+  port: 5432,
+  ssl: true,
+};
 
+app.get('/api/hockey/teams', async (req, res) => {
   const client = new pg.Client(config);
+
   client.connect((err) => {
     if (err) throw err;
     else {
-      const query = 'SELECT * FROM player_profiles;';
+      const query = `
+      SELECT sport, team_name_short, logo_image
+      FROM teams
+      WHERE sport = 'Hockey'
+      GROUP BY sport, team_name_short, logo_image
+      ORDER BY team_name_short;
+      `;
       client.query(query).then((response) => {
         const rows = response.rows;
         logger.log(rows);
