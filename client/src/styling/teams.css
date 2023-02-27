@@ -3,11 +3,14 @@
   height: fit-content;
   margin: auto;
   background-color: var(--color-whiteBackground);
+  border-radius: 15px;
   /* border: 7px solid green; */
 }
 
 #teams-header {
   font-size: 2vw;
+  text-align: center;
+  padding-top: 2vh;
 }
 
 .all-teams-content {
@@ -45,6 +48,10 @@
 .team-logo {
   width: 6vw;
   height: 10vh;
+}
+
+.team-logo:hover {
+  scale: 1.1;
 }
 
 .team-links {
