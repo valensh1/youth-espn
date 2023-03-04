@@ -5,15 +5,15 @@ import Navbar from './Navbar';
 function Teams() {
   const [teams, setTeams] = useState([]);
 
-  let urlPathToParse = window.location.pathname.split('/');
-  const sport = urlPathToParse[1];
+  let urlPathToParse = window.location.pathname.split('/'); // Get sport from url path
+  const sport = urlPathToParse[1]; // Sport is located in first index position in url path
 
-  const sportCase = `${sport[0].toUpperCase()}${sport.slice(1)}`;
+  const sportCase = `${sport[0].toUpperCase()}${sport.slice(1)}`; // Capitalization of sport so it appears such as Hockey
 
   useEffect(() => {
     (async () => {
       try {
-        const response = await fetch(`/api/${sport}/teams`);
+        const response = await fetch(`/api/${sport}/teams`); // Fetching of sports teams from database to display
         const teamsDataPull = await response.json();
         console.log(teamsDataPull);
         setTeams(teamsDataPull);
@@ -43,9 +43,9 @@ function Teams() {
                   <span>{team.team_name_short}</span>
                 </Link>
                 <div className="team-links">
-                  <Link to={`/${team.team_name_short}/stats`}>Statistics</Link>
-                  <Link to={`/${team.team_name_short}/schedule`}>Schedule</Link>
-                  <Link to={`/${team.team_name_short}/roster`}>Roster</Link>
+                  <Link to={`${teamName}/stats`}>Statistics</Link>
+                  <Link to={`${teamName}/schedule`}>Schedule</Link>
+                  <Link to={`${teamName}/roster`}>Roster</Link>
                 </div>
               </div>
             );

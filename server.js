@@ -2,40 +2,34 @@ require('dotenv').config(); // Requirement to be able to use .env file so we can
 const express = require('express');
 const app = express();
 const APIRouter = express.Router();
-const pg = require('pg');
 var logger = require('tracer').console(); // Logger so you can see code line numbers in Node.js. Need to use logger.log instead of console.log though. Must download Tracer from npm using npm i tracer
 var cors = require('cors');
 app.use(cors());
+const sqlQueries = require('./SqlQueries/sqlQueries');
 
 app.listen(5001);
 
-const config = {
-  host: 'postgres-server-smv.postgres.database.azure.com',
-  user: process.env.AZURE_USERNAME,
-  password: process.env.AZURE_PASSWORD,
-  database: process.env.AZURE_DATABASE,
-  port: 5432,
-  ssl: true,
-};
+app.get('/api/hockey/seasons', async (req, res) => {
+  const seasons = await sqlQueries.getAllSeasons();
+  // await logger.log(seasons);
+  res.json(seasons);
+});
 
 app.get('/api/hockey/teams', async (req, res) => {
-  const client = new pg.Client(config);
+  const teams = await sqlQueries.getAllTeams();
+  // await logger.log(teams);
+  res.json(teams);
+});
 
-  client.connect((err) => {
-    if (err) throw err;
-    else {
-      const query = `
-      SELECT sport, team_name_short, logo_image
-      FROM teams
-      WHERE sport = 'Hockey'
-      GROUP BY sport, team_name_short, logo_image
-      ORDER BY team_name_short;
-      `;
-      client.query(query).then((response) => {
-        const rows = response.rows;
-        logger.log(rows);
-        res.json(rows);
-      });
-    }
-  });
+app.get('/api/hockey/teams/fullNames', async (req, res) => {
+  const teams = await sqlQueries.getAllTeamsFullNames();
+  // await logger.log(teams);
+  res.json(teams);
+});
+
+app.get('/api/hockey/teams/:team/roster', async (req, res) => {
+  const team = req.params.team;
+  const singleTeamRoster = await sqlQueries.getSingleTeamRoster(team);
+  // await logger.log(singleTeamRoster);
+  res.json(singleTeamRoster);
 });
