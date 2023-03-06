@@ -15,16 +15,18 @@ function Rosters() {
     console.log(team);
     teams.forEach((el) => {
       const teamHave2Words = el.team_name_short.indexOf(' ') >= 0; // See if team name has two words; This returns a variable that is a boolean.
-      console.log(teamHave2Words);
       const teamNameModified = teamHave2Words
-        ? el.team_name_short.replace(/ /g, '').toLowerCase()
+        ? el.team_name_short.replace(/ /g, '').toLowerCase() // Replace space in team name to concatenate with all lowercase letters
         : el.team_name_short.toLowerCase();
-      console.log(teamNameModified);
       if (teamNameModified === team) {
-        console.log(el.team_name_short);
         setSelectedTeam(el.team_name_short);
       }
     });
+  };
+
+  const changeSelectedTeam = (event) => {
+    // console.log(event.target.value);
+    setSelectedTeam(event.target.value);
   };
 
   useEffect(() => {
@@ -47,9 +49,12 @@ function Rosters() {
         setTeams(teamsData);
         setSingleTeam(singleTeamData);
         console.log(seasonsData, teamsData, singleTeamData);
-        teamNameToCapitalizeFirstLetter(teamToQuery);
       });
   }, []);
+
+  useEffect(() => {
+    teamNameToCapitalizeFirstLetter(teamToQuery);
+  }, [teams]);
 
   return (
     <div className="teams-container">
@@ -63,8 +68,8 @@ function Rosters() {
       <select
         name="teams"
         id="teams"
-        // value={teamNameToCapitalizeFirstLetter(teamToQuery)}
         value={selectedTeam}
+        onChange={changeSelectedTeam}
       >
         {teams.map((el) => {
           return <option value={el.team_short}>{el.team_name_short}</option>;
