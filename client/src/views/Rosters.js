@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 function Rosters() {
   const [seasons, setSeasons] = useState([]);
@@ -8,7 +9,7 @@ function Rosters() {
 
   console.log(window.location.pathname);
   console.log(window.location.pathname.split('/')[3]); // Gets the team name from the url path to query database
-  const teamToQuery = window.location.pathname.split('/')[3];
+  let teamToQuery = window.location.pathname.split('/')[3];
   console.log(teamToQuery);
 
   const teamNameToCapitalizeFirstLetter = (team) => {
@@ -25,8 +26,16 @@ function Rosters() {
   };
 
   const changeSelectedTeam = (event) => {
-    // console.log(event.target.value);
+    console.log(event.target.value);
     setSelectedTeam(event.target.value);
+    let modifiedTeam = event.target.value;
+    if (modifiedTeam.indexOf(' ') >= 0) {
+      modifiedTeam = event.target.value.replace(/ /g, '').toLowerCase();
+    } else {
+      modifiedTeam = event.target.value.toLowerCase();
+    }
+    document.location.href = `/hockey/teams/${modifiedTeam}/roster`;
+    return modifiedTeam;
   };
 
   useEffect(() => {
@@ -55,6 +64,20 @@ function Rosters() {
   useEffect(() => {
     teamNameToCapitalizeFirstLetter(teamToQuery);
   }, [teams]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await fetch(
+          `/api/hockey/teams/${selectedTeam}/roster`
+        );
+        const data = await response.json();
+        console.log(data);
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+  }, [selectedTeam]);
 
   return (
     <div className="teams-container">
