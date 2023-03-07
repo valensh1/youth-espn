@@ -6,6 +6,7 @@ function Rosters() {
   const [teams, setTeams] = useState([]);
   const [singleTeam, setSingleTeam] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState('');
+  const [selectedSeason, setSelectedSeason] = useState('');
 
   console.log(window.location.pathname);
   console.log(window.location.pathname.split('/')[3]); // Gets the team name from the url path to query database
@@ -38,6 +39,11 @@ function Rosters() {
     return modifiedTeam;
   };
 
+  const changeSeason = (event) => {
+    console.log(event.target.value);
+    setSelectedSeason(event.target.value);
+  };
+
   useEffect(() => {
     const APICalls = [
       fetch(`/api/hockey/seasons`),
@@ -58,6 +64,7 @@ function Rosters() {
         setTeams(teamsData);
         setSingleTeam(singleTeamData);
         console.log(seasonsData, teamsData, singleTeamData);
+        setSelectedSeason(seasonsData[0].season);
       });
   }, []);
 
@@ -71,8 +78,9 @@ function Rosters() {
         const response = await fetch(
           `/api/hockey/teams/${selectedTeam}/roster`
         );
-        const data = await response.json();
-        console.log(data);
+        const rosterData = await response.json();
+        console.log(rosterData);
+        setSingleTeam(rosterData);
       } catch (error) {
         console.error(error);
       }
@@ -82,9 +90,18 @@ function Rosters() {
   return (
     <div className="teams-container">
       <h1>Roster</h1>
-      <select name="seasons" id="seasons">
+      <select
+        name="seasons"
+        id="seasons"
+        onChange={changeSeason}
+        value={selectedSeason}
+      >
         {seasons.map((el) => {
-          return <option value={el.season}>{el.season}</option>;
+          return (
+            <option value={el.season} key={el.season}>
+              {el.season}
+            </option>
+          );
         })}
       </select>
 
@@ -95,9 +112,30 @@ function Rosters() {
         onChange={changeSelectedTeam}
       >
         {teams.map((el) => {
-          return <option value={el.team_short}>{el.team_name_short}</option>;
+          return (
+            <option value={el.team_short} key={el.team_name_short}>
+              {el.team_name_short}
+            </option>
+          );
         })}
       </select>
+      <table>
+        <tr>
+          <th>Player</th>
+          <th>#</th>
+          <th>Position</th>
+        </tr>
+
+        {singleTeam.map((player) => {
+          return (
+            <tr>
+              <td>{`${player.first_name}`}</td>
+              <td>{`${player.last_name}`}</td>
+              <td>{`${player.position}`}</td>
+            </tr>
+          );
+        })}
+      </table>
     </div>
   );
 }
