@@ -52,11 +52,12 @@ module.exports = {
       throw error;
     }
   },
-  getSingleTeamRoster: async (team) => {
+  getSingleTeamRoster: async (team, season) => {
     try {
       //   await logger.log(team.toUpperCase());
       const teamToQuery = team.toUpperCase();
       logger.log(teamToQuery);
+      logger.log(season);
       //   const teamToRetrieve = team.toUpperCase();
       response = await pool.query(`
       SELECT r.*, p.date_of_birth, p.height_inches, p.weight_lbs, t.team_name_full, t.team_name_short 
@@ -65,7 +66,7 @@ module.exports = {
       ON player_profile_id_fk = p.id
       LEFT JOIN teams t
       ON team_id_fk = t.id
-      WHERE team_name_short ILIKE '${teamToQuery}'
+      WHERE team_name_short ILIKE '${teamToQuery}' AND season = '${season}'
       ORDER BY r.first_name;
         `);
       logger.log(response.rows[0]);

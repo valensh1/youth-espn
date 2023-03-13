@@ -1,17 +1,23 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-function Rosters() {
+// Current Season prop passed in is the current season for the sport being rendered (e.g. 2022-2023 season)
+function Rosters({ currentSeason }) {
+  // Information from the url
+  console.log(window.location.pathname);
+  // console.log(window.location.pathname.split('/')[3]);
+  let teamToQuery = window.location.pathname.split('/')[3]; // Gets the team name from the url path to query database
+  console.log(teamToQuery);
+
+  const sportToQuery = window.location.pathname.split('/')[1];
+  console.log(sportToQuery);
   const [seasons, setSeasons] = useState([]);
   const [teams, setTeams] = useState([]);
   const [singleTeam, setSingleTeam] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState('');
-  const [selectedSeason, setSelectedSeason] = useState('');
-
-  console.log(window.location.pathname);
-  console.log(window.location.pathname.split('/')[3]); // Gets the team name from the url path to query database
-  let teamToQuery = window.location.pathname.split('/')[3];
-  console.log(teamToQuery);
+  const [selectedSeason, setSelectedSeason] = useState(
+    currentSeason[sportToQuery]
+  );
 
   const teamNameToCapitalizeFirstLetter = (team) => {
     console.log(team);
@@ -26,6 +32,7 @@ function Rosters() {
     });
   };
 
+  // Function to place the team selected by user in drop-down in the url with lower case letters and no spaces in the url
   const changeSelectedTeam = (event) => {
     console.log(event.target.value);
     setSelectedTeam(event.target.value);
@@ -35,7 +42,7 @@ function Rosters() {
     } else {
       modifiedTeam = event.target.value.toLowerCase();
     }
-    document.location.href = `/hockey/teams/${modifiedTeam}/roster`;
+    document.location.href = `/${sportToQuery}/teams/${modifiedTeam}/roster`;
     return modifiedTeam;
   };
 
@@ -44,11 +51,18 @@ function Rosters() {
     setSelectedSeason(event.target.value);
   };
 
+  const modBirthDateToDisplay = (birthDate) => {
+    birthDate = new Date(birthDate); // Convert date string to date to perform Javascript functions
+    return Intl.DateTimeFormat('en-US').format(birthDate);
+  };
+
   useEffect(() => {
     const APICalls = [
-      fetch(`/api/hockey/seasons`),
-      fetch(`/api/hockey/teams`),
-      fetch(`/api/hockey/teams/${teamToQuery}/roster`),
+      fetch(`/api/${sportToQuery}/seasons`),
+      fetch(`/api/${sportToQuery}/teams`),
+      fetch(
+        `/api/${sportToQuery}/teams/${teamToQuery}/roster?season=${currentSeason[sportToQuery]}`
+      ),
     ];
 
     Promise.all([APICalls[0], APICalls[1], APICalls[2]])
@@ -64,7 +78,6 @@ function Rosters() {
         setTeams(teamsData);
         setSingleTeam(singleTeamData);
         console.log(seasonsData, teamsData, singleTeamData);
-        setSelectedSeason(seasonsData[0].season);
       });
   }, []);
 
@@ -76,7 +89,26 @@ function Rosters() {
     (async () => {
       try {
         const response = await fetch(
-          `/api/hockey/teams/${selectedTeam}/roster`
+          `/api/${sportToQuery}/teams/${selectedTeam}/roster?season=${selectedSeason}`
+        );
+        const rosterData = await response.json();
+        console.log(rosterData);
+        setSingleTeam(rosterData);
+        const seasonsDropDownElement = document.getElementById('seasons');
+        const seasonsDropDownText = seasonsDropDownElement.innerText;
+        console.log(seasonsDropDownText);
+        setSelectedSeason(seasonsDropDownText);
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+  }, [selectedTeam]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await fetch(
+          `/api/${sportToQuery}/teams/${selectedTeam}/roster?season=${selectedSeason}`
         );
         const rosterData = await response.json();
         console.log(rosterData);
@@ -85,7 +117,7 @@ function Rosters() {
         console.error(error);
       }
     })();
-  }, [selectedTeam]);
+  }, [selectedSeason]);
 
   return (
     <div className="teams-container">
@@ -94,7 +126,7 @@ function Rosters() {
         name="seasons"
         id="seasons"
         onChange={changeSeason}
-        value={selectedSeason}
+        value={selectedSeason || currentSeason[sportToQuery]}
       >
         {seasons.map((el) => {
           return (
@@ -119,19 +151,29 @@ function Rosters() {
           );
         })}
       </select>
-      <table>
+      <table className="roster-table">
         <tr>
           <th>Player</th>
           <th>#</th>
           <th>Position</th>
+          <th>Shooting Hand</th>
+          <th>Height</th>
+          <th>Weight</th>
+          <th>Birth Date</th>
         </tr>
 
         {singleTeam.map((player) => {
           return (
-            <tr>
-              <td>{`${player.first_name}`}</td>
-              <td>{`${player.last_name}`}</td>
-              <td>{`${player.position}`}</td>
+            <tr className="roster-table-data">
+              <Link to={'/'}>
+                <td>{`${player.first_name} ${player.last_name}`}</td>
+              </Link>
+              <td>{player.jersey_number}</td>
+              <td>{player.position}</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>{modBirthDateToDisplay(player.date_of_birth)}</td>
             </tr>
           );
         })}

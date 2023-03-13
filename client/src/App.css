@@ -2,6 +2,7 @@
 @import './styling/gameCard.css';
 @import './styling/hockey/hockeyHome.css';
 @import './styling/teams.css';
+@import './styling/rosters.css';
 
 *::before,
 *::after {

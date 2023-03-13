@@ -1,0 +1,21 @@
+.roster-table {
+  width: 50vw;
+  position: relative;
+  left: 15vw;
+}
+
+.roster-table tr > th {
+  background-color: black;
+  color: white;
+  width: 8vw;
+  font-size: 1vw;
+}
+
+.roster-table-data td {
+  font-size: 0.8vw;
+}
+
+.roster-table-data a {
+  text-decoration: none;
+  color: black;
+}

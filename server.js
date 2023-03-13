@@ -28,8 +28,12 @@ app.get('/api/hockey/teams/fullNames', async (req, res) => {
 });
 
 app.get('/api/hockey/teams/:team/roster', async (req, res) => {
+  const seasonToQuery = req.query.season;
   const team = req.params.team;
-  const singleTeamRoster = await sqlQueries.getSingleTeamRoster(team);
+  const singleTeamRoster = await sqlQueries.getSingleTeamRoster(
+    team,
+    seasonToQuery
+  );
   // await logger.log(singleTeamRoster);
   res.json(singleTeamRoster);
 });
