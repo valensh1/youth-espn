@@ -28,10 +28,13 @@ app.get('/api/hockey/teams/fullNames', async (req, res) => {
 });
 
 app.get('/api/hockey/teams/:team/roster', async (req, res) => {
+  logger.log(req.query);
   const seasonToQuery = req.query.season;
   const team = req.params.team;
+  const teamToQuery = req.query.teamToQuery ? req.query.teamToQuery : team; // On initial load there is no req.query params. Req.params does NOT happen until the user selects a team from the drop-down menu. So if no req.params then just take the team from the url path.
+
   const singleTeamRoster = await sqlQueries.getSingleTeamRoster(
-    team,
+    teamToQuery,
     seasonToQuery
   );
   // await logger.log(singleTeamRoster);

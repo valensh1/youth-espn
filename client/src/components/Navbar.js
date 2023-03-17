@@ -18,7 +18,7 @@ function Navbar() {
       <div id="navbar-content">
         {navbarList.map((sport) => {
           return (
-            <div className="drop-down">
+            <div className="drop-down" id={sport}>
               <Link to={`/${sport.toLowerCase()}`}>{sport}</Link>
               <div className="hover-content">
                 {sportSubCategories.map((subCategory) => {
@@ -26,6 +26,7 @@ function Navbar() {
                     <>
                       <Link
                         to={`/${sport.toLowerCase()}/${subCategory.toLowerCase()}`}
+                        id={subCategory}
                       >
                         {subCategory}
                       </Link>
@@ -43,7 +44,10 @@ function Navbar() {
             {otherSports.map((sport) => {
               return (
                 <>
-                  <a href="">{sport}</a>;
+                  <a href="" key={sport}>
+                    {sport}
+                  </a>
+                  ;
                 </>
               );
             })}

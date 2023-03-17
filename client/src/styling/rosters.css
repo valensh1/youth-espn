@@ -19,3 +19,9 @@
   text-decoration: none;
   color: black;
 }
+
+.teams-container select {
+  margin-right: 2vw;
+  margin-bottom: 3vw;
+  width: 15vw;
+}

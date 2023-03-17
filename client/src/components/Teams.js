@@ -34,18 +34,24 @@ function Teams() {
               .toLowerCase()
               .replace(' ', '');
             return (
-              <div className="individual-team-container" id={teamName}>
-                <Link
-                  key={team.team_name_short}
-                  to={`/${team.team_name_short}`}
-                >
+              <div
+                className="individual-team-container"
+                id={teamName}
+                key={team.team_name_short}
+              >
+                <Link to={`/${team.team_name_short}`}>
                   <img className="team-logo" src={team.logo_image} alt="" />
                   <span>{team.team_name_short}</span>
                 </Link>
                 <div className="team-links">
                   <Link to={`${teamName}/stats`}>Statistics</Link>
                   <Link to={`${teamName}/schedule`}>Schedule</Link>
-                  <Link to={`${teamName}/roster`}>Roster</Link>
+                  <Link
+                    to={`${teamName}/roster`}
+                    state={{ team: team.team_name_short }}
+                  >
+                    Roster
+                  </Link>
                 </div>
               </div>
             );
