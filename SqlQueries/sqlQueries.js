@@ -27,10 +27,10 @@ module.exports = {
   getAllTeams: async () => {
     try {
       response = await pool.query(` 
-              SELECT sport, team_name_short, team_name_full, logo_image
+              SELECT sport, team_name_short, team_name_full, logo_image, primary_team_color, secondary_team_color, third_team_color
               FROM teams
               WHERE sport = 'Hockey'
-              GROUP BY sport, team_name_short,team_name_full, logo_image
+              GROUP BY sport, team_name_short,team_name_full, logo_image, primary_team_color, secondary_team_color, third_team_color 
               ORDER BY team_name_short;
               `);
       return response.rows;
@@ -60,13 +60,15 @@ module.exports = {
       logger.log(season);
       //   const teamToRetrieve = team.toUpperCase();
       response = await pool.query(`
-      SELECT r.*, p.date_of_birth, p.height_inches, p.weight_lbs, t.team_name_full, t.team_name_short 
+      SELECT r.*, p.date_of_birth, p.height_inches, p.weight_lbs, t.team_name_full, t.team_name_short, t.primary_team_color, t.secondary_team_color, third_team_color, playImg.profile_img_1, profile_img_2,profile_img_3, profile_img_4, profile_img_5, action_img_1, action_img_2, action_img_3,action_img_4,action_img_5,action_img_6,action_img_7,action_img_8,action_img_9,action_img_10
       FROM rosters r
       LEFT JOIN player_profiles p
       ON player_profile_id_fk = p.id
       LEFT JOIN teams t
       ON team_id_fk = t.id
-      WHERE team_name_short ILIKE '${teamToQuery}' AND season = '${season}'
+      LEFT JOIN player_images playImg
+      ON r.player_profile_id_fk = playImg.player_profile_id_fk
+      WHERE t.team_name_short ILIKE '${teamToQuery}' AND r.season = '${season}'
       ORDER BY r.first_name;
         `);
       logger.log(response.rows[0]);

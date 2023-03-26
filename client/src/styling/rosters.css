@@ -1,18 +1,28 @@
+.teams-container {
+  background-color: black;
+  height: 100vh;
+}
+
 .roster-table {
   width: 50vw;
   position: relative;
   left: 15vw;
+  background-color: var(--color-whiteBackground);
 }
 
 .roster-table tr > th {
   background-color: black;
   color: white;
-  width: 8vw;
-  font-size: 1vw;
 }
 
 .roster-table-data td {
   font-size: 0.8vw;
+  text-align: center;
+}
+
+.roster-table-data .left {
+  text-align: left;
+  background-color: var(--color-lightGray);
 }
 
 .roster-table-data a {
@@ -24,4 +34,20 @@
   margin-right: 2vw;
   margin-bottom: 3vw;
   width: 15vw;
+}
+
+.teams-container h3 {
+  color: orangered;
+}
+
+.player-img-name {
+  display: flex;
+  align-items: center;
+}
+
+a > img {
+  width: 3vw;
+  border-radius: 50%;
+  border: 2px solid orangered;
+  margin-right: 0.5vw;
 }
