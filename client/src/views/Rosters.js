@@ -204,15 +204,16 @@ function Rosters({ currentSeason }) {
             </tr>
           </thead>
 
-          {playerPositions?.forwards?.map((player) => {
-            return (
-              <tbody key={player.id}>
-                <tr className="roster-table-data">
-                  <td className="left">
-                    <Link
-                      to={'/'}
-                    >{`${player.first_name} ${player.last_name}`}</Link>
-                  </td>
+          <tbody>
+            {playerPositions?.forwards?.map((player) => {
+              return (
+                <tr className="roster-table-data" key={player.id}>
+                  <Link className="player-img-name" to={''}>
+                    <img src={player.profile_img_1} alt="player profile pic" />
+                    <td className="left">
+                      {`${player.first_name} ${player.last_name}`}
+                    </td>
+                  </Link>
                   <td className="centered">{player.jersey_number}</td>
                   <td></td>
                   <td></td>
@@ -221,9 +222,9 @@ function Rosters({ currentSeason }) {
                     {modBirthDateToDisplay(player.date_of_birth)}
                   </td>
                 </tr>
-              </tbody>
-            );
-          })}
+              );
+            })}
+          </tbody>
         </table>
 
         <h3>Defense</h3>
@@ -239,15 +240,16 @@ function Rosters({ currentSeason }) {
             </tr>
           </thead>
 
-          {playerPositions?.defense?.map((player) => {
-            return (
-              <tbody key={player.id}>
-                <tr className="roster-table-data">
-                  <td className="left">
-                    <Link
-                      to={'/'}
-                    >{`${player.first_name} ${player.last_name}`}</Link>
-                  </td>
+          <tbody>
+            {playerPositions?.defense?.map((player) => {
+              return (
+                <tr className="roster-table-data" key={player.id}>
+                  <Link className="player-img-name" to={''}>
+                    <img src={player.profile_img_1} alt="player profile pic" />
+                    <td className="left">
+                      {`${player.first_name} ${player.last_name}`}
+                    </td>
+                  </Link>
                   <td className="centered">{player.jersey_number}</td>
                   <td></td>
                   <td></td>
@@ -256,9 +258,9 @@ function Rosters({ currentSeason }) {
                     {modBirthDateToDisplay(player.date_of_birth)}
                   </td>
                 </tr>
-              </tbody>
-            );
-          })}
+              );
+            })}
+          </tbody>
         </table>
 
         <h3>Goalies</h3>
@@ -267,35 +269,32 @@ function Rosters({ currentSeason }) {
             <tr>
               <th>Player</th>
               <th>#</th>
-              <th>Shooting Hand</th>
               <th>Height</th>
               <th>Weight</th>
               <th>Birth Date</th>
             </tr>
           </thead>
 
-          {playerPositions?.goalies?.map((player) => {
-            return (
-              <tbody key={player.id}>
-                <Link className="player-img-name" to={''}>
-                  <img src={player.profile_img_1} alt="player profile pic" />
-                  <td className="left">
-                    {`${player.first_name} ${player.last_name}`}
-                  </td>
-                </Link>
-
-                <tr className="roster-table-data">
+          <tbody>
+            {playerPositions?.goalies?.map((player) => {
+              return (
+                <tr className="roster-table-data" key={player.id}>
+                  <Link className="player-img-name" to={''}>
+                    <img src={player.profile_img_1} alt="player profile pic" />
+                    <td className="left">
+                      {`${player.first_name} ${player.last_name}`}
+                    </td>
+                  </Link>
                   <td className="centered">{player.jersey_number}</td>
-                  <td></td>
                   <td></td>
                   <td></td>
                   <td className="centered">
                     {modBirthDateToDisplay(player.date_of_birth)}
                   </td>
                 </tr>
-              </tbody>
-            );
-          })}
+              );
+            })}
+          </tbody>
         </table>
       </div>
     </>

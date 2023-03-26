@@ -1,6 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Sintony&display=swap'); /* Sintony font-family import from Google fonts */
+
 .teams-container {
   background-color: black;
-  height: 100vh;
+  height: fit-content;
 }
 
 .roster-table {
@@ -8,6 +10,7 @@
   position: relative;
   left: 15vw;
   background-color: var(--color-whiteBackground);
+  border-spacing: 0;
 }
 
 .roster-table tr > th {
@@ -16,18 +19,35 @@
 }
 
 .roster-table-data td {
-  font-size: 0.8vw;
+  font-size: 0.75vw;
+  font-family: 'Sintony', sans-serif;
   text-align: center;
+  line-height: 3.5vh;
+  border-bottom: 0.5px solid var(--color-grayText);
 }
 
 .roster-table-data .left {
   text-align: left;
-  background-color: var(--color-lightGray);
 }
 
+/* Styling for the shaded area on table which includes the profile pic and player name */
 .roster-table-data a {
   text-decoration: none;
   color: black;
+  background-color: var(--color-lightGray);
+  /* border-bottom: 0.5px solid var(--color-grayText); */
+}
+
+.roster-table-data a td {
+  /* border-bottom: 4px solid green; */
+}
+
+/* Styling for the profile pic */
+.roster-table a > img {
+  width: 3vw;
+  border-radius: 50%;
+  border: 2px solid orangered;
+  margin-right: 0.5vw;
 }
 
 .teams-container select {
@@ -43,11 +63,4 @@
 .player-img-name {
   display: flex;
   align-items: center;
-}
-
-a > img {
-  width: 3vw;
-  border-radius: 50%;
-  border: 2px solid orangered;
-  margin-right: 0.5vw;
 }
