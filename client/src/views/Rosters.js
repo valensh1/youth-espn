@@ -208,12 +208,14 @@ function Rosters({ currentSeason }) {
             {playerPositions?.forwards?.map((player) => {
               return (
                 <tr className="roster-table-data" key={player.id}>
-                  <Link className="player-img-name" to={''}>
-                    <img src={player.profile_img_1} alt="player profile pic" />
-                    <td className="left">
-                      {`${player.first_name} ${player.last_name}`}
-                    </td>
-                  </Link>
+                  <td className="shaded">
+                    <Link className="player-img-name" to={''}>
+                      <img src={player.profile_img_1} alt="" />
+                      <p className="left">
+                        {`${player.first_name} ${player.last_name}`}
+                      </p>
+                    </Link>
+                  </td>
                   <td className="centered">{player.jersey_number}</td>
                   <td></td>
                   <td></td>
@@ -244,12 +246,14 @@ function Rosters({ currentSeason }) {
             {playerPositions?.defense?.map((player) => {
               return (
                 <tr className="roster-table-data" key={player.id}>
-                  <Link className="player-img-name" to={''}>
-                    <img src={player.profile_img_1} alt="player profile pic" />
-                    <td className="left">
-                      {`${player.first_name} ${player.last_name}`}
-                    </td>
-                  </Link>
+                  <td className="shaded">
+                    <Link className="player-img-name" to={''}>
+                      <img src={player.profile_img_1} alt="" />
+                      <p className="left">
+                        {`${player.first_name} ${player.last_name}`}
+                      </p>
+                    </Link>
+                  </td>
                   <td className="centered">{player.jersey_number}</td>
                   <td></td>
                   <td></td>
@@ -279,12 +283,14 @@ function Rosters({ currentSeason }) {
             {playerPositions?.goalies?.map((player) => {
               return (
                 <tr className="roster-table-data" key={player.id}>
-                  <Link className="player-img-name" to={''}>
-                    <img src={player.profile_img_1} alt="player profile pic" />
-                    <td className="left">
-                      {`${player.first_name} ${player.last_name}`}
-                    </td>
-                  </Link>
+                  <td className="shaded">
+                    <Link className="player-img-name" to={''}>
+                      <img src={player.profile_img_1} alt="" />
+                      <p className="left">
+                        {`${player.first_name} ${player.last_name}`}
+                      </p>
+                    </Link>
+                  </td>
                   <td className="centered">{player.jersey_number}</td>
                   <td></td>
                   <td></td>
