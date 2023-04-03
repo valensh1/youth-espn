@@ -28,7 +28,7 @@ function Rosters({ currentSeason }) {
     currentSeason[sportToQuery]
   );
   const [selectedTeam, setSelectedTeam] = useState(teamNameCapitalized);
-  const [teamColors, setTeamColors] = useState({});
+  const [selectedTeamInfo, setSelectedTeamInfo] = useState({});
 
   //----------------------------------------------------------------- USE EFFECT HOOKS ------------------------------------------------------------------------
 
@@ -54,10 +54,18 @@ function Rosters({ currentSeason }) {
         setSeasons(seasonsData);
         setTeams(teamsData);
         setSingleTeam(singleTeamData);
-        setTeamColors({
-          primaryColor: singleTeamData[0].primary_team_color,
-          secondaryColor: singleTeamData[0].secondary_team_color,
-          thirdColor: singleTeamData[0].third_team_color,
+        teamsData.forEach((team) => {
+          const modifiedTeamName = modifyTeamNameToLowercaseNoSpaces(
+            team.team_name_short
+          );
+          if (modifiedTeamName === teamToQuery) {
+            setSelectedTeamInfo({
+              primaryColor: team.primary_team_color,
+              secondaryColor: team.secondary_team_color,
+              thirdColor: team.third_team_color,
+              logo: team.logo_image,
+            });
+          }
         });
       });
   }, []);
@@ -113,6 +121,17 @@ function Rosters({ currentSeason }) {
       const rosterData = await response.json();
       console.log(rosterData);
       setSingleTeam(rosterData);
+      teams.forEach((team) => {
+        console.log(team.team_name_short, event.target.value);
+        if (team.team_name_short === event.target.value) {
+          setSelectedTeamInfo({
+            primaryColor: team.primary_team_color,
+            secondaryColor: team.secondary_team_color,
+            thirdColor: team.third_team_color,
+            logo: team.logo_image,
+          });
+        }
+      });
     } catch (error) {}
   };
 
@@ -148,6 +167,16 @@ function Rosters({ currentSeason }) {
     return teamName;
   };
 
+  const modifyTeamNameToLowercaseNoSpaces = (team) => {
+    let modifiedTeam = '';
+    if (team.indexOf(' ') >= 0) {
+      modifiedTeam = team.replace(/ /g, '').toLowerCase();
+    } else {
+      modifiedTeam = team.toLowerCase();
+    }
+    return modifiedTeam;
+  };
+
   const modBirthDateToDisplay = (birthDate) => {
     birthDate = new Date(birthDate); // Convert date string to date to perform Javascript functions
     return Intl.DateTimeFormat('en-US').format(birthDate);
@@ -156,10 +185,13 @@ function Rosters({ currentSeason }) {
   //----------------------------------------------------------------- JSX ------------------------------------------------------------------------
   return (
     <>
-      <div className="teams-container">
+      <div
+        className="teams-container"
+        style={{ backgroundColor: selectedTeamInfo.secondaryColor }}
+      >
         <Navbar />
         <h1
-          style={{ color: `${teamColors.primaryColor}` }}
+          style={{ color: `${selectedTeamInfo.primaryColor}` }}
         >{`${selectedTeam} Roster`}</h1>
         <select
           name="seasons"
@@ -191,8 +223,13 @@ function Rosters({ currentSeason }) {
           })}
         </select>
 
-        <h3>Forwards</h3>
-        <table className="roster-table">
+        <img src={selectedTeamInfo.logo} alt="" id="team-logo" />
+
+        <h3 style={{ color: `${selectedTeamInfo.primaryColor}` }}>Forwards</h3>
+        <table
+          className="roster-table"
+          style={{ border: `10px solid ${selectedTeamInfo.primaryColor}` }}
+        >
           <thead>
             <tr>
               <th>Player</th>
@@ -210,7 +247,13 @@ function Rosters({ currentSeason }) {
                 <tr className="roster-table-data" key={player.id}>
                   <td className="shaded">
                     <Link className="player-img-name" to={''}>
-                      <img src={player.profile_img_1} alt="" />
+                      <img
+                        src={player.profile_img_1}
+                        alt=""
+                        style={{
+                          border: `2px solid ${selectedTeamInfo.primaryColor}`,
+                        }}
+                      />
                       <p className="left">
                         {`${player.first_name} ${player.last_name}`}
                       </p>
@@ -229,8 +272,11 @@ function Rosters({ currentSeason }) {
           </tbody>
         </table>
 
-        <h3>Defense</h3>
-        <table className="roster-table">
+        <h3 style={{ color: `${selectedTeamInfo.primaryColor}` }}>Defense</h3>
+        <table
+          className="roster-table"
+          style={{ border: `10px solid ${selectedTeamInfo.primaryColor}` }}
+        >
           <thead>
             <tr>
               <th>Player</th>
@@ -248,7 +294,13 @@ function Rosters({ currentSeason }) {
                 <tr className="roster-table-data" key={player.id}>
                   <td className="shaded">
                     <Link className="player-img-name" to={''}>
-                      <img src={player.profile_img_1} alt="" />
+                      <img
+                        src={player.profile_img_1}
+                        alt=""
+                        style={{
+                          border: `2px solid ${selectedTeamInfo.primaryColor}`,
+                        }}
+                      />
                       <p className="left">
                         {`${player.first_name} ${player.last_name}`}
                       </p>
@@ -267,8 +319,11 @@ function Rosters({ currentSeason }) {
           </tbody>
         </table>
 
-        <h3>Goalies</h3>
-        <table className="roster-table">
+        <h3 style={{ color: `${selectedTeamInfo.primaryColor}` }}>Goalies</h3>
+        <table
+          className="roster-table"
+          style={{ border: `10px solid ${selectedTeamInfo.primaryColor}` }}
+        >
           <thead>
             <tr>
               <th>Player</th>
@@ -285,7 +340,13 @@ function Rosters({ currentSeason }) {
                 <tr className="roster-table-data" key={player.id}>
                   <td className="shaded">
                     <Link className="player-img-name" to={''}>
-                      <img src={player.profile_img_1} alt="" />
+                      <img
+                        src={player.profile_img_1}
+                        alt=""
+                        style={{
+                          border: `2px solid ${selectedTeamInfo.primaryColor}`,
+                        }}
+                      />
                       <p className="left">
                         {`${player.first_name} ${player.last_name}`}
                       </p>

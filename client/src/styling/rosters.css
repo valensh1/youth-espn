@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Sintony&display=swap'); /* Sintony font-family import from Google fonts */
 
 .teams-container {
-  background-color: black;
   height: fit-content;
 }
 
@@ -19,7 +18,6 @@
   left: 15vw;
   background-color: var(--color-whiteBackground);
   border-spacing: 0;
-  border: 10px solid orangered;
   margin-bottom: 7.5vh;
 }
 
@@ -59,7 +57,6 @@
   width: 2.8vw;
   height: 5vh;
   border-radius: 50%;
-  border: 2px solid orangered;
   margin-right: 0.5vw;
 }
 
@@ -76,4 +73,9 @@
 .player-img-name {
   display: flex;
   align-items: center;
+}
+
+#team-logo {
+  height: 15vh;
+  width: 10vw;
 }
