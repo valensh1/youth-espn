@@ -30,7 +30,7 @@ function HeadlineGame({ nameForClass }) {
             <li className="team-name">Bears</li>
             <img
               className="logos"
-              src="https://i.imgur.com/DgIwxpm.png"
+              src="https://i.imgur.com/nk04yUE.png"
               alt=""
             />
             <li className="scores winner">7</li>

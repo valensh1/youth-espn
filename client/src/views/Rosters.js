@@ -22,11 +22,13 @@ function Rosters({ currentSeason }) {
   //----------------------------------------------------------------- USE STATE HOOKS ------------------------------------------------------------------------
   const [seasons, setSeasons] = useState([]);
   const [teams, setTeams] = useState([]);
+  const [levels, setLevels] = useState([]);
   const [singleTeam, setSingleTeam] = useState([]);
   const [playerPositions, setPlayerPositions] = useState({});
   const [selectedSeason, setSelectedSeason] = useState(
     currentSeason[sportToQuery]
   );
+  const [selectedLevel, setSelectedLevel] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState(teamNameCapitalized);
   const [selectedTeamInfo, setSelectedTeamInfo] = useState({});
 
@@ -40,20 +42,23 @@ function Rosters({ currentSeason }) {
       fetch(
         `/api/${sportToQuery}/teams/${teamToQuery}/roster?season=${currentSeason[sportToQuery]}`
       ),
+      fetch(`/api/${sportToQuery}/levels`),
     ];
 
-    Promise.all([APICalls[0], APICalls[1], APICalls[2]])
-      .then(([seasonsData, teamsData, singleTeamData]) =>
+    Promise.all([APICalls[0], APICalls[1], APICalls[2], APICalls[3]])
+      .then(([seasonsData, teamsData, singleTeamData, teamLevels]) =>
         Promise.all([
           seasonsData.json(),
           teamsData.json(),
           singleTeamData.json(),
+          teamLevels.json(),
         ])
       )
-      .then(([seasonsData, teamsData, singleTeamData]) => {
+      .then(([seasonsData, teamsData, singleTeamData, teamLevels]) => {
         setSeasons(seasonsData);
         setTeams(teamsData);
         setSingleTeam(singleTeamData);
+        setLevels(teamLevels);
         teamsData.forEach((team) => {
           const modifiedTeamName = modifyTeamNameToLowercaseNoSpaces(
             team.team_name_short
@@ -132,6 +137,13 @@ function Rosters({ currentSeason }) {
           });
         }
       });
+    } catch (error) {}
+  };
+
+  const changeSelectedLevel = async (event) => {
+    try {
+      console.log(event.target.value);
+      setSelectedLevel(event.target.value);
     } catch (error) {}
   };
 
@@ -220,6 +232,17 @@ function Rosters({ currentSeason }) {
                 {el.team_name_short}
               </option>
             );
+          })}
+        </select>
+
+        <select
+          name="level"
+          id="level-selection"
+          value={selectedLevel}
+          onChange={changeSelectedLevel}
+        >
+          {levels.map((level) => {
+            return <option>{level.level}</option>;
           })}
         </select>
 

@@ -9,6 +9,12 @@ const sqlQueries = require('./SqlQueries/sqlQueries');
 
 app.listen(5001);
 
+app.get('/api/hockey/levels', async (req, res) => {
+  const levels = await sqlQueries.getAllLevels();
+  // await logger.log(levels);
+  res.json(levels);
+});
+
 app.get('/api/hockey/seasons', async (req, res) => {
   const seasons = await sqlQueries.getAllSeasons();
   // await logger.log(seasons);

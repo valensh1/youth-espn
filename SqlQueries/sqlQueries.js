@@ -1,5 +1,6 @@
+let { response } = require('express');
 const { Pool } = require('pg');
-var logger = require('tracer').console(); // Logger so you can see code line numbers in Node.js. Need to use logger.log instead of console.log though. Must download Tracer from npm using npm i tracer
+let logger = require('tracer').console(); // Logger so you can see code line numbers in Node.js. Need to use logger.log instead of console.log though. Must download Tracer from npm using npm i tracer
 
 const config = {
   host: 'postgres-server-smv.postgres.database.azure.com',
@@ -24,11 +25,12 @@ module.exports = {
       throw error;
     }
   },
+
   getAllTeams: async () => {
     try {
       response = await pool.query(` 
               SELECT sport, team_name_short, team_name_full, logo_image, primary_team_color, secondary_team_color, third_team_color
-              FROM teams
+              FROM teams.teams
               WHERE sport = 'Hockey'
               GROUP BY sport, team_name_short,team_name_full, logo_image, primary_team_color, secondary_team_color, third_team_color 
               ORDER BY team_name_short;
@@ -38,20 +40,35 @@ module.exports = {
       throw error;
     }
   },
-  getAllTeamsFullNames: async () => {
+
+  getAllLevels: async () => {
     try {
       response = await pool.query(`
-          SELECT sport, team_name_short, team_name_full, logo_image
-              FROM teams
-              WHERE sport = 'Hockey'
-              GROUP BY sport, team_name_short,team_name_full, logo_image
-              ORDER BY team_name_full;
-        `);
+      SELECT DISTINCT level
+      FROM teams.teams
+      ORDER BY level;
+      `);
       return response.rows;
     } catch (error) {
       throw error;
     }
   },
+
+  getAllTeamsFullNames: async () => {
+    try {
+      response = await pool.query(`
+          SELECT sport, team_name_short, team_name_full, logo_image
+              FROM teams.teams
+              WHERE sport = 'Hockey'
+              GROUP BY sport, team_name_short,team_name_full, logo_image
+              ORDER BY team_name_full;   
+              `);
+      return response.rows;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   getSingleTeamRoster: async (team, season) => {
     try {
       //   await logger.log(team.toUpperCase());
@@ -64,7 +81,7 @@ module.exports = {
       FROM rosters r
       LEFT JOIN player_profiles p
       ON player_profile_id_fk = p.id
-      LEFT JOIN teams t
+      LEFT JOIN teams.teams t
       ON team_id_fk = t.id
       LEFT JOIN player_images playImg
       ON r.player_profile_id_fk = playImg.player_profile_id_fk
