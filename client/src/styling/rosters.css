@@ -4,28 +4,80 @@
   height: fit-content;
 }
 
-.teams-container h3 {
-  font-size: 1vw;
+.teams-container h1 {
+  font-size: 1.2vw;
+  font-weight: 800;
   position: relative;
-  left: 15vw;
+  left: 25vw;
   text-align: center;
   width: 50vw;
+  margin-bottom: 5vh;
+}
+
+#team-logo {
+  height: 10vh;
+  width: 7vw;
+  position: relative;
+  left: 46.4vw;
+}
+
+.teams-container h3 {
+  font-size: 0.8vw;
+  font-weight: 800;
+  position: relative;
+  left: 25vw;
+  text-align: center;
+  width: 50vw;
+}
+
+.teams-container .filter-dropdowns-container {
+  display: flex;
+  background-color: var(--color-lightGray);
+  width: 29vw;
+  height: 5vh;
+  border-radius: 5px;
+}
+
+.teams-container .filter-dropdowns {
+  display: flex;
+  flex-direction: column;
+  margin-left: 1vw;
+}
+
+.teams-container label {
+  font-size: 0.6vw;
+  margin-top: 0.25vh;
+  margin-bottom: 0.5vh;
+}
+
+.teams-container select {
+  position: relative;
+  margin-right: 2vw;
+  margin-bottom: 3vw;
+  width: 7vw;
+  font-size: 0.55vw;
+}
+
+.teams-container select option {
+  position: absolute;
+  top: 50%;
 }
 
 .roster-table {
   width: 50vw;
   position: relative;
-  left: 15vw;
+  left: 25vw;
   background-color: var(--color-whiteBackground);
   border-spacing: 0;
   margin-bottom: 7.5vh;
+  border-radius: 10px;
 }
 
 .roster-table tr > th {
   background-color: black;
   color: white;
   line-height: 3vh;
-  font-size: 0.7vw;
+  font-size: 0.6vw;
 }
 
 .shaded {
@@ -52,6 +104,10 @@
   padding: 1vh 0.2vw;
 }
 
+.roster-table-data a > p:hover {
+  scale: 1.07;
+}
+
 /* Styling for the profile pic */
 .roster-table img {
   width: 2.8vw;
@@ -60,10 +116,9 @@
   margin-right: 0.5vw;
 }
 
-.teams-container select {
-  margin-right: 2vw;
-  margin-bottom: 3vw;
-  width: 15vw;
+/* Hover over player image */
+.roster-table img:hover {
+  scale: 1.075;
 }
 
 .teams-container h3 {
@@ -73,9 +128,4 @@
 .player-img-name {
   display: flex;
   align-items: center;
-}
-
-#team-logo {
-  height: 15vh;
-  width: 10vw;
 }

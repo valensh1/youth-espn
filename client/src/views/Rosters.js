@@ -202,51 +202,63 @@ function Rosters({ currentSeason }) {
         style={{ backgroundColor: selectedTeamInfo.secondaryColor }}
       >
         <Navbar />
+
+        <div className="filter-dropdowns-container">
+          <div className="filter-dropdowns">
+            <label htmlFor="seasons">Season</label>
+            <select
+              name="seasons"
+              id="seasons-selection"
+              value={selectedSeason}
+              onChange={changeSelectedSeason}
+            >
+              {seasons.map((el) => {
+                return (
+                  <option value={el.season} key={el.season}>
+                    {el.season}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+
+          <div className="filter-dropdowns">
+            <label htmlFor="teams">Team</label>
+            <select
+              name="teams"
+              id="teams-selection"
+              value={selectedTeam}
+              onChange={changeSelectedTeam}
+            >
+              {teams.map((el) => {
+                return (
+                  <option value={el.team_short} key={el.team_name_short}>
+                    {el.team_name_short}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+
+          <div className="filter-dropdowns">
+            <label htmlFor="teams">Level</label>
+            <select
+              name="level"
+              id="level-selection"
+              value={selectedLevel}
+              onChange={changeSelectedLevel}
+            >
+              {levels.map((level) => {
+                return <option>{level.level}</option>;
+              })}
+            </select>
+          </div>
+        </div>
+
+        <img src={selectedTeamInfo.logo} alt="" id="team-logo" />
         <h1
           style={{ color: `${selectedTeamInfo.primaryColor}` }}
         >{`${selectedTeam} Roster`}</h1>
-        <select
-          name="seasons"
-          id="seasons-selection"
-          value={selectedSeason}
-          onChange={changeSelectedSeason}
-        >
-          {seasons.map((el) => {
-            return (
-              <option value={el.season} key={el.season}>
-                {el.season}
-              </option>
-            );
-          })}
-        </select>
-
-        <select
-          name="teams"
-          id="teams-selection"
-          value={selectedTeam}
-          onChange={changeSelectedTeam}
-        >
-          {teams.map((el) => {
-            return (
-              <option value={el.team_short} key={el.team_name_short}>
-                {el.team_name_short}
-              </option>
-            );
-          })}
-        </select>
-
-        <select
-          name="level"
-          id="level-selection"
-          value={selectedLevel}
-          onChange={changeSelectedLevel}
-        >
-          {levels.map((level) => {
-            return <option>{level.level}</option>;
-          })}
-        </select>
-
-        <img src={selectedTeamInfo.logo} alt="" id="team-logo" />
 
         <h3 style={{ color: `${selectedTeamInfo.primaryColor}` }}>Forwards</h3>
         <table
