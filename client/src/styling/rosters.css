@@ -15,10 +15,32 @@
 }
 
 #team-logo {
+  display: inline-block;
   height: 10vh;
   width: 7vw;
   position: relative;
   left: 46.4vw;
+}
+
+.pill-container {
+  margin-top: 10vh;
+  margin-left: 36.5vw;
+  width: fit-content;
+}
+
+.pill {
+  margin-left: 5vw;
+  border: 4px solid orangered;
+  border-radius: 5px;
+  padding: 0.5vh 0.5vw;
+  font-size: 1.2vw;
+  text-decoration: none;
+  background-color: black;
+  color: white;
+}
+
+.pill:hover {
+  background-color: orangered;
 }
 
 .teams-container h3 {

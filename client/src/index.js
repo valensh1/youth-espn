@@ -20,6 +20,10 @@ const router = createBrowserRouter([
     element: <Hockey />,
   },
   {
+    path: '/hockey/home',
+    element: <Hockey />,
+  },
+  {
     path: 'hockey/teams',
     element: <Teams />,
   },

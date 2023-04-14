@@ -13,7 +13,7 @@ function GameCard({ nameForClass }) {
             <a href="">
               <div className="team-scores">
                 <div className="visiting-team teams">
-                  <img src="https://i.imgur.com/Hv7B0wA.png" alt="" />
+                  <img src="https://i.imgur.com/2eOiFmz.png" alt="" />
                   <li className="team">OCHC</li>
                   <li>5</li>
                 </div>
@@ -32,7 +32,7 @@ function GameCard({ nameForClass }) {
             <a href="">
               <div className="team-scores">
                 <div className="visiting-team teams">
-                  <img src="https://i.imgur.com/Hv7B0wA.png" alt="" />
+                  <img src="https://i.imgur.com/2eOiFmz.png" alt="" />
                   <li className="team">OCHC</li>
                   <li>5</li>
                 </div>
@@ -50,44 +50,7 @@ function GameCard({ nameForClass }) {
             <a href="">
               <div className="team-scores">
                 <div className="visiting-team teams">
-                  <img src="https://i.imgur.com/Hv7B0wA.png" alt="" />
-                  <li className="team">OCHC</li>
-                  <li>5</li>
-                </div>
-                <div className="home-team teams">
-                  <img src="https://i.imgur.com/sit1EbX.png" alt="" />
-                  <li className="team">Jr. Gulls</li>
-                  <li>1</li>
-                </div>
-              </div>
-              <div className="horizontal-line"></div>
-              <div className="gametime-period">
-                <li id="gametime">1:49 - 2nd</li>
-              </div>
-            </a>
-            <div className="vertical-line"></div>
-            <a href="">
-              <div className="team-scores">
-                <div className="visiting-team teams">
-                  <img src="https://i.imgur.com/Hv7B0wA.png" alt="" />
-                  <li className="team">OCHC</li>
-                  <li>5</li>
-                </div>
-                <div className="home-team teams">
-                  <img src="https://i.imgur.com/sit1EbX.png" alt="" />
-                  <li className="team">Jr. Gulls</li>
-                  <li>1</li>
-                </div>
-              </div>
-              <div className="horizontal-line"></div>
-              <div className="gametime-period">
-                <li id="gametime">1:49 - 2nd</li>
-              </div>
-            </a>
-            <a href="">
-              <div className="team-scores">
-                <div className="visiting-team teams">
-                  <img src="https://i.imgur.com/Hv7B0wA.png" alt="" />
+                  <img src="https://i.imgur.com/2eOiFmz.png" alt="" />
                   <li className="team">OCHC</li>
                   <li>5</li>
                 </div>
@@ -106,7 +69,7 @@ function GameCard({ nameForClass }) {
             <a href="">
               <div className="team-scores">
                 <div className="visiting-team teams">
-                  <img src="https://i.imgur.com/Hv7B0wA.png" alt="" />
+                  <img src="https://i.imgur.com/2eOiFmz.png" alt="" />
                   <li className="team">OCHC</li>
                   <li>5</li>
                 </div>
@@ -124,7 +87,7 @@ function GameCard({ nameForClass }) {
             <a href="">
               <div className="team-scores">
                 <div className="visiting-team teams">
-                  <img src="https://i.imgur.com/Hv7B0wA.png" alt="" />
+                  <img src="https://i.imgur.com/2eOiFmz.png" alt="" />
                   <li className="team">OCHC</li>
                   <li>5</li>
                 </div>
@@ -143,7 +106,44 @@ function GameCard({ nameForClass }) {
             <a href="">
               <div className="team-scores">
                 <div className="visiting-team teams">
-                  <img src="https://i.imgur.com/Hv7B0wA.png" alt="" />
+                  <img src="https://i.imgur.com/2eOiFmz.png" alt="" />
+                  <li className="team">OCHC</li>
+                  <li>5</li>
+                </div>
+                <div className="home-team teams">
+                  <img src="https://i.imgur.com/sit1EbX.png" alt="" />
+                  <li className="team">Jr. Gulls</li>
+                  <li>1</li>
+                </div>
+              </div>
+              <div className="horizontal-line"></div>
+              <div className="gametime-period">
+                <li id="gametime">1:49 - 2nd</li>
+              </div>
+            </a>
+            <a href="">
+              <div className="team-scores">
+                <div className="visiting-team teams">
+                  <img src="https://i.imgur.com/2eOiFmz.png" alt="" />
+                  <li className="team">OCHC</li>
+                  <li>5</li>
+                </div>
+                <div className="home-team teams">
+                  <img src="https://i.imgur.com/sit1EbX.png" alt="" />
+                  <li className="team">Jr. Gulls</li>
+                  <li>1</li>
+                </div>
+              </div>
+              <div className="horizontal-line"></div>
+              <div className="gametime-period">
+                <li id="gametime">1:49 - 2nd</li>
+              </div>
+            </a>
+            <div className="vertical-line"></div>
+            <a href="">
+              <div className="team-scores">
+                <div className="visiting-team teams">
+                  <img src="https://i.imgur.com/2eOiFmz.png" alt="" />
                   <li className="team">OCHC</li>
                   <li>5</li>
                 </div>

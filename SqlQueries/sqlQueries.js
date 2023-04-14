@@ -69,15 +69,16 @@ module.exports = {
     }
   },
 
-  getSingleTeamRoster: async (team, season) => {
+  getSingleTeamRoster: async (team, season, level) => {
     try {
       //   await logger.log(team.toUpperCase());
       const teamToQuery = team.toUpperCase();
       logger.log(teamToQuery);
       logger.log(season);
+      logger.log(level);
       //   const teamToRetrieve = team.toUpperCase();
       response = await pool.query(`
-      SELECT r.*, p.date_of_birth, p.height_inches, p.weight_lbs, t.team_name_full, t.team_name_short, t.primary_team_color, t.secondary_team_color, third_team_color, playImg.profile_img_1, profile_img_2,profile_img_3, profile_img_4, profile_img_5, action_img_1, action_img_2, action_img_3,action_img_4,action_img_5,action_img_6,action_img_7,action_img_8,action_img_9,action_img_10
+      SELECT r.*, p.date_of_birth, p.height_inches, p.weight_lbs, t.team_name_full, t.team_name_short, t.level, t.primary_team_color, t.secondary_team_color, third_team_color, playImg.profile_img_1, profile_img_2,profile_img_3, profile_img_4, profile_img_5, action_img_1, action_img_2, action_img_3,action_img_4,action_img_5,action_img_6,action_img_7,action_img_8,action_img_9,action_img_10
       FROM rosters r
       LEFT JOIN player_profiles p
       ON player_profile_id_fk = p.id
@@ -85,7 +86,7 @@ module.exports = {
       ON team_id_fk = t.id
       LEFT JOIN player_images playImg
       ON r.player_profile_id_fk = playImg.player_profile_id_fk
-      WHERE t.team_name_short ILIKE '${teamToQuery}' AND r.season = '${season}'
+      WHERE t.team_name_short ILIKE '${teamToQuery}' AND r.season = '${season}' AND t.level = '${level}'
       ORDER BY r.first_name;
         `);
       logger.log(response.rows[0]);

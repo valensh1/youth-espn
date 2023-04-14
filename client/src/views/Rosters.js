@@ -28,7 +28,7 @@ function Rosters({ currentSeason }) {
   const [selectedSeason, setSelectedSeason] = useState(
     currentSeason[sportToQuery]
   );
-  const [selectedLevel, setSelectedLevel] = useState([]);
+  const [selectedLevel, setSelectedLevel] = useState('AAA');
   const [selectedTeam, setSelectedTeam] = useState(teamNameCapitalized);
   const [selectedTeamInfo, setSelectedTeamInfo] = useState({});
 
@@ -40,7 +40,7 @@ function Rosters({ currentSeason }) {
       fetch(`/api/${sportToQuery}/seasons`),
       fetch(`/api/${sportToQuery}/teams`),
       fetch(
-        `/api/${sportToQuery}/teams/${teamToQuery}/roster?season=${currentSeason[sportToQuery]}`
+        `/api/${sportToQuery}/teams/${teamToQuery}/roster?season=${currentSeason[sportToQuery]}&level=AAA`
       ),
       fetch(`/api/${sportToQuery}/levels`),
     ];
@@ -104,7 +104,7 @@ function Rosters({ currentSeason }) {
       console.log(event.target.value);
       setSelectedSeason(event.target.value);
       const response = await fetch(
-        `/api/${sportToQuery}/teams/${selectedTeam}/roster?season=${event.target.value}`
+        `/api/${sportToQuery}/teams/${selectedTeam}/roster?season=${event.target.value}&level=${selectedLevel}`
       );
       const rosterData = await response.json();
       setSingleTeam(rosterData);
@@ -121,7 +121,9 @@ function Rosters({ currentSeason }) {
       const response = await fetch(
         `/api/${sportToQuery}/teams/${modifyTeamNameToPlaceInURL(
           event.target.value
-        )}/roster?season=${selectedSeason}&teamToQuery=${event.target.value}`
+        )}/roster?season=${selectedSeason}&teamToQuery=${
+          event.target.value
+        }&level=${selectedLevel}`
       );
       const rosterData = await response.json();
       console.log(rosterData);
@@ -144,6 +146,12 @@ function Rosters({ currentSeason }) {
     try {
       console.log(event.target.value);
       setSelectedLevel(event.target.value);
+      const response = await fetch(
+        `/api/${sportToQuery}/teams/${selectedTeam}/roster?season=${selectedSeason}&level=${event.target.value}`
+      );
+      const rosterData = await response.json();
+      console.log(rosterData);
+      setSingleTeam(rosterData);
     } catch (error) {}
   };
 
@@ -249,7 +257,7 @@ function Rosters({ currentSeason }) {
               onChange={changeSelectedLevel}
             >
               {levels.map((level) => {
-                return <option>{level.level}</option>;
+                return <option key={level.level}>{level.level}</option>;
               })}
             </select>
           </div>
@@ -259,6 +267,15 @@ function Rosters({ currentSeason }) {
         <h1
           style={{ color: `${selectedTeamInfo.primaryColor}` }}
         >{`${selectedTeam} Roster`}</h1>
+
+        <div className="pill-container">
+          <a href="" className="pill">
+            Ducks(1)
+          </a>
+          <a href="" className="pill">
+            Ducks(2)
+          </a>
+        </div>
 
         <h3 style={{ color: `${selectedTeamInfo.primaryColor}` }}>Forwards</h3>
         <table
