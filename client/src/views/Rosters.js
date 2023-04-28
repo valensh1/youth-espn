@@ -6,14 +6,19 @@ import Navbar from '../components/Navbar';
 function Rosters({ currentSeason }) {
   // Get sport to render rosters for
   const sportToQuery = window.location.pathname.split('/')[1];
-  console.log(sportToQuery);
 
   const teamToQuery = window.location.pathname.split('/')[3];
-  console.log(teamToQuery);
 
   let teamNameCapitalized = '';
+
+  const playersByPosition = {
+    forwards: [],
+    defense: [],
+    goalies: [],
+  };
+
   const location = useLocation();
-  // console.log(location.state);
+
   if (location?.state) {
     const { team } = location.state; // Destructure state prop that is passed from the Link element on Team.js so we can use to set the teams in drop-down menu and also use to query the database since the database contains team names such as Ice Dogs or Ducks
     teamNameCapitalized = team; // Used for drop-down menu and querying the database
@@ -24,6 +29,9 @@ function Rosters({ currentSeason }) {
   const [teams, setTeams] = useState([]);
   const [levels, setLevels] = useState([]);
   const [singleTeam, setSingleTeam] = useState([]);
+  const [multipleTeamsWithSameName, setMultipleTeamsWithSameName] = useState(
+    []
+  );
   const [playerPositions, setPlayerPositions] = useState({});
   const [selectedSeason, setSelectedSeason] = useState(
     currentSeason[sportToQuery]
@@ -77,31 +85,37 @@ function Rosters({ currentSeason }) {
 
   // UseEffect hook that organizes the players by position
   useEffect(() => {
-    const playersByPosition = {
-      forwards: [],
-      defense: [],
-      goalies: [],
-    };
-    singleTeam.find((player) => {
-      if (player.position === 'forward') {
-        console.log(`${player.first_name} ${player.last_name}`);
-        playersByPosition.forwards.push(player);
-      } else if (player.position === 'defenseman') {
-        console.log(`${player.first_name} ${player.last_name}`);
-        playersByPosition.defense.push(player);
-      } else {
-        console.log(`${player.first_name} ${player.last_name}`);
-        playersByPosition.goalies.push(player);
+    const teams = [];
+    setMultipleTeamsWithSameName([]); // clear out state
+
+    // Loop through single team data and push the different teams to an array for any team that has multiple teams (Example - Ducks A had two teams Ducks(1) and Ducks(2))
+    singleTeam.forEach((team) => {
+      console.log(team.actual_team_name);
+      if (!teams.includes(team.actual_team_name)) {
+        teams.push(team.actual_team_name);
       }
     });
-    return setPlayerPositions(playersByPosition);
+
+    // Set multipleTeamsWithSameName state IF more than one team is detected
+    if (teams.length > 1) {
+      setMultipleTeamsWithSameName(teams.sort());
+    }
+
+    getPlayerByPostionAndTeam(teams[0]); // Always show the first team as default
   }, [singleTeam]);
+
+  useEffect(() => {
+    const teamPillFirstTeam = document.getElementById('pill0');
+    console.log(teamPillFirstTeam?.innerText);
+    if (teamPillFirstTeam) {
+      teamPillFirstTeam.style.backgroundColor = selectedTeamInfo.primaryColor;
+    }
+  }, [multipleTeamsWithSameName]);
 
   //----------------------------------------------------------------- FUNCTIONS ------------------------------------------------------------------------
 
   const changeSelectedSeason = async (event) => {
     try {
-      console.log(event.target.value);
       setSelectedSeason(event.target.value);
       const response = await fetch(
         `/api/${sportToQuery}/teams/${selectedTeam}/roster?season=${event.target.value}&level=${selectedLevel}`
@@ -115,7 +129,6 @@ function Rosters({ currentSeason }) {
 
   const changeSelectedTeam = async (event) => {
     try {
-      console.log(event.target.value);
       setSelectedTeam(event.target.value);
       modifyTeamNameToPlaceInURL(event.target.value);
       const response = await fetch(
@@ -126,10 +139,8 @@ function Rosters({ currentSeason }) {
         }&level=${selectedLevel}`
       );
       const rosterData = await response.json();
-      console.log(rosterData);
       setSingleTeam(rosterData);
       teams.forEach((team) => {
-        console.log(team.team_name_short, event.target.value);
         if (team.team_name_short === event.target.value) {
           setSelectedTeamInfo({
             primaryColor: team.primary_team_color,
@@ -144,13 +155,11 @@ function Rosters({ currentSeason }) {
 
   const changeSelectedLevel = async (event) => {
     try {
-      console.log(event.target.value);
       setSelectedLevel(event.target.value);
       const response = await fetch(
         `/api/${sportToQuery}/teams/${selectedTeam}/roster?season=${selectedSeason}&level=${event.target.value}`
       );
       const rosterData = await response.json();
-      console.log(rosterData);
       setSingleTeam(rosterData);
     } catch (error) {}
   };
@@ -197,9 +206,39 @@ function Rosters({ currentSeason }) {
     return modifiedTeam;
   };
 
+  const getPlayerByPostionAndTeam = (team) => {
+    singleTeam.find((player) => {
+      if (player.position === 'forward' && player.actual_team_name === team) {
+        playersByPosition.forwards.push(player);
+      } else if (
+        player.position === 'defenseman' &&
+        player.actual_team_name === team
+      ) {
+        playersByPosition.defense.push(player);
+      } else if (
+        player.position === 'goalie' &&
+        player.actual_team_name === team
+      ) {
+        playersByPosition.goalies.push(player);
+      }
+    });
+    return setPlayerPositions(playersByPosition);
+  };
+
   const modBirthDateToDisplay = (birthDate) => {
     birthDate = new Date(birthDate); // Convert date string to date to perform Javascript functions
     return Intl.DateTimeFormat('en-US').format(birthDate);
+  };
+
+  // Function to change player name to primary team color when hovering over the player name
+  const hoverOverPlayerName = (event) => {
+    event.target.style.color = selectedTeamInfo.primaryColor;
+    event.target.style.transform = 'scale(1.05)';
+  };
+
+  // Function to change player name back to default color of black when no longer hovering over player name
+  const leaveHoverStatePlayerName = (event) => {
+    event.target.style.color = 'black';
   };
 
   //----------------------------------------------------------------- JSX ------------------------------------------------------------------------
@@ -269,12 +308,17 @@ function Rosters({ currentSeason }) {
         >{`${selectedTeam} Roster`}</h1>
 
         <div className="pill-container">
-          <a href="" className="pill">
-            Ducks(1)
-          </a>
-          <a href="" className="pill">
-            Ducks(2)
-          </a>
+          {multipleTeamsWithSameName?.length
+            ? multipleTeamsWithSameName.map((team, index) => {
+                return (
+                  <div key={team}>
+                    <a href="" className={`pill`} id={`pill${index}`}>
+                      {team}
+                    </a>
+                  </div>
+                );
+              })
+            : ''}
         </div>
 
         <h3 style={{ color: `${selectedTeamInfo.primaryColor}` }}>Forwards</h3>
@@ -306,7 +350,11 @@ function Rosters({ currentSeason }) {
                           border: `2px solid ${selectedTeamInfo.primaryColor}`,
                         }}
                       />
-                      <p className="left">
+                      <p
+                        className="left player-name default-color"
+                        onMouseEnter={hoverOverPlayerName}
+                        onMouseLeave={leaveHoverStatePlayerName}
+                      >
                         {`${player.first_name} ${player.last_name}`}
                       </p>
                     </Link>
