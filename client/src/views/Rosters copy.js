@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 
@@ -9,7 +9,7 @@ function Rosters({ currentSeason }) {
 
   const teamToQuery = window.location.pathname.split('/')[3];
 
-  const defaultLevelToDisplay = 'A';
+  const defaultLevelToDisplay = 'AAA';
 
   let teamNameCapitalized = '';
 
@@ -26,27 +26,23 @@ function Rosters({ currentSeason }) {
     teamNameCapitalized = team; // Used for drop-down menu and querying the database
   }
 
-  const seasonsDropdown = useRef(['2021-2022', '2022-2023', '2023-2024']);
-  console.log(seasonsDropdown.current);
-
   //----------------------------------------------------------------- USE STATE HOOKS ------------------------------------------------------------------------
-  const [rosterData, setRosterData] = useState({
-    seasons: [],
-    levels: [],
-    allTeams: [],
-    multipleTeamNames: [],
-    singleTeam: [],
-    playerPositions: {
-      forwards: [],
-      defenseman: [],
-      goalies: [],
-    },
-  });
-  const [selections, setSelections] = useState({
-    selectedSeason: currentSeason[sportToQuery],
-    selectedTeam: teamNameCapitalized,
-    selectedLevel: defaultLevelToDisplay,
-  });
+  const [seasons, setSeasons] = useState([]);
+  const [teams, setTeams] = useState([]);
+  const [levels, setLevels] = useState([]);
+  const [singleTeam, setSingleTeam] = useState([]);
+  const [multipleTeamsWithSameName, setMultipleTeamsWithSameName] = useState(
+    []
+  );
+  const [playerPositions, setPlayerPositions] = useState({});
+  const [selectedSeason, setSelectedSeason] = useState(
+    currentSeason[sportToQuery]
+  );
+  const [selectedLevel, setSelectedLevel] = useState(
+    `${defaultLevelToDisplay}`
+  );
+  const [selectedTeam, setSelectedTeam] = useState(teamNameCapitalized);
+  const [selectedTeamInfo, setSelectedTeamInfo] = useState({});
 
   //----------------------------------------------------------------- USE EFFECT HOOKS ------------------------------------------------------------------------
 
@@ -81,78 +77,66 @@ function Rosters({ currentSeason }) {
         singleTeamData,
         teamLevels
       );
-
-      //! State Object
-      const rosterInfo = {
-        seasons: seasonsData,
-        levels: teamLevels,
-        allTeams: teamsData,
-        multipleTeamNames: multipleTeamsWithSameName,
-        singleTeam: singleTeamData,
-      };
-      console.log(rosterInfo);
+      setSeasons(seasonsData);
+      setTeams(teamsData);
+      console.log(multipleTeamsWithSameName);
+      setMultipleTeamsWithSameName(multipleTeamsWithSameName);
+      setSingleTeam(singleTeamData);
+      setLevels(teamLevels);
 
       teamsData.forEach((team) => {
         const modifiedTeamName = modifyTeamNameToLowercaseNoSpaces(
           team.team_name_short
         );
         if (modifiedTeamName === teamToQuery) {
-          const teamColorsAndLogo = {
+          setSelectedTeamInfo({
             primaryColor: team.primary_team_color,
             secondaryColor: team.secondary_team_color,
             thirdColor: team.third_team_color,
             logo: team.logo_image,
-          };
-          setRosterData({ ...rosterData, ...rosterInfo, teamColorsAndLogo });
+          });
         }
       });
     }
+
     fetchData();
   }, []);
 
   useEffect(() => {
-    console.log(`single team data changed`);
-    // getPlayerByPositionAndTeam();
-    // async function fetchMultipleTeamData() {
-    //   try {
-    //     const multipleTeamResponse = await fetch(
-    //       `/api/${sportToQuery}/teams/${rosterData.selectedTeam}/multiple-team-names?level=${rosterData.selectedLevel}`
-    //     );
-    //     console.log(
-    //       `/api/${sportToQuery}/teams/${rosterData.selectedTeam}/multiple-team-names?level=${rosterData.selectedLevel}`
-    //     );
-    //     const multipleTeamData = await multipleTeamResponse.json();
-    //     console.log(multipleTeamData);
-    //     setRosterData({ ...rosterData, multipleTeamNames: multipleTeamData });
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // }
-    // fetchMultipleTeamData();
-  }, [rosterData.singleTeam]);
+    getPlayerByPositionAndTeam();
+    async function fetchMultipleTeamData() {
+      try {
+        const multipleTeamResponse = await fetch(
+          `/api/${sportToQuery}/teams/${selectedTeam}/multiple-team-names?level=${selectedLevel}`
+        );
+        const multipleTeamData = await multipleTeamResponse.json();
+        console.log(multipleTeamData);
+        setMultipleTeamsWithSameName(multipleTeamData);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchMultipleTeamData();
+  }, [singleTeam]);
 
   useEffect(() => {
     const teamPillFirstTeam = document.getElementById('pill0');
     console.log(teamPillFirstTeam?.innerText);
     if (teamPillFirstTeam) {
-      teamPillFirstTeam.style.backgroundColor =
-        rosterData.teamColorsAndLogo?.primaryColor;
+      teamPillFirstTeam.style.backgroundColor = selectedTeamInfo.primaryColor;
     }
-  }, [rosterData.multipleTeamData]);
+  }, [multipleTeamsWithSameName]);
 
   //----------------------------------------------------------------- FUNCTIONS ------------------------------------------------------------------------
 
   const changeSelectedSeason = async (event) => {
     try {
-      setSelections({ ...selections, selectedSeason: event.target.value });
+      setSelectedSeason(event.target.value);
       const response = await fetch(
-        `/api/${sportToQuery}/teams/${selections.selectedTeam}/roster?season=${event.target.value}&level=${selections.selectedLevel}`
+        `/api/${sportToQuery}/teams/${selectedTeam}/roster?season=${event.target.value}&level=${selectedLevel}`
       );
-      const roster = await response.json();
-      setRosterData({
-        ...rosterData,
-        singleTeam: roster,
-      });
+      const rosterData = await response.json();
+      setSingleTeam(rosterData);
     } catch (error) {
       console.error(error);
     }
@@ -160,30 +144,24 @@ function Rosters({ currentSeason }) {
 
   const changeSelectedTeam = async (event) => {
     try {
-      setSelections({ ...selections, selectedTeam: event.target.value });
+      setSelectedTeam(event.target.value);
       modifyTeamNameToPlaceInURL(event.target.value);
       const response = await fetch(
         `/api/${sportToQuery}/teams/${modifyTeamNameToPlaceInURL(
           event.target.value
-        )}/roster?season=${rosterData.selectedSeason}&teamToQuery=${
+        )}/roster?season=${selectedSeason}&teamToQuery=${
           event.target.value
-        }&level=${rosterData.selectedLevel}`
+        }&level=${selectedLevel}`
       );
-      const roster = await response.json();
-
-      rosterData.allTeams.forEach((team) => {
+      const rosterData = await response.json();
+      setSingleTeam(rosterData);
+      teams.forEach((team) => {
         if (team.team_name_short === event.target.value) {
-          const teamColorsAndLogo = {
+          setSelectedTeamInfo({
             primaryColor: team.primary_team_color,
             secondaryColor: team.secondary_team_color,
             thirdColor: team.third_team_color,
             logo: team.logo_image,
-          };
-          setRosterData({
-            ...rosterData,
-            selectedTeam: event.target.value,
-            singleTeam: roster,
-            teamColorsAndLogo,
           });
         }
       });
@@ -192,16 +170,12 @@ function Rosters({ currentSeason }) {
 
   const changeSelectedLevel = async (event) => {
     try {
-      setSelections({ ...selections, selectedLevel: event.target.value });
-
+      setSelectedLevel(event.target.value);
       const response = await fetch(
-        `/api/${sportToQuery}/teams/${rosterData.selectedTeam}/roster?season=${rosterData.selectedSeason}&level=${event.target.value}`
+        `/api/${sportToQuery}/teams/${selectedTeam}/roster?season=${selectedSeason}&level=${event.target.value}`
       );
-      const roster = await response.json();
-      setRosterData({
-        ...rosterData,
-        singleTeam: roster,
-      });
+      const rosterData = await response.json();
+      setSingleTeam(rosterData);
     } catch (error) {}
   };
 
@@ -224,7 +198,7 @@ function Rosters({ currentSeason }) {
   const modifyTeamNameFromURL = (team) => {
     console.log(team);
     let teamName = '';
-    rosterData.allTeams.forEach((el) => {
+    teams.forEach((el) => {
       const teamHave2Words = el.team_name_short.indexOf(' ') >= 0; // See if team name has two words; This returns a variable that is a boolean.
       const teamNameModified = teamHave2Words
         ? el.team_name_short.replace(/ /g, '').toLowerCase() // Replace space in team name to concatenate with all lowercase letters
@@ -248,7 +222,7 @@ function Rosters({ currentSeason }) {
   };
 
   const getPlayerByPositionAndTeam = () => {
-    rosterData.singleTeam.find((player) => {
+    singleTeam.find((player) => {
       if (player.position === 'forward') {
         playersByPosition.forwards.push(player);
       } else if (player.position === 'defenseman') {
@@ -257,7 +231,7 @@ function Rosters({ currentSeason }) {
         playersByPosition.goalies.push(player);
       }
     });
-    return setRosterData({ ...rosterData, playerPositions: playersByPosition });
+    return setPlayerPositions(playersByPosition);
   };
 
   const modBirthDateToDisplay = (birthDate) => {
@@ -267,7 +241,7 @@ function Rosters({ currentSeason }) {
 
   // Function to change player name to primary team color when hovering over the player name
   const hoverOverPlayerName = (event) => {
-    event.target.style.color = rosterData.teamColorsAndLogo?.primaryColor;
+    event.target.style.color = selectedTeamInfo.primaryColor;
     event.target.style.transform = 'scale(1.05)';
   };
 
@@ -281,9 +255,7 @@ function Rosters({ currentSeason }) {
     <>
       <div
         className="teams-container"
-        style={{
-          backgroundColor: rosterData.teamColorsAndLogo?.secondaryColor,
-        }}
+        style={{ backgroundColor: selectedTeamInfo.secondaryColor }}
       >
         <Navbar />
 
@@ -293,13 +265,13 @@ function Rosters({ currentSeason }) {
             <select
               name="seasons"
               id="seasons-selection"
-              value={selections.selectedSeason}
+              value={selectedSeason}
               onChange={changeSelectedSeason}
             >
-              {seasonsDropdown.current.map((el) => {
+              {seasons.map((el) => {
                 return (
-                  <option value={el} key={el}>
-                    {el}
+                  <option value={el.season} key={el.season}>
+                    {el.season}
                   </option>
                 );
               })}
@@ -311,10 +283,10 @@ function Rosters({ currentSeason }) {
             <select
               name="teams"
               id="teams-selection"
-              value={selections.selectedTeam}
+              value={selectedTeam}
               onChange={changeSelectedTeam}
             >
-              {rosterData.allTeams.map((el) => {
+              {teams.map((el) => {
                 return (
                   <option value={el.team_short} key={el.team_name_short}>
                     {el.team_name_short}
@@ -329,24 +301,24 @@ function Rosters({ currentSeason }) {
             <select
               name="level"
               id="level-selection"
-              value={selections.selectedLevel}
+              value={selectedLevel}
               onChange={changeSelectedLevel}
             >
-              {rosterData.levels.map((level) => {
+              {levels.map((level) => {
                 return <option key={level.level}>{level.level}</option>;
               })}
             </select>
           </div>
         </div>
 
-        <img src={rosterData.teamColorsAndLogo?.logo} alt="" id="team-logo" />
+        <img src={selectedTeamInfo.logo} alt="" id="team-logo" />
         <h1
-          style={{ color: `${rosterData.teamColorsAndLogo?.primaryColor}` }}
-        >{`${rosterData.selectedTeam} Roster`}</h1>
+          style={{ color: `${selectedTeamInfo.primaryColor}` }}
+        >{`${selectedTeam} Roster`}</h1>
 
         <div className="pill-container">
-          {rosterData.multipleTeamNames?.length
-            ? rosterData.multipleTeamNames.map((team, index) => {
+          {multipleTeamsWithSameName?.length
+            ? multipleTeamsWithSameName.map((team, index) => {
                 return (
                   <div key={team.actual_team_name}>
                     <a href="" className={`pill`} id={`pill${index}`}>
@@ -358,14 +330,10 @@ function Rosters({ currentSeason }) {
             : ''}
         </div>
 
-        <h3 style={{ color: `${rosterData.teamColorsAndLogo?.primaryColor}` }}>
-          Forwards
-        </h3>
+        <h3 style={{ color: `${selectedTeamInfo.primaryColor}` }}>Forwards</h3>
         <table
           className="roster-table"
-          style={{
-            border: `10px solid ${rosterData.teamColorsAndLogo?.primaryColor}`,
-          }}
+          style={{ border: `10px solid ${selectedTeamInfo.primaryColor}` }}
         >
           <thead>
             <tr>
@@ -379,7 +347,7 @@ function Rosters({ currentSeason }) {
           </thead>
 
           <tbody>
-            {rosterData.playerPositions?.forwards?.map((player) => {
+            {playerPositions?.forwards?.map((player) => {
               return (
                 <tr className="roster-table-data" key={player.id}>
                   <td className="shaded">
@@ -388,7 +356,7 @@ function Rosters({ currentSeason }) {
                         src={player.profile_img_1}
                         alt=""
                         style={{
-                          border: `2px solid ${rosterData.teamColorsAndLogo?.primaryColor}`,
+                          border: `2px solid ${selectedTeamInfo.primaryColor}`,
                         }}
                       />
                       <p
@@ -413,14 +381,10 @@ function Rosters({ currentSeason }) {
           </tbody>
         </table>
 
-        <h3 style={{ color: `${rosterData.teamColorsAndLogo?.primaryColor}` }}>
-          Defense
-        </h3>
+        <h3 style={{ color: `${selectedTeamInfo.primaryColor}` }}>Defense</h3>
         <table
           className="roster-table"
-          style={{
-            border: `10px solid ${rosterData.teamColorsAndLogo?.primaryColor}`,
-          }}
+          style={{ border: `10px solid ${selectedTeamInfo.primaryColor}` }}
         >
           <thead>
             <tr>
@@ -434,7 +398,7 @@ function Rosters({ currentSeason }) {
           </thead>
 
           <tbody>
-            {rosterData.playerPositions?.defense?.map((player) => {
+            {playerPositions?.defense?.map((player) => {
               return (
                 <tr className="roster-table-data" key={player.id}>
                   <td className="shaded">
@@ -443,7 +407,7 @@ function Rosters({ currentSeason }) {
                         src={player.profile_img_1}
                         alt=""
                         style={{
-                          border: `2px solid ${rosterData.teamColorsAndLogo?.primaryColor}`,
+                          border: `2px solid ${selectedTeamInfo.primaryColor}`,
                         }}
                       />
                       <p className="left">
@@ -464,14 +428,10 @@ function Rosters({ currentSeason }) {
           </tbody>
         </table>
 
-        <h3 style={{ color: `${rosterData.teamColorsAndLogo?.primaryColor}` }}>
-          Goalies
-        </h3>
+        <h3 style={{ color: `${selectedTeamInfo.primaryColor}` }}>Goalies</h3>
         <table
           className="roster-table"
-          style={{
-            border: `10px solid ${rosterData.teamColorsAndLogo?.primaryColor}`,
-          }}
+          style={{ border: `10px solid ${selectedTeamInfo.primaryColor}` }}
         >
           <thead>
             <tr>
@@ -484,7 +444,7 @@ function Rosters({ currentSeason }) {
           </thead>
 
           <tbody>
-            {rosterData.playerPositions?.goalies?.map((player) => {
+            {playerPositions?.goalies?.map((player) => {
               return (
                 <tr className="roster-table-data" key={player.id}>
                   <td className="shaded">
@@ -493,7 +453,7 @@ function Rosters({ currentSeason }) {
                         src={player.profile_img_1}
                         alt=""
                         style={{
-                          border: `2px solid ${rosterData.teamColorsAndLogo?.primaryColor}`,
+                          border: `2px solid ${selectedTeamInfo.primaryColor}`,
                         }}
                       />
                       <p className="left">

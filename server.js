@@ -11,33 +11,29 @@ app.listen(5001);
 
 app.get('/api/hockey/levels', async (req, res) => {
   const levels = await sqlQueries.getAllLevels();
-  // await logger.log(levels);
-  res.json(levels);
+  return res.json(levels);
 });
 
 app.get('/api/hockey/seasons', async (req, res) => {
   const seasons = await sqlQueries.getAllSeasons();
-  // await logger.log(seasons);
-  res.json(seasons);
+  return res.json(seasons);
 });
 
 app.get('/api/hockey/teams', async (req, res) => {
   const teams = await sqlQueries.getAllTeams();
-  // await logger.log(teams);
-  res.json(teams);
+  return res.json(teams);
 });
 
 app.get('/api/hockey/teams/fullNames', async (req, res) => {
   const teams = await sqlQueries.getAllTeamsFullNames();
-  // await logger.log(teams);
-  res.json(teams);
+  return res.json(teams);
 });
 
 app.get('/api/hockey/teams/:team/roster', async (req, res) => {
   logger.log(req.query);
   const seasonToQuery = req.query.season;
   const levelToQuery = req.query.level;
-  logger.log(levelToQuery);
+  // logger.log(levelToQuery);
   const team = req.params.team;
   const teamToQuery = req.query.teamToQuery ? req.query.teamToQuery : team; // On initial load there is no req.query params. Req.params does NOT happen until the user selects a team from the drop-down menu. So if no req.params then just take the team from the url path.
 
@@ -46,6 +42,15 @@ app.get('/api/hockey/teams/:team/roster', async (req, res) => {
     seasonToQuery,
     levelToQuery
   );
-  // await logger.log(singleTeamRoster);
-  res.json(singleTeamRoster);
+  return res.json(singleTeamRoster);
+});
+
+app.get('/api/hockey/teams/:team/multiple-team-names', async (req, res) => {
+  const team = req.params.team;
+  const level = req.query.level;
+  logger.log(`This is the team to query --> ${team}`);
+  logger.log(`This is the level to query --> ${level} `);
+  const multipleTeamNames = await sqlQueries.getMultipleTeamNames(team, level);
+  logger.log(multipleTeamNames);
+  return res.json(multipleTeamNames);
 });
