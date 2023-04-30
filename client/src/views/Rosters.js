@@ -26,15 +26,17 @@ function Rosters({ currentSeason }) {
     teamNameCapitalized = team; // Used for drop-down menu and querying the database
   }
 
-  const seasonsDropdown = useRef(['2021-2022', '2022-2023', '2023-2024']);
-  console.log(seasonsDropdown.current);
+  //----------------------------------------------------------------- USE REF HOOKS ------------------------------------------------------------------------
+
+  const pageData = useRef({
+    seasons: [],
+    allTeams: [],
+    levels: [],
+    multipleTeamsWithSameName: [],
+  });
 
   //----------------------------------------------------------------- USE STATE HOOKS ------------------------------------------------------------------------
   const [rosterData, setRosterData] = useState({
-    seasons: [],
-    levels: [],
-    allTeams: [],
-    multipleTeamNames: [],
     singleTeam: [],
     playerPositions: {
       forwards: [],
@@ -82,15 +84,7 @@ function Rosters({ currentSeason }) {
         teamLevels
       );
 
-      //! State Object
-      const rosterInfo = {
-        seasons: seasonsData,
-        levels: teamLevels,
-        allTeams: teamsData,
-        multipleTeamNames: multipleTeamsWithSameName,
-        singleTeam: singleTeamData,
-      };
-      console.log(rosterInfo);
+      pageData.current.seasons = seasonsData;
 
       teamsData.forEach((team) => {
         const modifiedTeamName = modifyTeamNameToLowercaseNoSpaces(
@@ -103,7 +97,11 @@ function Rosters({ currentSeason }) {
             thirdColor: team.third_team_color,
             logo: team.logo_image,
           };
-          setRosterData({ ...rosterData, ...rosterInfo, teamColorsAndLogo });
+          setRosterData({
+            ...rosterData,
+            singleTeamRoster: singleTeamData,
+            teamColorsAndLogo,
+          });
         }
       });
     }
@@ -141,6 +139,10 @@ function Rosters({ currentSeason }) {
   }, [rosterData.multipleTeamData]);
 
   //----------------------------------------------------------------- FUNCTIONS ------------------------------------------------------------------------
+
+  const retrievePageData = async function () {
+    // Function body goes here
+  };
 
   const changeSelectedSeason = async (event) => {
     try {
@@ -296,7 +298,7 @@ function Rosters({ currentSeason }) {
               value={selections.selectedSeason}
               onChange={changeSelectedSeason}
             >
-              {seasonsDropdown.current.map((el) => {
+              {pageData.current.seasons.map((el) => {
                 return (
                   <option value={el} key={el}>
                     {el}
