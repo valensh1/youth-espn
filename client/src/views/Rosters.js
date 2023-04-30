@@ -10,6 +10,7 @@ function Rosters({ currentSeason }) {
   const teamToQuery = window.location.pathname.split('/')[3];
 
   const defaultLevelToDisplay = 'A';
+  const defaultTeamToDisplay = 'Bears';
 
   let teamNameCapitalized = '';
 
@@ -46,7 +47,7 @@ function Rosters({ currentSeason }) {
   });
   const [selections, setSelections] = useState({
     selectedSeason: currentSeason[sportToQuery],
-    selectedTeam: teamNameCapitalized,
+    selectedTeam: teamNameCapitalized || defaultTeamToDisplay,
     selectedLevel: defaultLevelToDisplay,
   });
 
@@ -75,7 +76,7 @@ function Rosters({ currentSeason }) {
         thirdColor: '',
         logo: '',
       };
-      roster.forEach((team) => {
+      await pageData.current.allTeams.forEach((team) => {
         const modifiedTeamName = modifyTeamNameToLowercaseNoSpaces(
           team.team_name_short
         );
@@ -88,11 +89,12 @@ function Rosters({ currentSeason }) {
           };
         }
       });
-      getPlayerByPositionAndTeam(roster);
+      const playersByPosition = getPlayerByPositionAndTeam(roster);
+      console.log(playersByPosition);
       setRosterData({
         ...rosterData,
         teamRoster: roster,
-        playersByPosition: playersByPosition,
+        playersByPosition,
         teamColorsAndLogo,
       });
     }
@@ -128,7 +130,7 @@ function Rosters({ currentSeason }) {
       teamPillFirstTeam.style.backgroundColor =
         rosterData.teamColorsAndLogo?.primaryColor;
     }
-  }, [rosterData.multipleTeamData]);
+  }, [pageData.current.multipleTeamsWithSameName]);
 
   //----------------------------------------------------------------- FUNCTIONS ------------------------------------------------------------------------
 
@@ -176,7 +178,7 @@ function Rosters({ currentSeason }) {
       const roster = await response.json();
       setRosterData({
         ...rosterData,
-        singleTeam: roster,
+        teamRoster: roster,
       });
     } catch (error) {
       console.error(error);
@@ -196,7 +198,7 @@ function Rosters({ currentSeason }) {
       );
       const roster = await response.json();
 
-      pageData.allTeams.forEach((team) => {
+      pageData.current.allTeams.forEach((team) => {
         if (team.team_name_short === event.target.value) {
           const teamColorsAndLogo = {
             primaryColor: team.primary_team_color,
@@ -207,8 +209,6 @@ function Rosters({ currentSeason }) {
           setSelections({
             ...selections,
             selectedTeam: event.target.value,
-            singleTeam: roster,
-            teamColorsAndLogo,
           });
         }
       });
@@ -225,7 +225,7 @@ function Rosters({ currentSeason }) {
       const roster = await response.json();
       setRosterData({
         ...rosterData,
-        singleTeam: roster,
+        teamRoster: roster,
       });
     } catch (error) {}
   };
@@ -273,26 +273,40 @@ function Rosters({ currentSeason }) {
   };
 
   const getPlayerByPositionAndTeam = (roster) => {
-    try {
-      if (roster.length) {
-        rosterData.teamRoster.find((player) => {
-          console.log(player);
-          if (player.position === 'forward') {
-            playersByPosition.forwards.push(player);
-          } else if (player.position === 'defenseman') {
-            playersByPosition.defense.push(player);
-          } else if (player.position === 'goalie') {
-            playersByPosition.goalies.push(player);
-          }
-        });
-        console.log(playersByPosition);
-        return playersByPosition;
-      }
-    } catch (error) {
-      console.log('There was an error');
-      throw error;
+    const playersByPosition = {
+      forwards: [],
+      defense: [],
+      goalies: [],
+    };
+
+    console.log(roster);
+    if (roster.length) {
+      roster.find((player) => {
+        console.log(player);
+        if (player.position === 'forward') {
+          playersByPosition.forwards.push(player);
+        } else if (player.position === 'defenseman') {
+          playersByPosition.defense.push(player);
+        } else if (player.position === 'goalie') {
+          playersByPosition.goalies.push(player);
+        }
+      });
+      console.log(playersByPosition);
+      return playersByPosition;
+    } else {
+      rosterData.teamRoster.find((player) => {
+        console.log(player);
+        if (player.position === 'forward') {
+          playersByPosition.forwards.push(player);
+        } else if (player.position === 'defenseman') {
+          playersByPosition.defense.push(player);
+        } else if (player.position === 'goalie') {
+          playersByPosition.goalies.push(player);
+        }
+      });
+      console.log(`This is the ELSE STATEMENT RUNNING${playersByPosition}`);
+      return playersByPosition;
     }
-    // return setRosterData({ ...rosterData, playerPositions: playersByPosition });
   };
 
   const modBirthDateToDisplay = (birthDate) => {
@@ -377,11 +391,11 @@ function Rosters({ currentSeason }) {
         <img src={rosterData.teamColorsAndLogo?.logo} alt="" id="team-logo" />
         <h1
           style={{ color: `${rosterData.teamColorsAndLogo?.primaryColor}` }}
-        >{`${rosterData.selectedTeam} Roster`}</h1>
+        >{`${selections.selectedTeam} Roster`}</h1>
 
         <div className="pill-container">
-          {rosterData.multipleTeamNames?.length
-            ? rosterData.multipleTeamNames.map((team, index) => {
+          {pageData.current.multipleTeamsWithSameName?.length
+            ? pageData.current.multipleTeamsWithSameName.map((team, index) => {
                 return (
                   <div key={team.actual_team_name}>
                     <a href="" className={`pill`} id={`pill${index}`}>
@@ -414,7 +428,7 @@ function Rosters({ currentSeason }) {
           </thead>
 
           <tbody>
-            {rosterData.playerPositions?.forwards?.map((player) => {
+            {rosterData.playersByPosition?.forwards?.map((player) => {
               return (
                 <tr className="roster-table-data" key={player.id}>
                   <td className="shaded">
@@ -469,7 +483,7 @@ function Rosters({ currentSeason }) {
           </thead>
 
           <tbody>
-            {rosterData.playerPositions?.defense?.map((player) => {
+            {rosterData.playersByPosition?.defense?.map((player) => {
               return (
                 <tr className="roster-table-data" key={player.id}>
                   <td className="shaded">
@@ -519,7 +533,7 @@ function Rosters({ currentSeason }) {
           </thead>
 
           <tbody>
-            {rosterData.playerPositions?.goalies?.map((player) => {
+            {rosterData.playersByPosition?.goalies?.map((player) => {
               return (
                 <tr className="roster-table-data" key={player.id}>
                   <td className="shaded">
