@@ -4,7 +4,7 @@ import Navbar from '../components/Navbar';
 
 // Current Season prop passed in from index.js is the current season for the sport being rendered (e.g. 2022-2023 season)
 function Rosters({ currentSeason }) {
-  // Get sport to render rosters for
+  // Get sport to render rosters for from the url
   const sportToQuery = window.location.pathname.split('/')[1];
 
   const teamToQuery = window.location.pathname.split('/')[3];
@@ -28,7 +28,7 @@ function Rosters({ currentSeason }) {
 
   //----------------------------------------------------------------- USE REF HOOKS ------------------------------------------------------------------------
 
-  const pageData = useRef({
+  let pageData = useRef({
     seasons: [],
     allTeams: [],
     levels: [],
@@ -37,8 +37,8 @@ function Rosters({ currentSeason }) {
 
   //----------------------------------------------------------------- USE STATE HOOKS ------------------------------------------------------------------------
   const [rosterData, setRosterData] = useState({
-    singleTeam: [],
-    playerPositions: {
+    teamRoster: [],
+    playersByPosition: {
       forwards: [],
       defenseman: [],
       goalies: [],
@@ -55,79 +55,71 @@ function Rosters({ currentSeason }) {
   // UseEffect hook that makes the initial calls upon page load to retrieve the available seasons, general team info and roster data
   useEffect(() => {
     async function fetchData() {
-      const APICalls = [
-        fetch(`/api/${sportToQuery}/seasons`),
-        fetch(`/api/${sportToQuery}/teams`),
-        fetch(
-          `/api/${sportToQuery}/teams/${teamToQuery}/multiple-team-names?level=${defaultLevelToDisplay}`
-        ),
-        fetch(
-          `/api/${sportToQuery}/teams/${teamToQuery}/roster?season=${currentSeason[sportToQuery]}&level=${defaultLevelToDisplay}`
-        ),
-        fetch(`/api/${sportToQuery}/levels`),
-      ];
-
-      const [
-        seasonsData,
-        teamsData,
-        multipleTeamsWithSameName,
-        singleTeamData,
-        teamLevels,
-      ] = await Promise.all(
-        APICalls.map((call) => call.then((response) => response.json()))
+      const fetchRosterData = fetch(
+        `/api/${sportToQuery}/teams/${teamToQuery}/roster?season=${currentSeason[sportToQuery]}&level=${defaultLevelToDisplay}`
       );
       console.log(
-        seasonsData,
-        teamsData,
-        multipleTeamsWithSameName,
-        singleTeamData,
-        teamLevels
+        `/api/${sportToQuery}/teams/${teamToQuery}/roster?season=${currentSeason[sportToQuery]}&level=${defaultLevelToDisplay}`
       );
+      const [rosterResponse, pageDataResponse] = await Promise.all([
+        fetchRosterData,
+        fetchPageData(),
+      ]);
+      const roster = await rosterResponse.json();
+      console.log(roster);
+      console.log(pageData);
 
-      pageData.current.seasons = seasonsData;
-
-      teamsData.forEach((team) => {
+      let teamColorsAndLogo = {
+        primaryColor: '',
+        secondaryColor: '',
+        thirdColor: '',
+        logo: '',
+      };
+      roster.forEach((team) => {
         const modifiedTeamName = modifyTeamNameToLowercaseNoSpaces(
           team.team_name_short
         );
         if (modifiedTeamName === teamToQuery) {
-          const teamColorsAndLogo = {
+          teamColorsAndLogo = {
             primaryColor: team.primary_team_color,
             secondaryColor: team.secondary_team_color,
             thirdColor: team.third_team_color,
             logo: team.logo_image,
           };
-          setRosterData({
-            ...rosterData,
-            singleTeamRoster: singleTeamData,
-            teamColorsAndLogo,
-          });
         }
+      });
+      getPlayerByPositionAndTeam(roster);
+      setRosterData({
+        ...rosterData,
+        teamRoster: roster,
+        playersByPosition: playersByPosition,
+        teamColorsAndLogo,
       });
     }
     fetchData();
   }, []);
 
-  useEffect(() => {
-    console.log(`single team data changed`);
-    // getPlayerByPositionAndTeam();
-    // async function fetchMultipleTeamData() {
-    //   try {
-    //     const multipleTeamResponse = await fetch(
-    //       `/api/${sportToQuery}/teams/${rosterData.selectedTeam}/multiple-team-names?level=${rosterData.selectedLevel}`
-    //     );
-    //     console.log(
-    //       `/api/${sportToQuery}/teams/${rosterData.selectedTeam}/multiple-team-names?level=${rosterData.selectedLevel}`
-    //     );
-    //     const multipleTeamData = await multipleTeamResponse.json();
-    //     console.log(multipleTeamData);
-    //     setRosterData({ ...rosterData, multipleTeamNames: multipleTeamData });
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // }
-    // fetchMultipleTeamData();
-  }, [rosterData.singleTeam]);
+  // useEffect(() => {
+  // console.log(`single team data changed`);
+  // getPlayerByPositionAndTeam();
+  // async function fetchMultipleTeamData() {
+  //   try {
+  //     const multipleTeamResponse = await fetch(
+  //       `/api/${sportToQuery}/teams/${rosterData.selectedTeam}/multiple-team-names?level=${rosterData.selectedLevel}`
+  //     );
+  //     console.log(
+  //       `/api/${sportToQuery}/teams/${rosterData.selectedTeam}/multiple-team-names?level=${rosterData.selectedLevel}`
+  //     );
+  //     const multipleTeamData = await multipleTeamResponse.json();
+  //     console.log(multipleTeamData);
+  //     setRosterData({ ...rosterData, multipleTeamNames: multipleTeamData });
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+  // fetchMultipleTeamData();
+  // },
+  // [rosterData.teamRoster]);
 
   useEffect(() => {
     const teamPillFirstTeam = document.getElementById('pill0');
@@ -140,8 +132,39 @@ function Rosters({ currentSeason }) {
 
   //----------------------------------------------------------------- FUNCTIONS ------------------------------------------------------------------------
 
-  const retrievePageData = async function () {
-    // Function body goes here
+  const fetchPageData = async function () {
+    try {
+      const APICalls = [
+        fetch(`/api/${sportToQuery}/seasons`),
+        fetch(`/api/${sportToQuery}/teams`),
+        fetch(`/api/${sportToQuery}/levels`),
+        fetch(
+          `/api/${sportToQuery}/teams/${teamToQuery}/multiple-team-names?level=${defaultLevelToDisplay}`
+        ),
+      ];
+      const [
+        seasonsDropdown,
+        teamsDropdown,
+        levelsDropdown,
+        multipleTeamsWithSameName,
+      ] = await Promise.all(
+        APICalls.map((call) => call.then((response) => response.json()))
+      );
+      console.log(
+        seasonsDropdown,
+        teamsDropdown,
+        levelsDropdown,
+        multipleTeamsWithSameName
+      );
+      return (pageData.current = {
+        seasons: seasonsDropdown,
+        allTeams: teamsDropdown,
+        levels: levelsDropdown,
+        multipleTeamsWithSameName: multipleTeamsWithSameName,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const changeSelectedSeason = async (event) => {
@@ -173,7 +196,7 @@ function Rosters({ currentSeason }) {
       );
       const roster = await response.json();
 
-      rosterData.allTeams.forEach((team) => {
+      pageData.allTeams.forEach((team) => {
         if (team.team_name_short === event.target.value) {
           const teamColorsAndLogo = {
             primaryColor: team.primary_team_color,
@@ -181,8 +204,8 @@ function Rosters({ currentSeason }) {
             thirdColor: team.third_team_color,
             logo: team.logo_image,
           };
-          setRosterData({
-            ...rosterData,
+          setSelections({
+            ...selections,
             selectedTeam: event.target.value,
             singleTeam: roster,
             teamColorsAndLogo,
@@ -249,17 +272,27 @@ function Rosters({ currentSeason }) {
     return modifiedTeam;
   };
 
-  const getPlayerByPositionAndTeam = () => {
-    rosterData.singleTeam.find((player) => {
-      if (player.position === 'forward') {
-        playersByPosition.forwards.push(player);
-      } else if (player.position === 'defenseman') {
-        playersByPosition.defense.push(player);
-      } else if (player.position === 'goalie') {
-        playersByPosition.goalies.push(player);
+  const getPlayerByPositionAndTeam = (roster) => {
+    try {
+      if (roster.length) {
+        rosterData.teamRoster.find((player) => {
+          console.log(player);
+          if (player.position === 'forward') {
+            playersByPosition.forwards.push(player);
+          } else if (player.position === 'defenseman') {
+            playersByPosition.defense.push(player);
+          } else if (player.position === 'goalie') {
+            playersByPosition.goalies.push(player);
+          }
+        });
+        console.log(playersByPosition);
+        return playersByPosition;
       }
-    });
-    return setRosterData({ ...rosterData, playerPositions: playersByPosition });
+    } catch (error) {
+      console.log('There was an error');
+      throw error;
+    }
+    // return setRosterData({ ...rosterData, playerPositions: playersByPosition });
   };
 
   const modBirthDateToDisplay = (birthDate) => {
@@ -300,8 +333,8 @@ function Rosters({ currentSeason }) {
             >
               {pageData.current.seasons.map((el) => {
                 return (
-                  <option value={el} key={el}>
-                    {el}
+                  <option value={el.season} key={el.season}>
+                    {el.season}
                   </option>
                 );
               })}
@@ -316,9 +349,9 @@ function Rosters({ currentSeason }) {
               value={selections.selectedTeam}
               onChange={changeSelectedTeam}
             >
-              {rosterData.allTeams.map((el) => {
+              {pageData.current.allTeams.map((el) => {
                 return (
-                  <option value={el.team_short} key={el.team_name_short}>
+                  <option value={el.team_name_short} key={el.id}>
                     {el.team_name_short}
                   </option>
                 );
@@ -334,7 +367,7 @@ function Rosters({ currentSeason }) {
               value={selections.selectedLevel}
               onChange={changeSelectedLevel}
             >
-              {rosterData.levels.map((level) => {
+              {pageData.current.levels.map((level) => {
                 return <option key={level.level}>{level.level}</option>;
               })}
             </select>

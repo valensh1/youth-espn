@@ -1,6 +1,6 @@
 const globalVariables = {
   currentSeason: {
-    hockey: '2022-2023',
+    hockey: '2021-2022',
   },
 };
 
