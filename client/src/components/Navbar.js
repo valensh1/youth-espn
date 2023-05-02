@@ -11,14 +11,13 @@ function Navbar() {
     'Teams',
   ];
   const otherSports = ['Tennis', 'Boxing'];
-  const test = ''; // Need to delete this
 
   return (
     <div id="navbar-container">
       <div id="navbar-content">
         {navbarList.map((sport) => {
           return (
-            <div className="drop-down" id={sport}>
+            <div className="drop-down" id={sport} key={sport}>
               <Link to={`/${sport.toLowerCase()}`}>{sport}</Link>
               <div className="hover-content">
                 {sportSubCategories.map((subCategory) => {
@@ -27,6 +26,7 @@ function Navbar() {
                       <Link
                         to={`/${sport.toLowerCase()}/${subCategory.toLowerCase()}`}
                         id={subCategory}
+                        key={`${sport}-${subCategory}`}
                       >
                         {subCategory}
                       </Link>

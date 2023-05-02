@@ -44,10 +44,16 @@ function Rosters({ currentSeason }) {
       defenseman: [],
       goalies: [],
     },
+    teamColorsAndLogo: {
+      primaryColor: '',
+      secondaryColor: '',
+      thirdColor: '',
+      logo: '',
+    },
   });
   const [selections, setSelections] = useState({
     selectedSeason: currentSeason[sportToQuery],
-    selectedTeam: teamNameCapitalized || defaultTeamToDisplay,
+    selectedTeam: teamNameCapitalized,
     selectedLevel: defaultLevelToDisplay,
   });
 
@@ -55,90 +61,54 @@ function Rosters({ currentSeason }) {
 
   // UseEffect hook that makes the initial calls upon page load to retrieve the available seasons, general team info and roster data
   useEffect(() => {
+    const teamNameMoreThanOneWord = selections.selectedTeam.includes(' ');
+
+    // If team has more than one word then use
+    let teamToSearch = teamNameMoreThanOneWord
+      ? selections.selectedTeam
+      : teamToQuery;
+
     async function fetchData() {
       const fetchRosterData = fetch(
-        `/api/${sportToQuery}/teams/${teamToQuery}/roster?season=${currentSeason[sportToQuery]}&level=${defaultLevelToDisplay}`
+        `/api/${sportToQuery}/teams/${teamToSearch}/roster?season=${currentSeason[sportToQuery]}&level=${defaultLevelToDisplay}`
       );
       console.log(
-        `/api/${sportToQuery}/teams/${teamToQuery}/roster?season=${currentSeason[sportToQuery]}&level=${defaultLevelToDisplay}`
+        `/api/${sportToQuery}/teams/${teamToSearch}/roster?season=${currentSeason[sportToQuery]}&level=${defaultLevelToDisplay}`
       );
+
       const [rosterResponse, pageDataResponse] = await Promise.all([
         fetchRosterData,
         fetchPageData(),
       ]);
       const roster = await rosterResponse.json();
-      // console.log(roster);
-      // console.log(pageData);
+      console.log(roster);
+      console.log(pageDataResponse);
 
-      // let teamColorsAndLogo = {
-      //   primaryColor: '',
-      //   secondaryColor: '',
-      //   thirdColor: '',
-      //   logo: '',
-      // };
-      // await pageData.current.allTeams.forEach((team) => {
-      //   const modifiedTeamName = modifyTeamNameToLowercaseNoSpaces(
-      //     team.team_name_short
-      //   );
-      //   if (modifiedTeamName === teamToQuery) {
-      //     teamColorsAndLogo = {
-      //       primaryColor: team.primary_team_color,
-      //       secondaryColor: team.secondary_team_color,
-      //       thirdColor: team.third_team_color,
-      //       logo: team.logo_image,
-      //     };
-      //   }
-      // });
-      const teamColorsAndLogo = getTeamColorsAndLogo(selections.selectedTeam);
+      await fetchMultipleTeamWithSameName(
+        currentSeason[sportToQuery],
+        teamToQuery,
+        defaultLevelToDisplay
+      );
+
+      const teamColorsAndLogo = getTeamColorsAndLogo(teamToQuery);
       const playersByPosition = getPlayerByPositionAndTeam(roster);
-      // console.log(playersByPosition);
       setRosterData({
         ...rosterData,
         teamRoster: roster,
         playersByPosition,
-        teamColorsAndLogo,
+        teamColorsAndLogo: teamColorsAndLogo,
       });
     }
     fetchData();
   }, []);
 
-  // useEffect(() => {
-  // console.log(`single team data changed`);
-  // getPlayerByPositionAndTeam();
-  // async function fetchMultipleTeamData() {
-  //   try {
-  //     const multipleTeamResponse = await fetch(
-  //       `/api/${sportToQuery}/teams/${rosterData.selectedTeam}/multiple-team-names?level=${rosterData.selectedLevel}`
-  //     );
-  //     console.log(
-  //       `/api/${sportToQuery}/teams/${rosterData.selectedTeam}/multiple-team-names?level=${rosterData.selectedLevel}`
-  //     );
-  //     const multipleTeamData = await multipleTeamResponse.json();
-  //     console.log(multipleTeamData);
-  //     setRosterData({ ...rosterData, multipleTeamNames: multipleTeamData });
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
-  // fetchMultipleTeamData();
-  // },
-  // [rosterData.teamRoster]);
-
   useEffect(() => {
-    const teamColorsAndLogoFunction = async () => {
-      const teamColorsAndLogo = await getTeamColorsAndLogo(
-        selections.selectedTeam
-      );
-      console.log('Rerender due to team change');
-      console.log(teamColorsAndLogo);
-      setRosterData({ ...rosterData, teamColorsAndLogo });
-    };
-    teamColorsAndLogoFunction();
-  }, [selections.selectedTeam]);
+    localStorage.setItem('selectedTeam', pageData.current.teams);
+    console.log(localStorage);
+  }, [pageData.current.teams]);
 
   useEffect(() => {
     const teamPillFirstTeam = document.getElementById('pill0');
-    // console.log(teamPillFirstTeam?.innerText);
     if (teamPillFirstTeam) {
       teamPillFirstTeam.style.backgroundColor =
         rosterData.teamColorsAndLogo?.primaryColor;
@@ -153,28 +123,33 @@ function Rosters({ currentSeason }) {
         fetch(`/api/${sportToQuery}/seasons`),
         fetch(`/api/${sportToQuery}/teams`),
         fetch(`/api/${sportToQuery}/levels`),
-        fetch(
-          `/api/${sportToQuery}/teams/${teamToQuery}/multiple-team-names?level=${defaultLevelToDisplay}`
-        ),
       ];
-      const [
-        seasonsDropdown,
-        teamsDropdown,
-        levelsDropdown,
-        multipleTeamsWithSameName,
-      ] = await Promise.all(
-        APICalls.map((call) => call.then((response) => response.json()))
-      );
+      const [seasonsDropdown, teamsDropdown, levelsDropdown] =
+        await Promise.all(
+          APICalls.map((call) => call.then((response) => response.json()))
+        );
 
-      return (pageData.current = {
+      pageData.current = {
         seasons: seasonsDropdown,
         allTeams: teamsDropdown,
         levels: levelsDropdown,
-        multipleTeamsWithSameName: multipleTeamsWithSameName,
-      });
+      };
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const fetchMultipleTeamWithSameName = async (season, team, level) => {
+    const response = await fetch(
+      `/api/${sportToQuery}/teams/${team}/multiple-team-names?level=${level}&season=${season}`
+    );
+    console.log(
+      `/api/${sportToQuery}/teams/${team}/multiple-team-names?level=${level}&season=${season}`
+    );
+    const multipleTeamData = await response.json();
+    console.log(multipleTeamData);
+    pageData.current.multipleTeamsWithSameName = multipleTeamData;
+    return multipleTeamData;
   };
 
   const fetchDataDueToSelectionChange = async (season, team, level) => {
@@ -199,7 +174,6 @@ function Rosters({ currentSeason }) {
       const modifiedTeamName = modifyTeamNameToLowercaseNoSpaces(
         team.team_name_short
       );
-      // console.log(modifiedTeamName, teamToQuery);
       if (modifiedTeamName === teamToQuery) {
         teamColorsAndLogo = {
           primaryColor: team.primary_team_color,
@@ -224,6 +198,8 @@ function Rosters({ currentSeason }) {
         selectedTeam,
         selectedLevel
       );
+
+      await fetchMultipleTeamWithSameName(season, selectedTeam, selectedLevel);
 
       console.log(roster);
 
@@ -255,6 +231,8 @@ function Rosters({ currentSeason }) {
       const team = event.target.value;
       setSelections({ ...selections, selectedTeam: team });
       modifyTeamNameToPlaceInURL(team);
+      const teamColorsAndLogo = getTeamColorsAndLogo(team);
+      pageData.current.teams = event.target.value;
 
       const { selectedSeason, selectedLevel } = selections; // destructuring of selections useState to pass into fetchDataDueToSelectionChange function
       const roster = await fetchDataDueToSelectionChange(
@@ -262,8 +240,9 @@ function Rosters({ currentSeason }) {
         team,
         selectedLevel
       );
-
       console.log(roster);
+
+      await fetchMultipleTeamWithSameName(selectedSeason, team, selectedLevel);
 
       if (roster.length) {
         const playersByPosition = getPlayerByPositionAndTeam(roster);
@@ -271,6 +250,7 @@ function Rosters({ currentSeason }) {
           ...rosterData,
           teamRoster: roster,
           playersByPosition: playersByPosition,
+          teamColorsAndLogo: teamColorsAndLogo,
         });
       } else {
         setRosterData({
@@ -280,24 +260,12 @@ function Rosters({ currentSeason }) {
             defenseman: [],
             goalies: [],
           },
+          teamColorsAndLogo: teamColorsAndLogo,
         });
       }
-
-      pageData.current.allTeams.forEach((team) => {
-        if (team.team_name_short === team) {
-          const teamColorsAndLogo = {
-            primaryColor: team.primary_team_color,
-            secondaryColor: team.secondary_team_color,
-            thirdColor: team.third_team_color,
-            logo: team.logo_image,
-          };
-          setSelections({
-            ...selections,
-            selectedTeam: team,
-          });
-        }
-      });
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const changeSelectedLevel = async (event) => {
@@ -313,6 +281,7 @@ function Rosters({ currentSeason }) {
       );
 
       console.log(roster);
+      await fetchMultipleTeamWithSameName(selectedSeason, selectedTeam, level);
 
       if (roster.length) {
         const playersByPosition = getPlayerByPositionAndTeam(roster);
@@ -359,7 +328,6 @@ function Rosters({ currentSeason }) {
         ? el.team_name_short.replace(/ /g, '').toLowerCase() // Replace space in team name to concatenate with all lowercase letters
         : el.team_name_short.toLowerCase();
       if (teamNameModified === team) {
-        console.log(teamNameModified, team, el.team_name_short);
         teamName = el.team_name_short;
       }
     });
@@ -384,10 +352,8 @@ function Rosters({ currentSeason }) {
         goalies: [],
       };
 
-      console.log(roster);
       if (roster.length) {
         roster.find((player) => {
-          console.log(player);
           if (player.position === 'forward') {
             playersByPosition.forwards.push(player);
           } else if (player.position === 'defenseman') {
@@ -396,7 +362,6 @@ function Rosters({ currentSeason }) {
             playersByPosition.goalies.push(player);
           }
         });
-        console.log(playersByPosition);
         return playersByPosition;
       } else {
         console.log(`There were no players to organize into positions`);

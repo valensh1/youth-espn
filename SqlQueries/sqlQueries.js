@@ -69,11 +69,11 @@ module.exports = {
     }
   },
 
-  getMultipleTeamNames: async (team, level) => {
+  getMultipleTeamNames: async (season, level, team) => {
     try {
       const teamToQuery = team.toUpperCase();
-      logger.log(teamToQuery);
-      logger.log(level);
+      // logger.log(teamToQuery);
+      // logger.log(level);
 
       response = await pool.query(`
       SELECT DISTINCT r.actual_team_name
@@ -81,7 +81,8 @@ module.exports = {
       JOIN teams.teams t
       ON r.team_id_fk = t.id
       WHERE t.team_name_short ILIKE '${teamToQuery}'
-      AND t.level = '${level}';
+      AND t.level = '${level}'
+      AND r.season = '${season}';
       `);
       // logger.log(
       //   `This is the team names array --> ${JSON.stringify(response.rows)}`
@@ -96,9 +97,9 @@ module.exports = {
   getSingleTeamRoster: async (team, season, level) => {
     try {
       const teamToQuery = team.toUpperCase();
-      // logger.log(teamToQuery);
-      // logger.log(season);
-      // logger.log(level);
+      logger.log(teamToQuery);
+      logger.log(season);
+      logger.log(level);
       response = await pool.query(`
       SELECT r.*,
 	p.date_of_birth,
@@ -136,11 +137,7 @@ WHERE (r.actual_team_name ILIKE '${teamToQuery}'
 ORDER BY r.first_name;
 ;
         `);
-      // logger.log(
-      //   `This is the response for single team roster -->${JSON.stringify(
-      //     response.rows
-      //   )}`
-      // );
+      logger.log(JSON.stringify(response.rows));
       return response.rows;
     } catch (error) {
       throw error;

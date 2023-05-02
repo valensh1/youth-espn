@@ -50,9 +50,14 @@ app.get('/api/hockey/teams/:team/roster', async (req, res) => {
 app.get('/api/hockey/teams/:team/multiple-team-names', async (req, res) => {
   const team = req.params.team;
   const level = req.query.level;
+  const season = req.query.season;
   logger.log(`This is the team to query --> ${team}`);
   logger.log(`This is the level to query --> ${level} `);
-  const multipleTeamNames = await sqlQueries.getMultipleTeamNames(team, level);
+  const multipleTeamNames = await sqlQueries.getMultipleTeamNames(
+    season,
+    level,
+    team
+  );
   logger.log(multipleTeamNames);
   return res.json(multipleTeamNames);
 });
