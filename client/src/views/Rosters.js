@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 import { Link, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 
@@ -7,7 +8,7 @@ function Rosters({ currentSeason }) {
   // Get sport to render rosters for from the url
   const sportToQuery = window.location.pathname.split('/')[1];
 
-  const teamToQuery = window.location.pathname.split('/')[3];
+  // const teamToQuery = window.location.pathname.split('/')[3];
 
   const defaultLevelToDisplay = 'A';
   const defaultTeamToDisplay = 'Bears';
@@ -27,6 +28,10 @@ function Rosters({ currentSeason }) {
     teamNameCapitalized = team; // Used for drop-down menu and querying the database
   }
 
+  //----------------------------------------------------------------- USE PARAMS HOOKS ------------------------------------------------------------------------
+  const { teamName } = useParams(); // Gets team name from url path; This param variable is declared in index.js file
+  const teamToQuery = teamName;
+
   //----------------------------------------------------------------- USE REF HOOKS ------------------------------------------------------------------------
 
   let pageData = useRef({
@@ -37,24 +42,28 @@ function Rosters({ currentSeason }) {
   });
 
   //----------------------------------------------------------------- USE STATE HOOKS ------------------------------------------------------------------------
-  const [rosterData, setRosterData] = useState({
-    teamRoster: [],
-    playersByPosition: {
-      forwards: [],
-      defenseman: [],
-      goalies: [],
-    },
-    teamColorsAndLogo: {
-      primaryColor: '',
-      secondaryColor: '',
-      thirdColor: '',
-      logo: '',
-    },
-  });
+  const [rosterData, setRosterData] = useState(
+    JSON.parse(localStorage.getItem('rosterData')) || {
+      teamRoster: [],
+      playersByPosition: {
+        forwards: [],
+        defenseman: [],
+        goalies: [],
+      },
+
+      teamColorsAndLogo: {
+        primaryColor: '',
+        secondaryColor: '',
+        thirdColor: '',
+        logo: '',
+      },
+    }
+  );
   const [selections, setSelections] = useState({
-    selectedSeason: currentSeason[sportToQuery],
-    selectedTeam: teamNameCapitalized,
-    selectedLevel: defaultLevelToDisplay,
+    selectedSeason:
+      localStorage.getItem('season') || currentSeason[sportToQuery],
+    selectedTeam: teamNameCapitalized || localStorage.getItem('team'), // Retrieve from local storage if page gets refreshed (so user stays on same page with same filters if page gets refreshed) otherwise take the team that was clicked on from teams page and render roster for that team
+    selectedLevel: localStorage.getItem('level') || defaultLevelToDisplay,
   });
 
   //----------------------------------------------------------------- USE EFFECT HOOKS ------------------------------------------------------------------------
@@ -72,17 +81,12 @@ function Rosters({ currentSeason }) {
       const fetchRosterData = fetch(
         `/api/${sportToQuery}/teams/${teamToSearch}/roster?season=${currentSeason[sportToQuery]}&level=${defaultLevelToDisplay}`
       );
-      console.log(
-        `/api/${sportToQuery}/teams/${teamToSearch}/roster?season=${currentSeason[sportToQuery]}&level=${defaultLevelToDisplay}`
-      );
 
       const [rosterResponse, pageDataResponse] = await Promise.all([
         fetchRosterData,
         fetchPageData(),
       ]);
       const roster = await rosterResponse.json();
-      console.log(roster);
-      console.log(pageDataResponse);
 
       await fetchMultipleTeamWithSameName(
         currentSeason[sportToQuery],
@@ -92,6 +96,7 @@ function Rosters({ currentSeason }) {
 
       const teamColorsAndLogo = getTeamColorsAndLogo(teamToQuery);
       const playersByPosition = getPlayerByPositionAndTeam(roster);
+
       setRosterData({
         ...rosterData,
         teamRoster: roster,
@@ -99,13 +104,22 @@ function Rosters({ currentSeason }) {
         teamColorsAndLogo: teamColorsAndLogo,
       });
     }
+
     fetchData();
   }, []);
 
+  // Every time selected team is changed store the team in local storage so if user refreshes page it keeps the same team that user had selected and doesn't go back to blank or a default team
   useEffect(() => {
-    localStorage.setItem('selectedTeam', pageData.current.teams);
-    console.log(localStorage);
-  }, [pageData.current.teams]);
+    localStorage.setItem('team', selections.selectedTeam);
+    localStorage.setItem('season', selections.selectedSeason);
+    localStorage.setItem('level', selections.selectedLevel);
+    localStorage.setItem('rosterData', JSON.stringify(rosterData));
+  }, [
+    selections.selectedTeam,
+    selections.selectedSeason,
+    selections.selectedLevel,
+    rosterData,
+  ]);
 
   useEffect(() => {
     const teamPillFirstTeam = document.getElementById('pill0');
@@ -117,6 +131,7 @@ function Rosters({ currentSeason }) {
 
   //----------------------------------------------------------------- FUNCTIONS ------------------------------------------------------------------------
 
+  // Function to retrieve data for the dropdown filters on the page
   const fetchPageData = async function () {
     try {
       const APICalls = [
@@ -139,21 +154,19 @@ function Rosters({ currentSeason }) {
     }
   };
 
+  // Function to retrieve names of teams if more than one team with same name. Example, Jr. Ducks A team could have 2 teams such as Jr. Ducks(1) and Jr. Ducks(2)
   const fetchMultipleTeamWithSameName = async (season, team, level) => {
     const response = await fetch(
       `/api/${sportToQuery}/teams/${team}/multiple-team-names?level=${level}&season=${season}`
     );
-    console.log(
-      `/api/${sportToQuery}/teams/${team}/multiple-team-names?level=${level}&season=${season}`
-    );
+
     const multipleTeamData = await response.json();
-    console.log(multipleTeamData);
     pageData.current.multipleTeamsWithSameName = multipleTeamData;
     return multipleTeamData;
   };
 
+  // Function to retrieve data every time a filter is changed to display rosters
   const fetchDataDueToSelectionChange = async (season, team, level) => {
-    console.log(season, team, level);
     const response = await fetch(
       `/api/${sportToQuery}/teams/${team}/roster?season=${season}&level=${level}`
     );
@@ -161,6 +174,7 @@ function Rosters({ currentSeason }) {
     return roster;
   };
 
+  // Function to retrieve team colors and logo whenever a team is changed
   const getTeamColorsAndLogo = (selectedTeam) => {
     let teamColorsAndLogo = {
       primaryColor: '',
@@ -201,8 +215,6 @@ function Rosters({ currentSeason }) {
 
       await fetchMultipleTeamWithSameName(season, selectedTeam, selectedLevel);
 
-      console.log(roster);
-
       // If there is new roster data returned then organize the players by position and if no data returned then clear the playersByPosition state so no players display on page
       if (roster.length) {
         const playersByPosition = getPlayerByPositionAndTeam(roster);
@@ -232,7 +244,6 @@ function Rosters({ currentSeason }) {
       setSelections({ ...selections, selectedTeam: team });
       modifyTeamNameToPlaceInURL(team);
       const teamColorsAndLogo = getTeamColorsAndLogo(team);
-      pageData.current.teams = event.target.value;
 
       const { selectedSeason, selectedLevel } = selections; // destructuring of selections useState to pass into fetchDataDueToSelectionChange function
       const roster = await fetchDataDueToSelectionChange(
@@ -240,7 +251,6 @@ function Rosters({ currentSeason }) {
         team,
         selectedLevel
       );
-      console.log(roster);
 
       await fetchMultipleTeamWithSameName(selectedSeason, team, selectedLevel);
 
@@ -280,7 +290,6 @@ function Rosters({ currentSeason }) {
         level
       );
 
-      console.log(roster);
       await fetchMultipleTeamWithSameName(selectedSeason, selectedTeam, level);
 
       if (roster.length) {
@@ -320,7 +329,6 @@ function Rosters({ currentSeason }) {
   };
 
   const modifyTeamNameFromURL = (team) => {
-    console.log(team);
     let teamName = '';
     rosterData.allTeams.forEach((el) => {
       const teamHave2Words = el.team_name_short.indexOf(' ') >= 0; // See if team name has two words; This returns a variable that is a boolean.
