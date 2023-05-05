@@ -77,9 +77,13 @@ function Rosters({ currentSeason }) {
       ? selections.selectedTeam
       : teamToQuery;
 
+    const seasonToQuery =
+      localStorage.getItem('season') || currentSeason[sportToQuery];
+    const levelToQuery = localStorage.getItem('level') || defaultLevelToDisplay;
+
     async function fetchData() {
       const fetchRosterData = fetch(
-        `/api/${sportToQuery}/teams/${teamToSearch}/roster?season=${currentSeason[sportToQuery]}&level=${defaultLevelToDisplay}`
+        `/api/${sportToQuery}/teams/${teamToSearch}/roster?season=${seasonToQuery}&level=${levelToQuery}`
       );
 
       const [rosterResponse, pageDataResponse] = await Promise.all([
