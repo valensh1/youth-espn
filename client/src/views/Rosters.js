@@ -126,18 +126,17 @@ function Rosters({ currentSeason }) {
 
   useEffect(() => {
     const teamNumber = pageData.current.teamNumber;
-    const teamPillFirstTeam = document.getElementById(`pill${teamNumber}`);
-    if (teamNumber >= 2) {
-      teamPillFirstTeam.style.backgroundColor =
-        rosterData.teamColorsAndLogo?.primaryColor;
-      document.getElementById(`pill${teamNumber - 1}`).style.backgroundColor =
-        rosterData.teamColorsAndLogo.secondaryColor;
-    } else if (teamPillFirstTeam && teamNumber < 2) {
-      teamPillFirstTeam.style.backgroundColor =
-        rosterData.teamColorsAndLogo?.primaryColor;
-      document.getElementById(`pill${teamNumber + 1}`).style.backgroundColor =
-        rosterData.teamColorsAndLogo.secondaryColor;
-    }
+    let teamPills = document.getElementsByClassName('pill'); // HTML collection of all team pills displayed on page
+    teamPills = [...teamPills]; // Spread HTML collection into an array to iterate over and maintain the variable name teamPills
+
+    teamPills.forEach((pill, index) => {
+      if (index + 1 === teamNumber) {
+        pill.style.backgroundColor = rosterData.teamColorsAndLogo.primaryColor;
+      } else {
+        pill.style.backgroundColor =
+          rosterData.teamColorsAndLogo.secondaryColor;
+      }
+    });
   }, [pageData.current.multipleTeamsWithSameName, pageData.current.teamNumber]);
 
   //----------------------------------------------------------------- FUNCTIONS ------------------------------------------------------------------------

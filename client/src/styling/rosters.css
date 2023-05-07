@@ -23,10 +23,8 @@
 }
 
 .pill-container {
-  margin-left: 35vw;
-  margin-bottom: 5vh;
-  width: fit-content;
   display: flex;
+  justify-content: center;
 }
 
 .pill {
