@@ -12,13 +12,23 @@ function Navbar() {
   ];
   const otherSports = ['Tennis', 'Boxing'];
 
+  // Function that clears local storage for these key/value pairs that pertain to the roster page. Don't want these values to persist if user is no longer on that page.
+  const clearLocalStorage = () => {
+    localStorage.removeItem('team');
+    localStorage.removeItem('season');
+    localStorage.removeItem('level');
+    localStorage.removeItem('rosterData');
+  };
+
   return (
     <div id="navbar-container">
       <div id="navbar-content">
         {navbarList.map((sport) => {
           return (
             <div className="drop-down" id={sport} key={sport}>
-              <Link to={`/${sport.toLowerCase()}`}>{sport}</Link>
+              <Link to={`/${sport.toLowerCase()}`} onClick={clearLocalStorage}>
+                {sport}
+              </Link>
               <div className="hover-content">
                 {sportSubCategories.map((subCategory) => {
                   return (

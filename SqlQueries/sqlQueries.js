@@ -96,47 +96,80 @@ module.exports = {
   // Always retrieve Team(1) if it is a team with multiple teams
   getSingleTeamRoster: async (team, season, level) => {
     try {
+      const moreThanOneTeamFlag = team.includes('('); // If true then just query team directly vs. doing a general search on ducks and ducks(1)
+      logger.log(`More than one team Flag --> ${moreThanOneTeamFlag}`);
       const teamToQuery = team.toUpperCase();
-      logger.log(teamToQuery);
-      logger.log(season);
-      logger.log(level);
-      response = await pool.query(`
-      SELECT r.*,
-	p.date_of_birth,
-	p.height_inches,
-	p.weight_lbs,
-	t.team_name_full,
-	t.team_name_short,
-	t.level,
-	t.primary_team_color,
-	t.secondary_team_color,
-	t.third_team_color,
-	a.profile_img_1,
-	a.profile_img_2,
-	a.profile_img_3,
-	a.profile_img_4,
-	a.profile_img_5,
-	a.action_img_1,
-	a.action_img_2,
-	a.action_img_3,
-	a.action_img_4,
-	a.action_img_5,
-	a.action_img_6,
-	a.action_img_7,
-	a.action_img_8,
-	a.action_img_9,
-	a.action_img_10
-FROM rosters r
-LEFT JOIN player_profiles p ON player_profile_id_fk = p.id
-LEFT JOIN teams.teams t ON team_id_fk = t.id
-LEFT JOIN player_images a ON r.player_profile_id_fk = a.player_profile_id_fk
-WHERE (r.actual_team_name ILIKE '${teamToQuery}'
-							OR r.actual_team_name ILIKE '%${teamToQuery}(1)')
-	AND (r.season = '${season}'
-						AND t.level = '${level}')
-ORDER BY r.first_name;
-;
-        `);
+      const query = moreThanOneTeamFlag
+        ? `SELECT r.*,
+      p.date_of_birth,
+      p.height_inches,
+      p.weight_lbs,
+      t.team_name_full,
+      t.team_name_short,
+      t.level,
+      t.primary_team_color,
+      t.secondary_team_color,
+      t.third_team_color,
+      a.profile_img_1,
+      a.profile_img_2,
+      a.profile_img_3,
+      a.profile_img_4,
+      a.profile_img_5,
+      a.action_img_1,
+      a.action_img_2,
+      a.action_img_3,
+      a.action_img_4,
+      a.action_img_5,
+      a.action_img_6,
+      a.action_img_7,
+      a.action_img_8,
+      a.action_img_9,
+      a.action_img_10
+    FROM rosters r
+    LEFT JOIN player_profiles p ON player_profile_id_fk = p.id
+    LEFT JOIN teams.teams t ON team_id_fk = t.id
+    LEFT JOIN player_images a ON r.player_profile_id_fk = a.player_profile_id_fk
+    WHERE r.actual_team_name ILIKE '${teamToQuery}'
+      AND (r.season = '${season}'
+                AND t.level = '${level}')
+    ORDER BY r.first_name
+    ;`
+        : `SELECT r.*,
+        p.date_of_birth,
+        p.height_inches,
+        p.weight_lbs,
+        t.team_name_full,
+        t.team_name_short,
+        t.level,
+        t.primary_team_color,
+        t.secondary_team_color,
+        t.third_team_color,
+        a.profile_img_1,
+        a.profile_img_2,
+        a.profile_img_3,
+        a.profile_img_4,
+        a.profile_img_5,
+        a.action_img_1,
+        a.action_img_2,
+        a.action_img_3,
+        a.action_img_4,
+        a.action_img_5,
+        a.action_img_6,
+        a.action_img_7,
+        a.action_img_8,
+        a.action_img_9,
+        a.action_img_10
+      FROM rosters r
+      LEFT JOIN player_profiles p ON player_profile_id_fk = p.id
+      LEFT JOIN teams.teams t ON team_id_fk = t.id
+      LEFT JOIN player_images a ON r.player_profile_id_fk = a.player_profile_id_fk
+      WHERE (r.actual_team_name ILIKE '${teamToQuery}'
+      OR r.actual_team_name ILIKE '%${teamToQuery}(1)')
+        AND (r.season = '${season}'
+                  AND t.level = '${level}')
+      ORDER BY r.first_name
+      ;`;
+      response = await pool.query(query);
       logger.log(JSON.stringify(response.rows));
       return response.rows;
     } catch (error) {

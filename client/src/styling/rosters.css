@@ -41,7 +41,7 @@
 }
 
 .pill:hover {
-  background-color: orangered;
+  cursor: pointer;
 }
 
 .teams-container h3 {

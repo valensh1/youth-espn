@@ -93,12 +93,12 @@ function Rosters({ currentSeason }) {
       const roster = await rosterResponse.json();
 
       await fetchMultipleTeamWithSameName(
-        currentSeason[sportToQuery],
-        teamToQuery,
-        defaultLevelToDisplay
+        seasonToQuery,
+        teamToSearch,
+        levelToQuery
       );
 
-      const teamColorsAndLogo = getTeamColorsAndLogo(teamToQuery);
+      const teamColorsAndLogo = getTeamColorsAndLogo(teamToSearch);
       const playersByPosition = getPlayerByPositionAndTeam(roster);
 
       setRosterData({
@@ -108,7 +108,6 @@ function Rosters({ currentSeason }) {
         teamColorsAndLogo: teamColorsAndLogo,
       });
     }
-
     fetchData();
   }, []);
 
@@ -126,12 +125,20 @@ function Rosters({ currentSeason }) {
   ]);
 
   useEffect(() => {
-    const teamPillFirstTeam = document.getElementById('pill0');
-    if (teamPillFirstTeam) {
+    const teamNumber = pageData.current.teamNumber;
+    const teamPillFirstTeam = document.getElementById(`pill${teamNumber}`);
+    if (teamNumber >= 2) {
       teamPillFirstTeam.style.backgroundColor =
         rosterData.teamColorsAndLogo?.primaryColor;
+      document.getElementById(`pill${teamNumber - 1}`).style.backgroundColor =
+        rosterData.teamColorsAndLogo.secondaryColor;
+    } else if (teamPillFirstTeam && teamNumber < 2) {
+      teamPillFirstTeam.style.backgroundColor =
+        rosterData.teamColorsAndLogo?.primaryColor;
+      document.getElementById(`pill${teamNumber + 1}`).style.backgroundColor =
+        rosterData.teamColorsAndLogo.secondaryColor;
     }
-  }, [pageData.current.multipleTeamsWithSameName]);
+  }, [pageData.current.multipleTeamsWithSameName, pageData.current.teamNumber]);
 
   //----------------------------------------------------------------- FUNCTIONS ------------------------------------------------------------------------
 
@@ -152,6 +159,7 @@ function Rosters({ currentSeason }) {
         seasons: seasonsDropdown,
         allTeams: teamsDropdown,
         levels: levelsDropdown,
+        teamNumber: 1,
       };
     } catch (error) {
       console.log(error);
@@ -160,19 +168,65 @@ function Rosters({ currentSeason }) {
 
   // Function to retrieve names of teams if more than one team with same name. Example, Jr. Ducks A team could have 2 teams such as Jr. Ducks(1) and Jr. Ducks(2)
   const fetchMultipleTeamWithSameName = async (season, team, level) => {
+    pageData.current.multipleTeamsWithSameName = [];
     const response = await fetch(
       `/api/${sportToQuery}/teams/${team}/multiple-team-names?level=${level}&season=${season}`
     );
 
     const multipleTeamData = await response.json();
-    pageData.current.multipleTeamsWithSameName = multipleTeamData;
+    console.log(multipleTeamData);
+    if (multipleTeamData.length > 1) {
+      pageData.current.multipleTeamsWithSameName = multipleTeamData;
+    }
+
     return multipleTeamData;
   };
 
+  const displayOtherTeamWithSameName = async (event) => {
+    const teamNumber = event.target.dataset.teamNumber;
+    const teamPills = document.getElementsByClassName('pill');
+    const team = teamPills[teamNumber - 1].textContent;
+    pageData.current.teamNumber = Number(teamNumber);
+    console.log(team);
+    console.log(
+      `Here is the data attribute -> ${event.target.dataset.teamNumber}`
+    );
+    localStorage.setItem('team', team);
+    const { selectedSeason, selectedLevel } = selections; // Destructure of selections UseState to use to fetch data below
+    const roster = await fetchDataDueToSelectionChange(
+      selectedSeason,
+      team,
+      selectedLevel,
+      teamNumber
+    );
+    if (roster.length) {
+      const playersByPosition = getPlayerByPositionAndTeam(roster);
+      setRosterData({
+        ...rosterData,
+        teamRoster: roster,
+        playersByPosition: playersByPosition,
+      });
+    } else {
+      setRosterData({
+        ...rosterData,
+        playersByPosition: {
+          forwards: [],
+          defenseman: [],
+          goalies: [],
+        },
+      });
+    }
+  };
+
   // Function to retrieve data every time a filter is changed to display rosters
-  const fetchDataDueToSelectionChange = async (season, team, level) => {
+  const fetchDataDueToSelectionChange = async (
+    season,
+    team,
+    level,
+    teamNumber
+  ) => {
     const response = await fetch(
-      `/api/${sportToQuery}/teams/${team}/roster?season=${season}&level=${level}`
+      `/api/${sportToQuery}/teams/${team}/roster?season=${season}&level=${level}&teamNumber=${teamNumber}`
     );
     const roster = await response.json();
     return roster;
@@ -214,7 +268,8 @@ function Rosters({ currentSeason }) {
       const roster = await fetchDataDueToSelectionChange(
         season,
         selectedTeam,
-        selectedLevel
+        selectedLevel,
+        1
       );
 
       await fetchMultipleTeamWithSameName(season, selectedTeam, selectedLevel);
@@ -253,7 +308,8 @@ function Rosters({ currentSeason }) {
       const roster = await fetchDataDueToSelectionChange(
         selectedSeason,
         team,
-        selectedLevel
+        selectedLevel,
+        1
       );
 
       await fetchMultipleTeamWithSameName(selectedSeason, team, selectedLevel);
@@ -291,7 +347,8 @@ function Rosters({ currentSeason }) {
       const roster = await fetchDataDueToSelectionChange(
         selectedSeason,
         selectedTeam,
-        level
+        level,
+        1
       );
 
       await fetchMultipleTeamWithSameName(selectedSeason, selectedTeam, level);
@@ -474,9 +531,15 @@ function Rosters({ currentSeason }) {
             ? pageData.current.multipleTeamsWithSameName.map((team, index) => {
                 return (
                   <div key={team.actual_team_name}>
-                    <a href="" className={`pill`} id={`pill${index}`}>
+                    <p
+                      href=""
+                      className={`pill`}
+                      id={`pill${index + 1}`}
+                      data-team-number={index + 1}
+                      onClick={displayOtherTeamWithSameName}
+                    >
                       {team.actual_team_name}
-                    </a>
+                    </p>
                   </div>
                 );
               })
