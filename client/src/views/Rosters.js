@@ -8,8 +8,6 @@ function Rosters({ currentSeason }) {
   // Get sport to render rosters for from the url
   const sportToQuery = window.location.pathname.split('/')[1];
 
-  // const teamToQuery = window.location.pathname.split('/')[3];
-
   const defaultLevelToDisplay = 'A';
   const defaultTeamToDisplay = 'Bears';
 
@@ -32,8 +30,8 @@ function Rosters({ currentSeason }) {
   }
 
   //----------------------------------------------------------------- USE PARAMS HOOKS ------------------------------------------------------------------------
-  const { teamName } = useParams(); // Gets team name from url path; This param variable is declared in index.js file
-  const teamToQuery = teamName;
+  const { team } = useParams(); // Gets team name from url path; This param variable is declared in index.js file
+  const teamToQuery = team;
 
   //----------------------------------------------------------------- USE REF HOOKS ------------------------------------------------------------------------
 
@@ -65,7 +63,6 @@ function Rosters({ currentSeason }) {
   const [selections, setSelections] = useState({
     selectedSeason:
       localStorage.getItem('season') || currentSeason[sportToQuery],
-    // selectedTeam: teamNameCapitalized || localStorage.getItem('team'), // Retrieve from local storage if page gets refreshed (so user stays on same page with same filters if page gets refreshed) otherwise take the team that was clicked on from teams page and render roster for that team
     selectedTeam: localStorage.getItem('team') || teamNameCapitalized, // Retrieve from local storage if page gets refreshed (so user stays on same page with same filters if page gets refreshed) otherwise take the team that was clicked on from teams page and render roster for that team
     selectedLevel: localStorage.getItem('level') || defaultLevelToDisplay,
   });
@@ -101,7 +98,7 @@ function Rosters({ currentSeason }) {
         levelToQuery
       );
 
-      const teamColorsAndLogo = getTeamColorsAndLogo(selections.selectedTeam);
+      const teamColorsAndLogo = getTeamColorsAndLogo(selections.selectedTeam); // selections.selectedTeam because need to search by main team such as the Ducks and not Ducks(1) like the fetch query above is doing
       const playersByPosition = getPlayerByPositionAndTeam(roster);
 
       setRosterData({
@@ -229,6 +226,12 @@ function Rosters({ currentSeason }) {
     }
   };
 
+  // Function that clears multiple team data out from local storage every time a new selection is made from dropdowns such as a new team, new season or new level
+  const clearLocalStorageForMultipleTeamData = () => {
+    localStorage.removeItem('actualTeam');
+    localStorage.removeItem('teamNumber');
+  };
+
   // Function to retrieve data every time a filter is changed to display rosters
   const fetchDataDueToSelectionChange = async (
     season,
@@ -271,6 +274,7 @@ function Rosters({ currentSeason }) {
 
   const changeSelectedSeason = async (event) => {
     try {
+      clearLocalStorageForMultipleTeamData();
       const season = event.target.value; // selected season from dropdown menu
       await setSelections({ ...selections, selectedSeason: season }); // Change state to selected season
 
@@ -310,6 +314,7 @@ function Rosters({ currentSeason }) {
 
   const changeSelectedTeam = async (event) => {
     try {
+      clearLocalStorageForMultipleTeamData();
       const team = event.target.value;
       setSelections({ ...selections, selectedTeam: team });
       modifyTeamNameToPlaceInURL(team);
@@ -351,6 +356,7 @@ function Rosters({ currentSeason }) {
 
   const changeSelectedLevel = async (event) => {
     try {
+      clearLocalStorageForMultipleTeamData();
       const level = event.target.value;
       await setSelections({ ...selections, selectedLevel: level });
 
