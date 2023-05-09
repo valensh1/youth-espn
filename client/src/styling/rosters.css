@@ -23,9 +23,8 @@
 }
 
 .pill-container {
-  margin-top: 10vh;
-  margin-left: 36.5vw;
-  width: fit-content;
+  display: flex;
+  justify-content: center;
 }
 
 .pill {
@@ -40,7 +39,7 @@
 }
 
 .pill:hover {
-  background-color: orangered;
+  cursor: pointer;
 }
 
 .teams-container h3 {

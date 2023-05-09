@@ -5,7 +5,7 @@ import App from './App';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ErrorPage from './test/error';
 import Hockey from './views/Hockey/hockeyHome';
-import Teams from './components/Teams';
+import Teams from './views/Teams';
 import Rosters from './views/Rosters';
 import { globalVariables } from './model/globalVariables';
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Navbar from './Navbar';
+import Navbar from '../components/Navbar';
 
 function Teams() {
   const [teams, setTeams] = useState([]);
@@ -15,7 +15,7 @@ function Teams() {
       try {
         const response = await fetch(`/api/${sport}/teams`); // Fetching of sports teams from database to display
         const teamsDataPull = await response.json();
-        console.log(teamsDataPull);
+        // console.log(teamsDataPull);
         setTeams(teamsDataPull);
       } catch (error) {
         console.error(error);

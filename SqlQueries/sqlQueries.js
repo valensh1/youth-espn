@@ -17,9 +17,22 @@ module.exports = {
   getAllSeasons: async () => {
     try {
       response = await pool.query(`SELECT DISTINCT season
-              FROM rosters
+              FROM teams.rosters
               ORDER BY 1 DESC;
               `);
+      return response.rows;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getAllLevels: async () => {
+    try {
+      response = await pool.query(`
+      SELECT DISTINCT level
+      FROM teams.teams
+      ORDER BY level;
+      `);
       return response.rows;
     } catch (error) {
       throw error;
@@ -41,19 +54,6 @@ module.exports = {
     }
   },
 
-  getAllLevels: async () => {
-    try {
-      response = await pool.query(`
-      SELECT DISTINCT level
-      FROM teams.teams
-      ORDER BY level;
-      `);
-      return response.rows;
-    } catch (error) {
-      throw error;
-    }
-  },
-
   getAllTeamsFullNames: async () => {
     try {
       response = await pool.query(`
@@ -69,27 +69,108 @@ module.exports = {
     }
   },
 
+  getMultipleTeamNames: async (season, level, team) => {
+    try {
+      const teamToQuery = team.toUpperCase();
+      // logger.log(teamToQuery);
+      // logger.log(level);
+
+      response = await pool.query(`
+      SELECT DISTINCT r.actual_team_name
+      FROM teams.rosters r
+      JOIN teams.teams t
+      ON r.team_id_fk = t.id
+      WHERE t.team_name_short ILIKE '${teamToQuery}'
+      AND t.level = '${level}'
+      AND r.season = '${season}';
+      `);
+      // logger.log(
+      //   `This is the team names array --> ${JSON.stringify(response.rows)}`
+      // );
+      return response.rows;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Always retrieve Team(1) if it is a team with multiple teams
   getSingleTeamRoster: async (team, season, level) => {
     try {
-      //   await logger.log(team.toUpperCase());
+      const moreThanOneTeamFlag = team.includes('('); // If true then just query team directly vs. doing a general search on ducks and ducks(1)
+      logger.log(`More than one team Flag --> ${moreThanOneTeamFlag}`);
       const teamToQuery = team.toUpperCase();
-      logger.log(teamToQuery);
-      logger.log(season);
-      logger.log(level);
-      //   const teamToRetrieve = team.toUpperCase();
-      response = await pool.query(`
-      SELECT r.*, p.date_of_birth, p.height_inches, p.weight_lbs, t.team_name_full, t.team_name_short, t.level, t.primary_team_color, t.secondary_team_color, third_team_color, playImg.profile_img_1, profile_img_2,profile_img_3, profile_img_4, profile_img_5, action_img_1, action_img_2, action_img_3,action_img_4,action_img_5,action_img_6,action_img_7,action_img_8,action_img_9,action_img_10
-      FROM rosters r
-      LEFT JOIN player_profiles p
-      ON player_profile_id_fk = p.id
-      LEFT JOIN teams.teams t
-      ON team_id_fk = t.id
-      LEFT JOIN player_images playImg
-      ON r.player_profile_id_fk = playImg.player_profile_id_fk
-      WHERE t.team_name_short ILIKE '${teamToQuery}' AND r.season = '${season}' AND t.level = '${level}'
-      ORDER BY r.first_name;
-        `);
-      logger.log(response.rows[0]);
+      const query = moreThanOneTeamFlag
+        ? `SELECT r.*,
+      p.date_of_birth,
+      p.height_inches,
+      p.weight_lbs,
+      t.team_name_full,
+      t.team_name_short,
+      t.level,
+      t.primary_team_color,
+      t.secondary_team_color,
+      t.third_team_color,
+      a.profile_img_1,
+      a.profile_img_2,
+      a.profile_img_3,
+      a.profile_img_4,
+      a.profile_img_5,
+      a.action_img_1,
+      a.action_img_2,
+      a.action_img_3,
+      a.action_img_4,
+      a.action_img_5,
+      a.action_img_6,
+      a.action_img_7,
+      a.action_img_8,
+      a.action_img_9,
+      a.action_img_10
+    FROM teams.rosters r
+    LEFT JOIN players.player_profiles p ON player_profile_id_fk = p.id
+    LEFT JOIN teams.teams t ON team_id_fk = t.id
+    LEFT JOIN players.player_images a ON r.player_profile_id_fk = a.player_profile_id_fk
+    WHERE r.actual_team_name ILIKE '${teamToQuery}'
+      AND (r.season = '${season}'
+                AND t.level = '${level}')
+    ORDER BY r.first_name
+    ;`
+        : `SELECT r.*,
+        p.date_of_birth,
+        p.height_inches,
+        p.weight_lbs,
+        t.team_name_full,
+        t.team_name_short,
+        t.level,
+        t.primary_team_color,
+        t.secondary_team_color,
+        t.third_team_color,
+        a.profile_img_1,
+        a.profile_img_2,
+        a.profile_img_3,
+        a.profile_img_4,
+        a.profile_img_5,
+        a.action_img_1,
+        a.action_img_2,
+        a.action_img_3,
+        a.action_img_4,
+        a.action_img_5,
+        a.action_img_6,
+        a.action_img_7,
+        a.action_img_8,
+        a.action_img_9,
+        a.action_img_10
+      FROM teams.rosters r
+      LEFT JOIN players.player_profiles p ON player_profile_id_fk = p.id
+      LEFT JOIN teams.teams t ON team_id_fk = t.id
+      LEFT JOIN players.player_images a ON r.player_profile_id_fk = a.player_profile_id_fk
+      WHERE (r.actual_team_name ILIKE '${teamToQuery}'
+      OR r.actual_team_name ILIKE '%${teamToQuery}(1)')
+        AND (r.season = '${season}'
+                  AND t.level = '${level}')
+      ORDER BY r.first_name
+      ;`;
+      response = await pool.query(query);
+      logger.log(JSON.stringify(response.rows));
       return response.rows;
     } catch (error) {
       throw error;
