@@ -9,12 +9,8 @@ function Rosters({ currentSeason }) {
   const sportToQuery = window.location.pathname.split('/')[1];
 
   const defaultLevelToDisplay = 'A';
-  const defaultTeamToDisplay = 'Bears';
 
   let teamNameCapitalized = '';
-  let teamFromLocalStorage = localStorage.getItem('actualTeam')
-    ? localStorage.getItem('actualTeam')
-    : localStorage.getItem('team');
 
   const playersByPosition = {
     forwards: [],
@@ -31,7 +27,6 @@ function Rosters({ currentSeason }) {
 
   //----------------------------------------------------------------- USE PARAMS HOOKS ------------------------------------------------------------------------
   const { team } = useParams(); // Gets team name from url path; This param variable is declared in index.js file
-  const teamToQuery = team;
 
   //----------------------------------------------------------------- USE REF HOOKS ------------------------------------------------------------------------
 
@@ -74,8 +69,6 @@ function Rosters({ currentSeason }) {
     let teamToSearch = localStorage.getItem('actualTeam')
       ? localStorage.getItem('actualTeam')
       : selections.selectedTeam;
-
-    console.log(teamToSearch);
 
     const seasonToQuery =
       localStorage.getItem('season') || currentSeason[sportToQuery];
@@ -129,10 +122,8 @@ function Rosters({ currentSeason }) {
       Number(localStorage.getItem('teamNumber')) ||
       pageData.current.teamNumber ||
       1;
-    console.log(`This is the computed team number -> ${teamNumber}`);
-    let localStorageTeam = localStorage.getItem('teamNumber');
-    console.log(`This is the team number ->  ${localStorageTeam}`);
-    console.log(`This is the typeof team number -> ${typeof localStorageTeam}`);
+
+    console.log(teamNumber);
 
     let teamPills = document.getElementsByClassName('pill'); // HTML collection of all team pills displayed on page
     teamPills = [...teamPills]; // Spread HTML collection into an array to iterate over and maintain the variable name teamPills
@@ -181,7 +172,6 @@ function Rosters({ currentSeason }) {
     );
 
     const multipleTeamData = await response.json();
-    console.log(multipleTeamData);
     if (multipleTeamData.length > 1) {
       pageData.current.multipleTeamsWithSameName = multipleTeamData;
     }
@@ -195,10 +185,7 @@ function Rosters({ currentSeason }) {
     const team = teamPills[teamNumber - 1].textContent;
     pageData.current.teamNumber = Number(teamNumber);
     localStorage.setItem('teamNumber', Number(teamNumber));
-    console.log(team);
-    console.log(
-      `Here is the data attribute -> ${event.target.dataset.teamNumber}`
-    );
+
     localStorage.setItem('actualTeam', team);
     const { selectedSeason, selectedLevel } = selections; // Destructure of selections UseState to use to fetch data below
     const roster = await fetchDataDueToSelectionChange(
@@ -275,6 +262,7 @@ function Rosters({ currentSeason }) {
   const changeSelectedSeason = async (event) => {
     try {
       clearLocalStorageForMultipleTeamData();
+      pageData.current.teamNumber = 1;
       const season = event.target.value; // selected season from dropdown menu
       await setSelections({ ...selections, selectedSeason: season }); // Change state to selected season
 
@@ -357,6 +345,7 @@ function Rosters({ currentSeason }) {
   const changeSelectedLevel = async (event) => {
     try {
       clearLocalStorageForMultipleTeamData();
+      pageData.current.teamNumber = 1;
       const level = event.target.value;
       await setSelections({ ...selections, selectedLevel: level });
 

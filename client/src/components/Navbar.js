@@ -27,10 +27,13 @@ function Navbar() {
       <div id="navbar-content">
         {navbarList.map((sport) => {
           return (
-            <div className="drop-down" id={sport} key={sport}>
-              <Link to={`/${sport.toLowerCase()}`} onClick={clearLocalStorage}>
-                {sport}
-              </Link>
+            <div
+              className="drop-down"
+              id={sport}
+              key={sport}
+              onClick={clearLocalStorage}
+            >
+              <Link to={`/${sport.toLowerCase()}`}>{sport}</Link>
               <div className="hover-content">
                 {sportSubCategories.map((subCategory) => {
                   return (
