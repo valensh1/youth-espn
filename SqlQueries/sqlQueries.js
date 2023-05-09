@@ -17,7 +17,7 @@ module.exports = {
   getAllSeasons: async () => {
     try {
       response = await pool.query(`SELECT DISTINCT season
-              FROM rosters
+              FROM teams.rosters
               ORDER BY 1 DESC;
               `);
       return response.rows;
@@ -77,7 +77,7 @@ module.exports = {
 
       response = await pool.query(`
       SELECT DISTINCT r.actual_team_name
-      FROM rosters r
+      FROM teams.rosters r
       JOIN teams.teams t
       ON r.team_id_fk = t.id
       WHERE t.team_name_short ILIKE '${teamToQuery}'
@@ -125,10 +125,10 @@ module.exports = {
       a.action_img_8,
       a.action_img_9,
       a.action_img_10
-    FROM rosters r
-    LEFT JOIN player_profiles p ON player_profile_id_fk = p.id
+    FROM teams.rosters r
+    LEFT JOIN players.player_profiles p ON player_profile_id_fk = p.id
     LEFT JOIN teams.teams t ON team_id_fk = t.id
-    LEFT JOIN player_images a ON r.player_profile_id_fk = a.player_profile_id_fk
+    LEFT JOIN players.player_images a ON r.player_profile_id_fk = a.player_profile_id_fk
     WHERE r.actual_team_name ILIKE '${teamToQuery}'
       AND (r.season = '${season}'
                 AND t.level = '${level}')
@@ -159,10 +159,10 @@ module.exports = {
         a.action_img_8,
         a.action_img_9,
         a.action_img_10
-      FROM rosters r
-      LEFT JOIN player_profiles p ON player_profile_id_fk = p.id
+      FROM teams.rosters r
+      LEFT JOIN players.player_profiles p ON player_profile_id_fk = p.id
       LEFT JOIN teams.teams t ON team_id_fk = t.id
-      LEFT JOIN player_images a ON r.player_profile_id_fk = a.player_profile_id_fk
+      LEFT JOIN players.player_images a ON r.player_profile_id_fk = a.player_profile_id_fk
       WHERE (r.actual_team_name ILIKE '${teamToQuery}'
       OR r.actual_team_name ILIKE '%${teamToQuery}(1)')
         AND (r.season = '${season}'

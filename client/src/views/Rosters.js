@@ -14,6 +14,9 @@ function Rosters({ currentSeason }) {
   const defaultTeamToDisplay = 'Bears';
 
   let teamNameCapitalized = '';
+  let teamFromLocalStorage = localStorage.getItem('actualTeam')
+    ? localStorage.getItem('actualTeam')
+    : localStorage.getItem('team');
 
   const playersByPosition = {
     forwards: [],
@@ -25,7 +28,7 @@ function Rosters({ currentSeason }) {
 
   if (location?.state) {
     const { team } = location.state; // Destructure state prop that is passed from the Link element on Team.js so we can use to set the teams in drop-down menu and also use to query the database since the database contains team names such as Ice Dogs or Ducks
-    teamNameCapitalized = team; // Used for drop-down menu and querying the database
+    teamNameCapitalized = team; // Used for drop-down menu and querying the database; Team name spelled in format such as Ducks and Ice Dogs as it appears in the drop down menus
   }
 
   //----------------------------------------------------------------- USE PARAMS HOOKS ------------------------------------------------------------------------
@@ -62,7 +65,8 @@ function Rosters({ currentSeason }) {
   const [selections, setSelections] = useState({
     selectedSeason:
       localStorage.getItem('season') || currentSeason[sportToQuery],
-    selectedTeam: teamNameCapitalized || localStorage.getItem('team'), // Retrieve from local storage if page gets refreshed (so user stays on same page with same filters if page gets refreshed) otherwise take the team that was clicked on from teams page and render roster for that team
+    // selectedTeam: teamNameCapitalized || localStorage.getItem('team'), // Retrieve from local storage if page gets refreshed (so user stays on same page with same filters if page gets refreshed) otherwise take the team that was clicked on from teams page and render roster for that team
+    selectedTeam: localStorage.getItem('team') || teamNameCapitalized, // Retrieve from local storage if page gets refreshed (so user stays on same page with same filters if page gets refreshed) otherwise take the team that was clicked on from teams page and render roster for that team
     selectedLevel: localStorage.getItem('level') || defaultLevelToDisplay,
   });
 
@@ -70,12 +74,11 @@ function Rosters({ currentSeason }) {
 
   // UseEffect hook that makes the initial calls upon page load to retrieve the available seasons, general team info and roster data
   useEffect(() => {
-    const teamNameMoreThanOneWord = selections.selectedTeam.includes(' ');
+    let teamToSearch = localStorage.getItem('actualTeam')
+      ? localStorage.getItem('actualTeam')
+      : selections.selectedTeam;
 
-    // If team has more than one word then use
-    let teamToSearch = teamNameMoreThanOneWord
-      ? selections.selectedTeam
-      : teamToQuery;
+    console.log(teamToSearch);
 
     const seasonToQuery =
       localStorage.getItem('season') || currentSeason[sportToQuery];
@@ -92,13 +95,13 @@ function Rosters({ currentSeason }) {
       ]);
       const roster = await rosterResponse.json();
 
-      await fetchMultipleTeamWithSameName(
+      await fetchMultipleTeamsWithSameName(
         seasonToQuery,
-        teamToSearch,
+        selections.selectedTeam,
         levelToQuery
       );
 
-      const teamColorsAndLogo = getTeamColorsAndLogo(teamToSearch);
+      const teamColorsAndLogo = getTeamColorsAndLogo(selections.selectedTeam);
       const playersByPosition = getPlayerByPositionAndTeam(roster);
 
       setRosterData({
@@ -125,7 +128,15 @@ function Rosters({ currentSeason }) {
   ]);
 
   useEffect(() => {
-    const teamNumber = pageData.current.teamNumber;
+    const teamNumber =
+      Number(localStorage.getItem('teamNumber')) ||
+      pageData.current.teamNumber ||
+      1;
+    console.log(`This is the computed team number -> ${teamNumber}`);
+    let localStorageTeam = localStorage.getItem('teamNumber');
+    console.log(`This is the team number ->  ${localStorageTeam}`);
+    console.log(`This is the typeof team number -> ${typeof localStorageTeam}`);
+
     let teamPills = document.getElementsByClassName('pill'); // HTML collection of all team pills displayed on page
     teamPills = [...teamPills]; // Spread HTML collection into an array to iterate over and maintain the variable name teamPills
 
@@ -158,7 +169,7 @@ function Rosters({ currentSeason }) {
         seasons: seasonsDropdown,
         allTeams: teamsDropdown,
         levels: levelsDropdown,
-        teamNumber: 1,
+        teamNumber: localStorage.getItem('teamNumber'),
       };
     } catch (error) {
       console.log(error);
@@ -166,7 +177,7 @@ function Rosters({ currentSeason }) {
   };
 
   // Function to retrieve names of teams if more than one team with same name. Example, Jr. Ducks A team could have 2 teams such as Jr. Ducks(1) and Jr. Ducks(2)
-  const fetchMultipleTeamWithSameName = async (season, team, level) => {
+  const fetchMultipleTeamsWithSameName = async (season, team, level) => {
     pageData.current.multipleTeamsWithSameName = [];
     const response = await fetch(
       `/api/${sportToQuery}/teams/${team}/multiple-team-names?level=${level}&season=${season}`
@@ -186,11 +197,12 @@ function Rosters({ currentSeason }) {
     const teamPills = document.getElementsByClassName('pill');
     const team = teamPills[teamNumber - 1].textContent;
     pageData.current.teamNumber = Number(teamNumber);
+    localStorage.setItem('teamNumber', Number(teamNumber));
     console.log(team);
     console.log(
       `Here is the data attribute -> ${event.target.dataset.teamNumber}`
     );
-    localStorage.setItem('team', team);
+    localStorage.setItem('actualTeam', team);
     const { selectedSeason, selectedLevel } = selections; // Destructure of selections UseState to use to fetch data below
     const roster = await fetchDataDueToSelectionChange(
       selectedSeason,
@@ -271,7 +283,7 @@ function Rosters({ currentSeason }) {
         1
       );
 
-      await fetchMultipleTeamWithSameName(season, selectedTeam, selectedLevel);
+      await fetchMultipleTeamsWithSameName(season, selectedTeam, selectedLevel);
 
       // If there is new roster data returned then organize the players by position and if no data returned then clear the playersByPosition state so no players display on page
       if (roster.length) {
@@ -311,7 +323,7 @@ function Rosters({ currentSeason }) {
         1
       );
 
-      await fetchMultipleTeamWithSameName(selectedSeason, team, selectedLevel);
+      await fetchMultipleTeamsWithSameName(selectedSeason, team, selectedLevel);
 
       if (roster.length) {
         const playersByPosition = getPlayerByPositionAndTeam(roster);
@@ -350,7 +362,7 @@ function Rosters({ currentSeason }) {
         1
       );
 
-      await fetchMultipleTeamWithSameName(selectedSeason, selectedTeam, level);
+      await fetchMultipleTeamsWithSameName(selectedSeason, selectedTeam, level);
 
       if (roster.length) {
         const playersByPosition = getPlayerByPositionAndTeam(roster);

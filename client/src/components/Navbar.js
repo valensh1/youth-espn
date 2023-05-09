@@ -15,6 +15,8 @@ function Navbar() {
   // Function that clears local storage for these key/value pairs that pertain to the roster page. Don't want these values to persist if user is no longer on that page.
   const clearLocalStorage = () => {
     localStorage.removeItem('team');
+    localStorage.removeItem('actualTeam');
+    localStorage.removeItem('teamNumber');
     localStorage.removeItem('season');
     localStorage.removeItem('level');
     localStorage.removeItem('rosterData');
