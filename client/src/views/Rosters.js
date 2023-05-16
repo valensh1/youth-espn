@@ -429,11 +429,11 @@ function Rosters({ currentSeason }) {
 
       if (roster.length) {
         roster.find((player) => {
-          if (player.position === 'forward') {
+          if (player.player_position === 'forward') {
             playersByPosition.forwards.push(player);
-          } else if (player.position === 'defenseman') {
+          } else if (player.player_position === 'defenseman') {
             playersByPosition.defense.push(player);
-          } else if (player.position === 'goalie') {
+          } else if (player.player_position === 'goalie') {
             playersByPosition.goalies.push(player);
           }
         });
@@ -521,7 +521,9 @@ function Rosters({ currentSeason }) {
               onChange={changeSelectedLevel}
             >
               {pageData.current.levels.map((level) => {
-                return <option key={level.level}>{level.level}</option>;
+                return (
+                  <option key={level.team_level}>{level.team_level}</option>
+                );
               })}
             </select>
           </div>
@@ -640,7 +642,11 @@ function Rosters({ currentSeason }) {
                           border: `2px solid ${rosterData.teamColorsAndLogo?.primaryColor}`,
                         }}
                       />
-                      <p className="left">
+                      <p
+                        className="left"
+                        onMouseEnter={hoverOverPlayerName}
+                        onMouseLeave={leaveHoverStatePlayerName}
+                      >
                         {`${player.first_name} ${player.last_name}`}
                       </p>
                     </Link>
@@ -690,7 +696,11 @@ function Rosters({ currentSeason }) {
                           border: `2px solid ${rosterData.teamColorsAndLogo?.primaryColor}`,
                         }}
                       />
-                      <p className="left">
+                      <p
+                        className="left"
+                        onMouseEnter={hoverOverPlayerName}
+                        onMouseLeave={leaveHoverStatePlayerName}
+                      >
                         {`${player.first_name} ${player.last_name}`}
                       </p>
                     </Link>

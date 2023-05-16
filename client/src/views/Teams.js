@@ -15,7 +15,7 @@ function Teams() {
       try {
         const response = await fetch(`/api/${sport}/teams`); // Fetching of sports teams from database to display
         const teamsDataPull = await response.json();
-        // console.log(teamsDataPull);
+        console.log(teamsDataPull);
         setTeams(teamsDataPull);
       } catch (error) {
         console.error(error);

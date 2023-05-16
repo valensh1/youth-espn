@@ -29,9 +29,9 @@ module.exports = {
   getAllLevels: async () => {
     try {
       response = await pool.query(`
-      SELECT DISTINCT level
+      SELECT DISTINCT team_level
       FROM teams.teams
-      ORDER BY level;
+      ORDER BY team_level;
       `);
       return response.rows;
     } catch (error) {
@@ -81,7 +81,7 @@ module.exports = {
       JOIN teams.teams t
       ON r.team_id_fk = t.id
       WHERE t.team_name_short ILIKE '${teamToQuery}'
-      AND t.level = '${level}'
+      AND t.team_level = '${level}'
       AND r.season = '${season}';
       `);
       // logger.log(
@@ -106,7 +106,7 @@ module.exports = {
       p.weight_lbs,
       t.team_name_full,
       t.team_name_short,
-      t.level,
+      t.team_level,
       t.primary_team_color,
       t.secondary_team_color,
       t.third_team_color,
@@ -131,7 +131,7 @@ module.exports = {
     LEFT JOIN players.player_images a ON r.player_profile_id_fk = a.player_profile_id_fk
     WHERE r.actual_team_name ILIKE '${teamToQuery}'
       AND (r.season = '${season}'
-                AND t.level = '${level}')
+                AND t.team_level = '${level}')
     ORDER BY r.first_name
     ;`
         : `SELECT r.*,
@@ -140,7 +140,7 @@ module.exports = {
         p.weight_lbs,
         t.team_name_full,
         t.team_name_short,
-        t.level,
+        t.team_level,
         t.primary_team_color,
         t.secondary_team_color,
         t.third_team_color,
@@ -166,7 +166,7 @@ module.exports = {
       WHERE (r.actual_team_name ILIKE '${teamToQuery}'
       OR r.actual_team_name ILIKE '%${teamToQuery}(1)')
         AND (r.season = '${season}'
-                  AND t.level = '${level}')
+                  AND t.team_level = '${level}')
       ORDER BY r.first_name
       ;`;
       response = await pool.query(query);
