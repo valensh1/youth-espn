@@ -217,6 +217,7 @@ function Rosters({ currentSeason }) {
   const clearLocalStorageForMultipleTeamData = () => {
     localStorage.removeItem('actualTeam');
     localStorage.removeItem('teamNumber');
+    pageData.current.teamNumber = 1;
   };
 
   // Function to retrieve data every time a filter is changed to display rosters
@@ -262,7 +263,6 @@ function Rosters({ currentSeason }) {
   const changeSelectedSeason = async (event) => {
     try {
       clearLocalStorageForMultipleTeamData();
-      pageData.current.teamNumber = 1;
       const season = event.target.value; // selected season from dropdown menu
       await setSelections({ ...selections, selectedSeason: season }); // Change state to selected season
 
@@ -345,7 +345,6 @@ function Rosters({ currentSeason }) {
   const changeSelectedLevel = async (event) => {
     try {
       clearLocalStorageForMultipleTeamData();
-      pageData.current.teamNumber = 1;
       const level = event.target.value;
       await setSelections({ ...selections, selectedLevel: level });
 
