@@ -7,6 +7,7 @@ import ErrorPage from './test/error';
 import Hockey from './views/Hockey/hockeyHome';
 import Teams from './views/Teams';
 import Rosters from './views/Rosters';
+import Scores from './views/Scores';
 import { globalVariables } from './model/globalVariables';
 
 const router = createBrowserRouter([
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
   {
     path: 'hockey/teams',
     element: <Teams />,
+  },
+  {
+    path: ':hockey/scores',
+    element: <Scores />,
   },
   {
     path: 'hockey/teams/:teamName/roster',

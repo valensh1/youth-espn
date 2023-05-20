@@ -25,10 +25,10 @@ function Rosters({ currentSeason }) {
     teamNameCapitalized = team; // Used for drop-down menu and querying the database; Team name spelled in format such as Ducks and Ice Dogs as it appears in the drop down menus
   }
 
-  //----------------------------------------------------------------- USE PARAMS HOOKS ------------------------------------------------------------------------
+  //?----------------------------------------------------------------- USE PARAMS HOOKS ------------------------------------------------------------------------
   const { team } = useParams(); // Gets team name from url path; This param variable is declared in index.js file
 
-  //----------------------------------------------------------------- USE REF HOOKS ------------------------------------------------------------------------
+  //?----------------------------------------------------------------- USE REF HOOKS ------------------------------------------------------------------------
 
   let pageData = useRef({
     seasons: [],
@@ -37,7 +37,7 @@ function Rosters({ currentSeason }) {
     multipleTeamsWithSameName: [],
   });
 
-  //----------------------------------------------------------------- USE STATE HOOKS ------------------------------------------------------------------------
+  //?----------------------------------------------------------------- USE STATE HOOKS ------------------------------------------------------------------------
   const [rosterData, setRosterData] = useState(
     JSON.parse(localStorage.getItem('rosterData')) || {
       teamRoster: [],
@@ -62,7 +62,7 @@ function Rosters({ currentSeason }) {
     selectedLevel: localStorage.getItem('level') || defaultLevelToDisplay,
   });
 
-  //----------------------------------------------------------------- USE EFFECT HOOKS ------------------------------------------------------------------------
+  //?----------------------------------------------------------------- USE EFFECT HOOKS ------------------------------------------------------------------------
 
   // UseEffect hook that makes the initial calls upon page load to retrieve the available seasons, general team info and roster data
   useEffect(() => {
@@ -138,7 +138,7 @@ function Rosters({ currentSeason }) {
     });
   }, [pageData.current.multipleTeamsWithSameName, pageData.current.teamNumber]);
 
-  //----------------------------------------------------------------- FUNCTIONS ------------------------------------------------------------------------
+  //?----------------------------------------------------------------- FUNCTIONS ------------------------------------------------------------------------
 
   // Function to retrieve data for the dropdown filters on the page
   const fetchPageData = async function () {
@@ -463,7 +463,7 @@ function Rosters({ currentSeason }) {
     event.target.style.color = 'black';
   };
 
-  //----------------------------------------------------------------- JSX ------------------------------------------------------------------------
+  //?----------------------------------------------------------------- JSX ------------------------------------------------------------------------
   return (
     <>
       <div

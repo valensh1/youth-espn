@@ -14,6 +14,17 @@ app.get('/api/hockey/levels', async (req, res) => {
   return res.json(levels);
 });
 
+app.get('/api/hockey/scores', async (req, res) => {
+  const dateToQuery = req.query.date;
+  const seasonToQuery = req.query.season;
+  logger.log(dateToQuery);
+  logger.log(seasonToQuery);
+  logger.log(`Date to query for scores ${dateToQuery}`);
+  const scores = await sqlQueries.getScores('2021-2022', '10-10-2021', 'A');
+  logger.log(scores);
+  return res.json(scores);
+});
+
 app.get('/api/hockey/seasons', async (req, res) => {
   const seasons = await sqlQueries.getAllSeasons();
   return res.json(seasons);
