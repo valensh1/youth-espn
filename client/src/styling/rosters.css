@@ -130,7 +130,7 @@
 }
 
 /* Styling for the profile pic */
-.roster-table img {
+.player-profile-pic {
   width: 2.8vw;
   height: 5vh;
   border-radius: 50%;
@@ -138,7 +138,7 @@
 }
 
 /* Hover over player image */
-.roster-table img:hover {
+.roster-table .player-profile-pic:hover {
   scale: 1.075;
 }
 

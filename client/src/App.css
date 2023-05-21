@@ -3,6 +3,7 @@
 @import './styling/hockey/hockeyHome.css';
 @import './styling/teams.css';
 @import './styling/rosters.css';
+@import './styling/scores.css';
 
 *::before,
 *::after {

@@ -580,6 +580,7 @@ function Rosters({ currentSeason }) {
                   <td className="shaded">
                     <Link className="player-img-name" to={''}>
                       <img
+                        className="player-profile-pic"
                         src={player.profile_img_1}
                         alt=""
                         style={{
@@ -635,6 +636,7 @@ function Rosters({ currentSeason }) {
                   <td className="shaded">
                     <Link className="player-img-name" to={''}>
                       <img
+                        className="player-profile-pic"
                         src={player.profile_img_1}
                         alt=""
                         style={{
@@ -689,6 +691,7 @@ function Rosters({ currentSeason }) {
                   <td className="shaded">
                     <Link className="player-img-name" to={''}>
                       <img
+                        className="player-profile-pic"
                         src={player.profile_img_1}
                         alt=""
                         style={{

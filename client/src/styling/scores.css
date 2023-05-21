@@ -1,0 +1,92 @@
+#scores-page-container {
+  background-color: var(--color-lightGray);
+}
+
+#scoreboard-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 50vw;
+  margin-left: 25vw;
+  margin-top: 5vh;
+  padding: 1vh 1vw;
+  background-color: white;
+}
+
+#individual-game-container {
+  border: 2px solid gray;
+  height: 20vh;
+  position: relative;
+}
+
+#individual-game-container > #game-status {
+  margin-left: 0.5vw;
+}
+
+.team-container {
+  display: flex;
+  font-size: 0.7vw;
+  margin: -0.5vh 1vw;
+  height: 10vh;
+}
+
+.scoreboard-team-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.scoreboard-team-name-logo {
+  display: flex;
+  /* align-items: center; */
+  width: 15vw;
+  text-decoration: none;
+}
+
+.scoreboard-team-logo {
+  width: 3vw;
+  height: 3vw;
+}
+
+.scoreboard-team-name {
+  margin-left: 0.75vw;
+}
+
+.scoreboard-team-name:hover {
+  scale: 1.07;
+}
+
+.scoreboard-record {
+  font-size: 0.6vw;
+  position: relative;
+  left: 4vw;
+  bottom: 4.25vh;
+}
+
+.scoreboard-scores-container {
+  /* margin-left: -2vw; */
+}
+
+.scoreboard-top-players-container {
+  display: flex;
+  flex-direction: column;
+  width: 12vw;
+  position: absolute;
+  top: 4%;
+  left: 75%;
+  /* border: 2px solid red; */
+}
+
+.scoreboard-top-player {
+  display: flex;
+  margin: 0.75vh 0 0.75vh 0;
+}
+
+#scoreboard-container .player-profile-pic {
+  width: 2.75vw;
+  height: 4vh;
+  border: 2px solid orangered;
+}
+
+.player-profile-pic:hover {
+  scale: 1.07;
+}
