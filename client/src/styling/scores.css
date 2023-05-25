@@ -90,3 +90,41 @@
 .player-profile-pic:hover {
   scale: 1.07;
 }
+
+/*? ------------------------------------------------------- Media Queries ---------------------------------------------------------- */
+@media only screen and (min-device-width: 768px) and (max-device-width: 1194px) and (-webkit-min-device-pixel-ratio: 1) {
+  #scoreboard-container {
+    width: 60vw;
+    margin-left: 20vw;
+    padding: 1vh 2vw;
+  }
+
+  #individual-game-container {
+    border: 2px solid gray;
+    height: 30vh;
+    width: 60vw;
+    position: relative;
+  }
+
+  .team-container {
+    font-size: 1vw;
+    margin: -0.5vh 1vw;
+  }
+
+  .team-container:nth-of-type(2) {
+    margin-top: 3vh;
+  }
+
+  .scoreboard-record {
+    font-size: 0.8vw;
+    position: relative;
+    left: 4vw;
+    bottom: 3vh;
+  }
+
+  #scoreboard-container .player-profile-pic {
+    width: 2.75vw;
+    height: 4vh;
+    border: 2px solid orangered;
+  }
+}
