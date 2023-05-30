@@ -335,9 +335,38 @@ WHERE teams.team_name IS NOT NULL
 ORDER BY teams.total_wins DESC;
 
 
+-- Total number of games per team
+SELECT team, sum(games_played) AS games_played 
+FROM (
+SELECT 
+CASE 
+	WHEN winning_team_long IS NOT NULL THEN winning_team_long
+	ELSE home_team_long
+END AS team ,
+COUNT(*) AS games_played
+FROM games.games
+GROUP BY team
 
--- Teams wins losses ties and points
-SELECT teams.team_name, teams.total_wins, COALESCE(losses.total_losses, 0) AS total_losses, COALESCE(ties.total_ties, 0) AS total_ties, COALESCE (points.total_points, 0) AS total_points
+
+
+UNION ALL
+
+SELECT 
+CASE 
+	WHEN losing_team_long IS NOT NULL THEN losing_team_long
+	ELSE visitor_team_long
+END AS team , 
+COUNT (*) AS games_played
+FROM games.games
+GROUP BY team
+) AS games_played
+
+GROUP BY team
+ORDER BY games_played DESC;
+
+
+-- Teams games_played (GP), wins, losses, ties and points
+SELECT teams.team_name, games_played, teams.total_wins, COALESCE(losses.total_losses, 0) AS total_losses, COALESCE(ties.total_ties, 0) AS total_ties, COALESCE (points.total_points, 0) AS total_points
 FROM (
     SELECT winning_team_long AS team_name, COUNT(winning_team_points) AS total_wins
     FROM games.games
@@ -395,17 +424,160 @@ GROUP BY team_long
 ORDER BY total_points DESC
 ) points
 ON points.team_long = teams.team_name
+LEFT JOIN (
+SELECT team, sum(games_played) AS games_played 
+FROM (
+SELECT 
+CASE 
+	WHEN winning_team_long IS NOT NULL THEN winning_team_long
+	ELSE home_team_long
+END AS team ,
+COUNT(*) AS games_played
+FROM games.games
+GROUP BY team
+
+UNION ALL
+
+SELECT 
+CASE 
+	WHEN losing_team_long IS NOT NULL THEN losing_team_long
+	ELSE visitor_team_long
+END AS team , 
+COUNT (*) AS games_played
+FROM games.games
+GROUP BY team
+) AS gp
+
+GROUP BY team
+ORDER BY games_played DESC
+) games_played ON games_played.team = teams.team_name
 WHERE teams.team_name IS NOT NULL 
-ORDER BY teams.total_wins DESC;
+ORDER BY total_points DESC;
 
 
+
+-- Goals Against Query
+SELECT
+	team,
+	sum("GA") AS "GA"
+FROM
+	(
+	SELECT
+		home_team_long AS team,
+		sum(visitor_team_score) AS "GA"
+	FROM
+		games.games
+    GROUP BY 
+    	team
+UNION ALL
+	SELECT
+		visitor_team_long AS team,
+		sum(home_team_score) AS "GA"
+FROM
+		games.games
+GROUP BY
+	team
+	
+) goals_against
+GROUP BY team
+ORDER BY "GA" DESC;
+
+
+-- Goals For Query
+SELECT
+	team,
+	sum("GF") AS "GF"
+FROM
+	(
+	SELECT
+		home_team_long AS team,
+		sum(home_team_score) AS "GF"
+	FROM
+		games.games
+	GROUP BY
+		team
+UNION ALL
+	SELECT
+		visitor_team_long AS team,
+		sum(visitor_team_score) AS "GF"
+	FROM
+		games.games
+	GROUP BY
+		team	
+) goals_for
+GROUP BY
+	team
+ORDER BY
+	"GF" DESC;
+
+
+
+-- Goal Differential Query
+SELECT gf.team, "GF", "GA", "GF" - "GA" AS "GD"
+FROM (
+
+-- Goals For Query
+SELECT
+	team,
+	sum("GF") AS "GF"
+FROM
+	(
+	SELECT
+		home_team_long AS team,
+		sum(home_team_score) AS "GF"
+	FROM
+		games.games
+	GROUP BY
+		team
+UNION ALL
+	SELECT
+		visitor_team_long AS team,
+		sum(visitor_team_score) AS "GF"
+	FROM
+		games.games
+	GROUP BY
+		team	
+) goals_for
+GROUP BY
+	team
+) gf
+
+JOIN (
+
+-- Goals Against Query
+SELECT
+	team,
+	sum("GA") AS "GA"
+FROM
+	(
+	SELECT
+		home_team_long AS team,
+		sum(visitor_team_score) AS "GA"
+	FROM
+		games.games
+    GROUP BY 
+    	team
+UNION ALL
+	SELECT
+		visitor_team_long AS team,
+		sum(home_team_score) AS "GA"
+FROM
+		games.games
+GROUP BY
+	team
+	
+) goals_against
+GROUP BY team
+) ga ON ga.team = gf.team
+GROUP BY gf.team, "GF", "GA", "GD"
+ORDER BY "GD";
 
 
 
 
 -- Query to see all games for one particular team
 WITH team_cte AS (
-  SELECT 'California Heat' AS team
+  SELECT 'San Diego Saints' AS team
 )
 SELECT *
 FROM games.games
@@ -415,9 +587,30 @@ WHERE winning_team_long = (SELECT team FROM team_cte)
    OR (tie = TRUE AND visitor_team_long = (SELECT team FROM team_cte));
 
 
+  SELECT * FROM games.games;
 
+ALTER TABLE games.games
+ALTER COLUMN game_type SET NOT NULL;
 
+CREATE SCHEMA leagues;
+CREATE TABLE leagues.leagues (
+id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+sport TEXT NOT NULL,
+age_group TEXT NOT NULL,
+age_starting INTEGER NOT NULL,
+age_ending INTEGER NOT NULL,
+league_level TEXT NOT NULL
+);
+INSERT INTO leagues.leagues(sport, age_group, age_starting, age_ending, league_level)
+VALUES('Hockey', '6U', 5, 6, 'Mini Mite'),
+('Hockey', '8U', 7, 8, 'Mite'),
+('Hockey', '10U', 9, 10, 'Squirt'),
+('Hockey', '12U', 11, 12, 'Peewee'),
+('Hockey', '14U', 13, 14, 'Bantam'),
+('Hockey', '16U', 15, 16, 'Minor Midget'),
+('Hockey', '18U', 17, 18, 'Major Midget');
 
-
-
+SELECT *
+FROM leagues.leagues
+WHERE sport ILIKE 'hockey';
 

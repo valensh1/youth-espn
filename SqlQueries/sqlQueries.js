@@ -54,6 +54,19 @@ module.exports = {
     }
   },
 
+  getAllLeagues: async (sport) => {
+    try {
+      response = await pool.query(`
+      SELECT *, age_group || ' - ' || league_level AS league_age
+      FROM leagues.leagues
+      WHERE sport ILIKE '${sport}';
+      `);
+      return response.rows;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   getAllTeamsFullNames: async () => {
     try {
       response = await pool.query(`

@@ -1,12 +1,18 @@
 import { useEffect, useState, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import GlobalFunctions from '../model/globalFunctions';
 import GameScoreboard from '../components/GameScoreboard';
 import Navbar from '../components/Navbar';
+import League from '../components/LeagueDropdown';
 
 function Scores() {
   const navigate = useNavigate();
   let urlPath;
+
+  const location = useLocation();
+  const currentPath = location.pathname;
+  const sportToQuery = currentPath.split('/')[1];
+
   //?----------------------------------------------------------------- USE STATE HOOKS ------------------------------------------------------------------------
 
   const [dateOfGames, setDateOfGames] = useState('');
@@ -48,6 +54,7 @@ function Scores() {
           onChange={selectedDate}
           value={dateOfGames}
         />
+        <League sport={sportToQuery} />
 
         <div id="scoreboard-container">
           <h1 id="game-date">Saturday, May 20, 2023</h1>

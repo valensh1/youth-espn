@@ -14,6 +14,12 @@ app.get('/api/hockey/levels', async (req, res) => {
   return res.json(levels);
 });
 
+app.get('/api/hockey/leagues', async (req, res) => {
+  const sport = req.query.sport;
+  const leagues = await sqlQueries.getAllLeagues(sport);
+  return res.json(leagues);
+});
+
 app.get('/api/hockey/scores', async (req, res) => {
   const dateToQuery = req.query.date;
   const seasonToQuery = req.query.season;
