@@ -3,7 +3,6 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import GlobalFunctions from '../model/globalFunctions';
 import GameScoreboard from '../components/GameScoreboard';
 import Navbar from '../components/Navbar';
-import League from '../components/LeagueDropdown';
 
 function Scores() {
   const navigate = useNavigate();
@@ -54,7 +53,6 @@ function Scores() {
           onChange={selectedDate}
           value={dateOfGames}
         />
-        <League sport={sportToQuery} />
 
         <div id="scoreboard-container">
           <h1 id="game-date">Saturday, May 20, 2023</h1>

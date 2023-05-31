@@ -9,7 +9,6 @@ function Rosters({ currentSeason }) {
   const sportToQuery = window.location.pathname.split('/')[1];
 
   const defaultLevelToDisplay = 'A';
-  const defaultLeagueToDisplay = 'Peewee';
 
   let teamNameCapitalized = '';
 
@@ -35,7 +34,6 @@ function Rosters({ currentSeason }) {
     seasons: [],
     allTeams: [],
     levels: [],
-    leagues: [],
     multipleTeamsWithSameName: [],
   });
 
@@ -62,7 +60,6 @@ function Rosters({ currentSeason }) {
       localStorage.getItem('season') || currentSeason[sportToQuery],
     selectedTeam: localStorage.getItem('team') || teamNameCapitalized, // Retrieve from local storage if page gets refreshed (so user stays on same page with same filters if page gets refreshed) otherwise take the team that was clicked on from teams page and render roster for that team
     selectedLevel: localStorage.getItem('level') || defaultLevelToDisplay,
-    selectedLeague: localStorage.getItem('league') || defaultLeagueToDisplay,
   });
 
   //?----------------------------------------------------------------- USE EFFECT HOOKS ------------------------------------------------------------------------
@@ -76,12 +73,10 @@ function Rosters({ currentSeason }) {
     const seasonToQuery =
       localStorage.getItem('season') || currentSeason[sportToQuery];
     const levelToQuery = localStorage.getItem('level') || defaultLevelToDisplay;
-    const leagueToQuery =
-      localStorage.getItem('league') || defaultLeagueToDisplay;
 
     async function fetchData() {
       const fetchRosterData = fetch(
-        `/api/${sportToQuery}/teams/${teamToSearch}/roster?season=${seasonToQuery}&level=${levelToQuery}&league=${leagueToQuery}`
+        `/api/${sportToQuery}/teams/${teamToSearch}/roster?season=${seasonToQuery}&level=${levelToQuery}`
       );
 
       const [rosterResponse, pageDataResponse] = await Promise.all([
@@ -93,8 +88,7 @@ function Rosters({ currentSeason }) {
       await fetchMultipleTeamsWithSameName(
         seasonToQuery,
         selections.selectedTeam,
-        levelToQuery,
-        leagueToQuery
+        levelToQuery
       );
 
       const teamColorsAndLogo = getTeamColorsAndLogo(selections.selectedTeam); // selections.selectedTeam because need to search by main team such as the Ducks and not Ducks(1) like the fetch query above is doing
@@ -115,13 +109,11 @@ function Rosters({ currentSeason }) {
     localStorage.setItem('team', selections.selectedTeam);
     localStorage.setItem('season', selections.selectedSeason);
     localStorage.setItem('level', selections.selectedLevel);
-    localStorage.setItem('league', selections.selectedLeague);
     localStorage.setItem('rosterData', JSON.stringify(rosterData));
   }, [
     selections.selectedTeam,
     selections.selectedSeason,
     selections.selectedLevel,
-    selections.selectedLeague,
     rosterData,
   ]);
 
@@ -155,9 +147,8 @@ function Rosters({ currentSeason }) {
         fetch(`/api/${sportToQuery}/seasons`),
         fetch(`/api/${sportToQuery}/teams`),
         fetch(`/api/${sportToQuery}/levels`),
-        fetch(`/api/${sportToQuery}/leagues`),
       ];
-      const [seasonsDropdown, teamsDropdown, levelsDropdown, leaguesDropdown] =
+      const [seasonsDropdown, teamsDropdown, levelsDropdown] =
         await Promise.all(
           APICalls.map((call) => call.then((response) => response.json()))
         );
@@ -166,7 +157,6 @@ function Rosters({ currentSeason }) {
         seasons: seasonsDropdown,
         allTeams: teamsDropdown,
         levels: levelsDropdown,
-        leagues: leaguesDropdown,
         teamNumber: localStorage.getItem('teamNumber'),
       };
     } catch (error) {
@@ -175,15 +165,10 @@ function Rosters({ currentSeason }) {
   };
 
   // Function to retrieve names of teams if more than one team with same name. Example, Jr. Ducks A team could have 2 teams such as Jr. Ducks(1) and Jr. Ducks(2)
-  const fetchMultipleTeamsWithSameName = async (
-    season,
-    team,
-    level,
-    league
-  ) => {
+  const fetchMultipleTeamsWithSameName = async (season, team, level) => {
     pageData.current.multipleTeamsWithSameName = [];
     const response = await fetch(
-      `/api/${sportToQuery}/teams/${team}/multiple-team-names?level=${level}&season=${season}&league=${league}`
+      `/api/${sportToQuery}/teams/${team}/multiple-team-names?level=${level}&season=${season}`
     );
 
     const multipleTeamData = await response.json();
@@ -202,12 +187,11 @@ function Rosters({ currentSeason }) {
     localStorage.setItem('teamNumber', Number(teamNumber));
 
     localStorage.setItem('actualTeam', team);
-    const { selectedSeason, selectedLevel, selectedLeague } = selections; // Destructure of selections UseState to use to fetch data below
+    const { selectedSeason, selectedLevel } = selections; // Destructure of selections UseState to use to fetch data below
     const roster = await fetchDataDueToSelectionChange(
       selectedSeason,
       team,
       selectedLevel,
-      selectedLeague,
       teamNumber
     );
     if (roster.length) {
@@ -241,11 +225,10 @@ function Rosters({ currentSeason }) {
     season,
     team,
     level,
-    league,
     teamNumber
   ) => {
     const response = await fetch(
-      `/api/${sportToQuery}/teams/${team}/roster?season=${season}&level=${level}&teamNumber=${teamNumber}&league=${league}`
+      `/api/${sportToQuery}/teams/${team}/roster?season=${season}&level=${level}&teamNumber=${teamNumber}`
     );
     const roster = await response.json();
     return roster;
@@ -284,12 +267,11 @@ function Rosters({ currentSeason }) {
       await setSelections({ ...selections, selectedSeason: season }); // Change state to selected season
 
       // Fetch new roster data due to selection change
-      const { selectedTeam, selectedLevel, selectedLeague } = selections; // destructuring of selections useState to pass into fetchDataDueToSelectionChange function
+      const { selectedTeam, selectedLevel } = selections; // destructuring of selections useState to pass into fetchDataDueToSelectionChange function
       const roster = await fetchDataDueToSelectionChange(
         season,
         selectedTeam,
         selectedLevel,
-        selectedLeague,
         1
       );
 
@@ -326,21 +308,15 @@ function Rosters({ currentSeason }) {
       modifyTeamNameToPlaceInURL(team);
       const teamColorsAndLogo = getTeamColorsAndLogo(team);
 
-      const { selectedSeason, selectedLevel, selectedLeague } = selections; // destructuring of selections useState to pass into fetchDataDueToSelectionChange function
+      const { selectedSeason, selectedLevel } = selections; // destructuring of selections useState to pass into fetchDataDueToSelectionChange function
       const roster = await fetchDataDueToSelectionChange(
         selectedSeason,
         team,
         selectedLevel,
-        selectedLeague,
         1
       );
 
-      await fetchMultipleTeamsWithSameName(
-        selectedSeason,
-        team,
-        selectedLevel,
-        selectedLeague
-      );
+      await fetchMultipleTeamsWithSameName(selectedSeason, team, selectedLevel);
 
       if (roster.length) {
         const playersByPosition = getPlayerByPositionAndTeam(roster);
@@ -372,63 +348,15 @@ function Rosters({ currentSeason }) {
       const level = event.target.value;
       await setSelections({ ...selections, selectedLevel: level });
 
-      const { selectedSeason, selectedTeam, selectedLeague } = selections; // destructuring of selections useState to pass into fetchDataDueToSelectionChange function
+      const { selectedSeason, selectedTeam } = selections; // destructuring of selections useState to pass into fetchDataDueToSelectionChange function
       const roster = await fetchDataDueToSelectionChange(
         selectedSeason,
         selectedTeam,
         level,
-        selectedLeague,
         1
       );
 
-      await fetchMultipleTeamsWithSameName(
-        selectedSeason,
-        selectedTeam,
-        level,
-        selectedLeague
-      );
-
-      if (roster.length) {
-        const playersByPosition = getPlayerByPositionAndTeam(roster);
-        setRosterData({
-          ...rosterData,
-          teamRoster: roster,
-          playersByPosition: playersByPosition,
-        });
-      } else {
-        setRosterData({
-          ...rosterData,
-          playersByPosition: {
-            forwards: [],
-            defenseman: [],
-            goalies: [],
-          },
-        });
-      }
-    } catch (error) {}
-  };
-
-  const changeSelectedLeague = async (event) => {
-    try {
-      clearLocalStorageForMultipleTeamData();
-      const league = event.target.value;
-      await setSelections({ ...selections, selectedLeague: league });
-
-      const { selectedSeason, selectedTeam, selectedLevel } = selections; // destructuring of selections useState to pass into fetchDataDueToSelectionChange function
-      const roster = await fetchDataDueToSelectionChange(
-        selectedSeason,
-        selectedTeam,
-        selectedLevel,
-        league,
-        1
-      );
-
-      await fetchMultipleTeamsWithSameName(
-        selectedSeason,
-        selectedTeam,
-        selectedLevel,
-        league
-      );
+      await fetchMultipleTeamsWithSameName(selectedSeason, selectedTeam, level);
 
       if (roster.length) {
         const playersByPosition = getPlayerByPositionAndTeam(roster);
@@ -595,20 +523,6 @@ function Rosters({ currentSeason }) {
                 return (
                   <option key={level.team_level}>{level.team_level}</option>
                 );
-              })}
-            </select>
-          </div>
-
-          <div className="filter-dropdowns" id="league-dropdown-container">
-            <label htmlFor="league-dropdown">League</label>
-            <select
-              name="league-dropdown"
-              id="league-dropdown"
-              value={selections.selectedLeague}
-              onChange={changeSelectedLeague}
-            >
-              {pageData.current.leagues.map((el) => {
-                return <option value={el.league_level}>{el.league_age}</option>;
               })}
             </select>
           </div>

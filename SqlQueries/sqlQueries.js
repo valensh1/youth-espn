@@ -82,7 +82,7 @@ module.exports = {
     }
   },
 
-  getMultipleTeamNames: async (season, level, team) => {
+  getMultipleTeamNames: async (season, level, team, league) => {
     try {
       const teamToQuery = team.toUpperCase();
       // logger.log(teamToQuery);
@@ -95,7 +95,9 @@ module.exports = {
       ON r.team_id_fk = t.id
       WHERE t.team_name_short ILIKE '${teamToQuery}'
       AND t.team_level = '${level}'
-      AND r.season = '${season}';
+      AND r.season = '${season}'
+      AND r.league_level_fk = '${league}'
+      ;
       `);
       // logger.log(
       //   `This is the team names array --> ${JSON.stringify(response.rows)}`
@@ -107,7 +109,7 @@ module.exports = {
   },
 
   // Always retrieve Team(1) if it is a team with multiple teams
-  getSingleTeamRoster: async (team, season, level) => {
+  getSingleTeamRoster: async (team, season, level, league) => {
     try {
       const moreThanOneTeamFlag = team.includes('('); // If true then just query team directly vs. doing a general search on ducks and ducks(1)
       logger.log(`More than one team Flag --> ${moreThanOneTeamFlag}`);
@@ -144,7 +146,8 @@ module.exports = {
     LEFT JOIN players.player_images a ON r.player_profile_id_fk = a.player_profile_id_fk
     WHERE r.actual_team_name ILIKE '${teamToQuery}'
       AND (r.season = '${season}'
-                AND t.team_level = '${level}')
+                AND t.team_level = '${level}'
+                AND r.league_level_fk = '${league}')
     ORDER BY r.first_name
     ;`
         : `SELECT r.*,
@@ -179,7 +182,8 @@ module.exports = {
       WHERE (r.actual_team_name ILIKE '${teamToQuery}'
       OR r.actual_team_name ILIKE '%${teamToQuery}(1)')
         AND (r.season = '${season}'
-                  AND t.team_level = '${level}')
+                  AND t.team_level = '${level}'
+                  AND r.league_level_fk = '${league}')
       ORDER BY r.first_name
       ;`;
       response = await pool.query(query);

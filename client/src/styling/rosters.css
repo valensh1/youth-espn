@@ -54,7 +54,7 @@
 .teams-container .filter-dropdowns-container {
   display: flex;
   background-color: var(--color-lightGray);
-  width: 29vw;
+  width: 40vw;
   height: 5vh;
   border-radius: 5px;
 }

@@ -19,6 +19,7 @@ function Navbar() {
     localStorage.removeItem('teamNumber');
     localStorage.removeItem('season');
     localStorage.removeItem('level');
+    localStorage.removeItem('league');
     localStorage.removeItem('rosterData');
   };
 
