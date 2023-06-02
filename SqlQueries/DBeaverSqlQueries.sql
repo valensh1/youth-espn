@@ -587,30 +587,17 @@ WHERE winning_team_long = (SELECT team FROM team_cte)
    OR (tie = TRUE AND visitor_team_long = (SELECT team FROM team_cte));
 
 
-  SELECT * FROM games.games;
+SELECT * FROM teams.rosters;
+SELECT * FROM teams.teams;
+SELECT * FROM leagues.leagues;
 
-ALTER TABLE games.games
-ALTER COLUMN game_type SET NOT NULL;
+ALTER TABLE teams.rosters 
+ADD CONSTRAINT fk_league_level
+FOREIGN KEY (league_level_fk) REFERENCES leagues.leagues(league_level);
 
-CREATE SCHEMA leagues;
-CREATE TABLE leagues.leagues (
-id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-sport TEXT NOT NULL,
-age_group TEXT NOT NULL,
-age_starting INTEGER NOT NULL,
-age_ending INTEGER NOT NULL,
-league_level TEXT NOT NULL
-);
-INSERT INTO leagues.leagues(sport, age_group, age_starting, age_ending, league_level)
-VALUES('Hockey', '6U', 5, 6, 'Mini Mite'),
-('Hockey', '8U', 7, 8, 'Mite'),
-('Hockey', '10U', 9, 10, 'Squirt'),
-('Hockey', '12U', 11, 12, 'Peewee'),
-('Hockey', '14U', 13, 14, 'Bantam'),
-('Hockey', '16U', 15, 16, 'Minor Midget'),
-('Hockey', '18U', 17, 18, 'Major Midget');
 
-SELECT *
-FROM leagues.leagues
-WHERE sport ILIKE 'hockey';
 
+
+UPDATE teams.rosters 
+SET league_level_fk = 'Squirt'
+WHERE actual_team_name IN ('Red Wings');

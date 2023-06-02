@@ -607,8 +607,12 @@ function Rosters({ currentSeason }) {
               value={selections.selectedLeague}
               onChange={changeSelectedLeague}
             >
-              {pageData.current.leagues.map((el) => {
-                return <option value={el.league_level}>{el.league_age}</option>;
+              {pageData.current.leagues.map((league) => {
+                return (
+                  <option value={league.league_level}>
+                    {league.league_age}
+                  </option>
+                );
               })}
             </select>
           </div>

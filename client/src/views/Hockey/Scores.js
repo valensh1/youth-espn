@@ -1,8 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import GlobalFunctions from '../model/globalFunctions';
-import GameScoreboard from '../components/GameScoreboard';
-import Navbar from '../components/Navbar';
+import GlobalFunctions from '../../model/globalFunctions';
+import GameScoreboard from '../../components/GameScoreboard';
+import Navbar from '../../components/Navbar';
 
 function Scores() {
   const navigate = useNavigate();
@@ -12,22 +12,37 @@ function Scores() {
   const currentPath = location.pathname;
   const sportToQuery = currentPath.split('/')[1];
 
+  const defaultLevel = 'A';
+  const defaultLeague = '12U - Peewee';
+
   //?----------------------------------------------------------------- USE STATE HOOKS ------------------------------------------------------------------------
 
   const [dateOfGames, setDateOfGames] = useState('');
-  const [selectedLevel, setSelectedLevel] = useState('AAA');
+  const [selectedLevel, setSelectedLevel] = useState(defaultLevel);
+  const [selectedLeague, setSelectedLeague] = useState(defaultLeague);
 
   //?----------------------------------------------------------------- USE REF HOOKS ------------------------------------------------------------------------
 
   let gameDateForHeading = useRef(); // Access useRef by calling gameDateForHeading.current
 
+  let pageData = useRef({
+    levels: [],
+    leagues: [],
+  });
+
   //?----------------------------------------------------------------- USE EFFECT HOOKS ------------------------------------------------------------------------
 
   useEffect(() => {
-    const dateObject = GlobalFunctions.datesWithDifferentFormats();
-    console.log(dateObject);
-    setDateOfGames(dateObject.datePickerFormat);
-    gameDateForHeading.current = dateObject.dateSpelledOutWithDayOfWeek;
+    const setDataOnInitialLoad = async function () {
+      const dateObject = GlobalFunctions.datesWithDifferentFormats();
+      // console.log(dateObject);
+      setDateOfGames(dateObject.datePickerFormat);
+      navigate(`?date=${dateObject.datePickerFormat}&level=${selectedLevel}`);
+      gameDateForHeading.current = dateObject.dateSpelledOutWithDayOfWeek;
+
+      await fetchPageData();
+    };
+    setDataOnInitialLoad();
   }, []);
 
   //?----------------------------------------------------------------- FUNCTIONS ------------------------------------------------------------------------
@@ -39,7 +54,35 @@ function Scores() {
     );
     setDateOfGames(dateObject.datePickerFormat);
     gameDateForHeading.current = dateObject.dateSpelledOutWithDayOfWeek;
-    navigate(`?date=${event.target.value}&level=A`);
+    navigate(`?date=${event.target.value}&level=${selectedLevel}`);
+  };
+
+  const fetchPageData = async function () {
+    try {
+      const APICalls = [
+        fetch(`/api/${sportToQuery}/levels`),
+        fetch(`/api/${sportToQuery}/leagues`),
+      ];
+      const [levelsDropdown, leaguesDropdown] = await Promise.all(
+        APICalls.map((call) => call.then((response) => response.json()))
+      );
+      pageData.current = {
+        levels: levelsDropdown,
+        leagues: leaguesDropdown,
+      };
+      setSelectedLevel(defaultLevel);
+      setSelectedLeague(defaultLeague);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const changeSelectedLevel = (event) => {
+    setSelectedLevel(event.target.value);
+  };
+
+  const changeSelectedLeague = (event) => {
+    setSelectedLeague(event.target.value);
   };
 
   //?----------------------------------------------------------------- JSX ------------------------------------------------------------------------
@@ -53,6 +96,35 @@ function Scores() {
           onChange={selectedDate}
           value={dateOfGames}
         />
+        <div className="filter-dropdowns">
+          <label htmlFor="teams">Level</label>
+          <select
+            name="level"
+            id="level-selection"
+            value={selectedLevel}
+            onChange={changeSelectedLevel}
+          >
+            {pageData.current.levels.map((level) => {
+              return <option key={level.team_level}>{level.team_level}</option>;
+            })}
+          </select>
+        </div>
+
+        <div className="filter-dropdowns" id="league-dropdown-container">
+          <label htmlFor="league-dropdown">League</label>
+          <select
+            name="league-dropdown"
+            id="league-dropdown"
+            value={selectedLeague}
+            onChange={changeSelectedLeague}
+          >
+            {pageData.current.leagues.map((league) => {
+              return (
+                <option value={league.league_level}>{league.league_age}</option>
+              );
+            })}
+          </select>
+        </div>
 
         <div id="scoreboard-container">
           <h1 id="game-date">Saturday, May 20, 2023</h1>
