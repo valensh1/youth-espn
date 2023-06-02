@@ -12,7 +12,7 @@ function Scores() {
   const currentPath = location.pathname;
   const sportToQuery = currentPath.split('/')[1];
 
-  const defaultLevel = 'A';
+  const defaultLevel = 'AA';
   const defaultLeague = '12U - Peewee';
 
   //?----------------------------------------------------------------- USE STATE HOOKS ------------------------------------------------------------------------
@@ -20,15 +20,14 @@ function Scores() {
   const [dateOfGames, setDateOfGames] = useState('');
   const [selectedLevel, setSelectedLevel] = useState(defaultLevel);
   const [selectedLeague, setSelectedLeague] = useState(defaultLeague);
+  const [selections, setSelections] = useState({
+    levels: [],
+    leagues: [],
+  });
 
   //?----------------------------------------------------------------- USE REF HOOKS ------------------------------------------------------------------------
 
   let gameDateForHeading = useRef(); // Access useRef by calling gameDateForHeading.current
-
-  let pageData = useRef({
-    levels: [],
-    leagues: [],
-  });
 
   //?----------------------------------------------------------------- USE EFFECT HOOKS ------------------------------------------------------------------------
 
@@ -39,11 +38,18 @@ function Scores() {
       setDateOfGames(dateObject.datePickerFormat);
       navigate(`?date=${dateObject.datePickerFormat}&level=${selectedLevel}`);
       gameDateForHeading.current = dateObject.dateSpelledOutWithDayOfWeek;
-
       await fetchPageData();
+      setSelectedLeague(defaultLeague);
     };
     setDataOnInitialLoad();
   }, []);
+
+  useEffect(() => {
+    const fetchData = async function () {
+      await fetchPageData();
+    };
+    fetchData();
+  }, [selectedLevel]);
 
   //?----------------------------------------------------------------- FUNCTIONS ------------------------------------------------------------------------
 
@@ -66,12 +72,11 @@ function Scores() {
       const [levelsDropdown, leaguesDropdown] = await Promise.all(
         APICalls.map((call) => call.then((response) => response.json()))
       );
-      pageData.current = {
+
+      setSelections({
         levels: levelsDropdown,
         leagues: leaguesDropdown,
-      };
-      setSelectedLevel(defaultLevel);
-      setSelectedLeague(defaultLeague);
+      });
     } catch (error) {
       console.log(error);
     }
@@ -96,15 +101,16 @@ function Scores() {
           onChange={selectedDate}
           value={dateOfGames}
         />
+
         <div className="filter-dropdowns">
           <label htmlFor="teams">Level</label>
           <select
             name="level"
-            id="level-selection"
+            id="level-selection-level"
             value={selectedLevel}
             onChange={changeSelectedLevel}
           >
-            {pageData.current.levels.map((level) => {
+            {selections?.levels?.map((level) => {
               return <option key={level.team_level}>{level.team_level}</option>;
             })}
           </select>
@@ -118,7 +124,7 @@ function Scores() {
             value={selectedLeague}
             onChange={changeSelectedLeague}
           >
-            {pageData.current.leagues.map((league) => {
+            {selections?.leagues.map((league) => {
               return (
                 <option value={league.league_level}>{league.league_age}</option>
               );
