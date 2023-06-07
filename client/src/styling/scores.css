@@ -15,7 +15,7 @@
 
 #individual-game-container {
   border: 2px solid gray;
-  height: 20vh;
+  height: 25vh;
   position: relative;
 }
 
@@ -101,7 +101,7 @@
 
   #individual-game-container {
     border: 2px solid gray;
-    height: 30vh;
+    height: 40vh;
     width: 60vw;
     position: relative;
   }
