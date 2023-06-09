@@ -13,6 +13,7 @@ function Scores() {
 
   const defaultLevel = 'A';
   const defaultLeague = '12U - Peewee';
+  const defaultLeageNameOnly = defaultLeague.split('-')[1].trim();
   const todaysDate = GlobalFunctions.dateFormats(undefined, 0); // Passing in a blank first argument so function defaults to default argument which is the current date
 
   //?----------------------------------------------------------------- USE STATE HOOKS ------------------------------------------------------------------------
@@ -47,15 +48,30 @@ function Scores() {
       setDropdowns({ levels: levels, leagues: leagues });
     };
     fetchDropdownData();
+    navigate(
+      `?date=${dateOfGames.gameDate}&level=${
+        selections.selectedLevel
+      }&league=${leagueNameOnly(defaultLeague)}`
+    );
   }, []);
 
   //?----------------------------------------------------------------- FUNCTIONS ------------------------------------------------------------------------
   const changeSelectedLevel = (event) => {
     setSelections({ ...selections, selectedLevel: event.target.value });
+    navigate(
+      `?date=${dateOfGames.gameDate}&level=${
+        event.target.value
+      }&league=${leagueNameOnly(selections.selectedLeague)}`
+    );
   };
 
   const changeSelectedLeague = (event) => {
     setSelections({ ...selections, selectedLeague: event.target.value });
+    navigate(
+      `?date=${dateOfGames.gameDate}&level=${
+        selections.selectedLevel
+      }&league=${leagueNameOnly(event.target.value)}`
+    );
   };
 
   const selectedDate = (event) => {
@@ -66,6 +82,18 @@ function Scores() {
       gameDate: dates.gameDate,
       dateForHeader: dates.dateForHeader,
     });
+    navigate(
+      `?date=${dates.gameDate}&level=${
+        selections.selectedLevel
+      }&league=${leagueNameOnly(selections.selectedLeague)}`
+    );
+  };
+
+  // This function removes the age group from the league name so left with 'Peewee' instead of '12U - Peewee'; This is to aid in making queries to the database.
+  const leagueNameOnly = (league) => {
+    const leagueArray = league.split('-');
+    const leagueName = leagueArray[1].trim();
+    return leagueName;
   };
   //?----------------------------------------------------------------- JSX ------------------------------------------------------------------------
   return (
