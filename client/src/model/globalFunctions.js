@@ -1,52 +1,69 @@
 /* eslint-disable import/no-anonymous-default-export */
 
 class GlobalFunctions {
-  // Function that gets dates in various formats to use throughout program. Function returns an object
-  datesWithDifferentFormats = (
-    date = new Date(),
-    dateFromDatePicker = false
-  ) => {
-    console.log(dateFromDatePicker);
-    console.log(date);
-    const daysOfWeek = [
-      'Sunday',
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday',
-      'Sunday',
-    ];
-    const monthsOfYear = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
+  daysOfWeek = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
 
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Must be 2 characters in length and if month is say 8 it will pad it with a beginning 0 to make it 08. Add 1 to month since it starts with index of 0
-    const monthWithNoPadding = date.getMonth();
-    const dayOfMonth = dateFromDatePicker
-      ? String(date.getDate() + 1).padStart(2, '0')
-      : String(date.getDate()).padStart(2, '0'); // Must be 2 characters in length and if day is say 8 it will pad it with a beginning 0 to make it 08.
-    console.log(`Day of month is ---> ${dayOfMonth}`);
-    const dayOfWeek = date.getDay();
-    const todayDateModified = `${year}-${month}-${dayOfMonth}`;
-    const dateSpelledOutWithDayOfWeek = `${daysOfWeek[dayOfWeek]}, ${monthsOfYear[monthWithNoPadding]} ${dayOfMonth}, ${year}`;
-    return {
-      dateSpelledOutWithDayOfWeek: dateSpelledOutWithDayOfWeek,
-      datePickerFormat: todayDateModified,
-    };
+  monthsOfYear = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
+  // Function that gets dates in various formats to use throughout program. Function returns an object
+  dateFormats = (date = new Date(), todayDate = 1) => {
+    if (todayDate) {
+      const dateArray = date.split('-'); // Split date into an array such as ['yyyy', 'mm', 'dd']
+      let [year, month, dayOfMonth] = dateArray; // Destructure array
+      date = new Date(year, month, dayOfMonth);
+
+      const monthAdjustedForZeroIndex = month - 1; // Adjust month down by one month to account for zero index
+      let dateForHeader = new Date(year, monthAdjustedForZeroIndex, dayOfMonth);
+
+      const monthsForHeading = this.monthsOfYear[monthAdjustedForZeroIndex];
+      const dayOfWeekForHeading = this.daysOfWeek[dateForHeader.getDay()];
+
+      dateForHeader = `${dayOfWeekForHeading}, ${monthsForHeading} ${dayOfMonth}, ${year}`;
+
+      const datePickerFormattedDate = `${year}-${month}-${dayOfMonth}`;
+
+      return {
+        dateForHeader: dateForHeader,
+        gameDate: datePickerFormattedDate,
+      };
+    } else {
+      let month = date.getMonth() + 1;
+      const monthSpelledOut = this.monthsOfYear[month - 1];
+      month = String(month).padStart(2, '0');
+      let dayOfMonth = date.getDate();
+      dayOfMonth = String(dayOfMonth).padStart(2, '0');
+      const year = date.getFullYear();
+      const dayOfWeek = this.daysOfWeek[date.getDay() - 1];
+
+      const dateForHeader = `${dayOfWeek}, ${monthSpelledOut} ${dayOfMonth}, ${year}`;
+      const datePickerFormattedDate = `${year}-${month}-${dayOfMonth}`;
+
+      return {
+        dateForHeader: dateForHeader,
+        gameDate: datePickerFormattedDate,
+      };
+    }
   };
 }
 export default new GlobalFunctions();
