@@ -5,17 +5,18 @@
 #scoreboard-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: fit-content;
   width: 50vw;
   margin-left: 25vw;
   margin-top: 5vh;
   padding: 1vh 1vw;
   background-color: white;
+  border-radius: 25px;
 }
 
 #individual-game-container {
   border: 2px solid gray;
-  height: 25vh;
+  height: fit-content;
   position: relative;
 }
 
@@ -58,7 +59,7 @@
 .scoreboard-record {
   font-size: 0.6vw;
   position: relative;
-  left: 4vw;
+  left: 3.75vw;
   bottom: 4.25vh;
 }
 
