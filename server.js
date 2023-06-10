@@ -5,6 +5,8 @@ const APIRouter = express.Router();
 var logger = require('tracer').console(); // Logger so you can see code line numbers in Node.js. Need to use logger.log instead of console.log though. Must download Tracer from npm using npm i tracer
 var cors = require('cors');
 app.use(cors());
+const url = require('url');
+
 const sqlQueries = require('./SqlQueries/sqlQueries');
 
 app.listen(5001);
@@ -14,21 +16,26 @@ app.get('/api/hockey/levels', async (req, res) => {
   return res.json(levels);
 });
 
+app.get('/api/hockey/scores', async (req, res) => {
+  const dateToQuery = req.query.date;
+  const levelToQuery = req.query.level;
+  const leagueToQuery = req.query.league;
+  logger.log(dateToQuery);
+  logger.log(levelToQuery);
+  logger.log(leagueToQuery);
+  const scores = await sqlQueries.getScores(
+    dateToQuery,
+    levelToQuery,
+    leagueToQuery
+  );
+  logger.log(scores);
+  return res.json(scores);
+});
+
 app.get(`/api/:sport/leagues`, async (req, res) => {
   const sport = req.params.sport;
   const leagues = await sqlQueries.getAllLeagues(sport);
   return res.json(leagues);
-});
-
-app.get('/api/hockey/scores', async (req, res) => {
-  const dateToQuery = req.query.date;
-  const seasonToQuery = req.query.season;
-  logger.log(dateToQuery);
-  logger.log(seasonToQuery);
-  logger.log(`Date to query for scores ${dateToQuery}`);
-  const scores = await sqlQueries.getScores('2021-2022', '10-10-2021', 'A');
-  logger.log(scores);
-  return res.json(scores);
 });
 
 app.get('/api/hockey/seasons', async (req, res) => {

@@ -194,17 +194,17 @@ module.exports = {
     }
   },
 
-  getScores: async (season, date, team_level) => {
+  getScores: async (date, team_level, league) => {
     try {
-      logger.log(season);
       logger.log(date);
       logger.log(team_level);
+      logger.log(league);
       const response = await pool.query(`
       SELECT g.*, t_home.logo_image AS home_team_logo, t_visitor.logo_image AS visitor_team_logo
       FROM games.games g
       LEFT JOIN teams.teams t_home ON g.home_team_id_fk = t_home.id
       LEFT JOIN teams.teams t_visitor ON g.visitor_team_id_fk = t_visitor.id
-      WHERE g.season = '${season}' AND g.game_date = '${date}' AND g.team_level = '${team_level}';`);
+      WHERE g.game_date = '${date}' AND g.team_level = '${team_level}' AND g.division = '${league}';`);
       return response.rows;
     } catch (error) {
       throw error;

@@ -31,6 +31,8 @@ function Scores() {
     selectedLeague: defaultLeague,
   });
 
+  const [scores, setScores] = useState([]);
+
   //?----------------------------------------------------------------- USE REF HOOKS ------------------------------------------------------------------------
 
   //?----------------------------------------------------------------- USE EFFECT HOOKS ------------------------------------------------------------------------
@@ -63,6 +65,11 @@ function Scores() {
         event.target.value
       }&league=${leagueNameOnly(selections.selectedLeague)}`
     );
+    fetchGameData(
+      dateOfGames.gameDate,
+      event.target.value,
+      selections.selectedLeague
+    );
   };
 
   const changeSelectedLeague = (event) => {
@@ -71,6 +78,11 @@ function Scores() {
       `?date=${dateOfGames.gameDate}&level=${
         selections.selectedLevel
       }&league=${leagueNameOnly(event.target.value)}`
+    );
+    fetchGameData(
+      dateOfGames.gameDate,
+      selections.selectedLevel,
+      event.target.value
     );
   };
 
@@ -87,6 +99,11 @@ function Scores() {
         selections.selectedLevel
       }&league=${leagueNameOnly(selections.selectedLeague)}`
     );
+    fetchGameData(
+      event.target.value,
+      selections.selectedLevel,
+      selections.selectedLeague
+    );
   };
 
   // This function removes the age group from the league name so left with 'Peewee' instead of '12U - Peewee'; This is to aid in making queries to the database.
@@ -94,6 +111,36 @@ function Scores() {
     const leagueArray = league.split('-');
     const leagueName = leagueArray[1].trim();
     return leagueName;
+  };
+
+  const fetchGameData = async (date, team_level, league) => {
+    try {
+      const leagueToQuery = leagueNameOnly(league);
+      const response = await fetch(
+        `/api/hockey/scores?date=${date}&level=${team_level}&league=${leagueToQuery}`
+      );
+      const data = await response.json();
+      setScores(data);
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const test = () => {
+    return (
+      <div>
+        <h1>Lakers</h1>
+      </div>
+    );
+  };
+
+  const test2 = () => {
+    return (
+      <div>
+        <h1>Clippers</h1>
+      </div>
+    );
   };
   //?----------------------------------------------------------------- JSX ------------------------------------------------------------------------
   return (
@@ -141,7 +188,13 @@ function Scores() {
       </div>
 
       <div id="scoreboard-container">
-        <h1 id="game-date">{dateOfGames.dateForHeader || ''}</h1>
+        <h1 id="game-date">{dateOfGames.dateForHeader}</h1>
+
+        {scores.length ? test() : test2()}
+        {scores.map((el) => {
+          return <div id="test">HELLO TEAM</div>;
+        })}
+
         <div id="individual-game-container">
           <h3 id="game-status">FINAL</h3>
           <div className="team-container scoreboard-home-team-container ">
