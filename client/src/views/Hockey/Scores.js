@@ -127,21 +127,6 @@ function Scores() {
     }
   };
 
-  const test = () => {
-    return (
-      <div>
-        <h1>Lakers</h1>
-      </div>
-    );
-  };
-
-  const test2 = () => {
-    return (
-      <div>
-        <h1>Clippers</h1>
-      </div>
-    );
-  };
   //?----------------------------------------------------------------- JSX ------------------------------------------------------------------------
   return (
     <div id="scores-page-container">
@@ -190,10 +175,88 @@ function Scores() {
       <div id="scoreboard-container">
         <h1 id="game-date">{dateOfGames.dateForHeader}</h1>
 
-        {scores.length ? test() : test2()}
-        {scores.map((el) => {
-          return <div id="test">HELLO TEAM</div>;
-        })}
+        {scores
+          ? scores.map((el) => {
+              return (
+                <div id="individual-game-container">
+                  <h3 id="game-status">FINAL</h3>
+                  <div className="team-container scoreboard-home-team-container ">
+                    <div className="scoreboard-team-info scoreboard-home-team-info ">
+                      <Link className="scoreboard-team-name-logo" to={''}>
+                        <img
+                          src="https://i.imgur.com/x4pIvDM.png"
+                          alt=""
+                          className="team-logo scoreboard-team-logo"
+                        />
+                        <p className="scoreboard-team-name">Jr. Ducks(2)</p>
+                      </Link>
+                      <p className="scoreboard-record">(0-0-0)</p>
+                    </div>
+                    <div className="scoreboard-scores-container scoreboard-home-team-scores">
+                      <p id="home-team-score">3</p>
+                    </div>
+                  </div>
+                  <div className="team-container scoreboard-visitor-team-container ">
+                    <div className="scoreboard-team-info scoreboard-visitor-team-info ">
+                      <Link className="scoreboard-team-name-logo" to={''}>
+                        <img
+                          src="https://i.imgur.com/TfJ4Gqd.png"
+                          alt=""
+                          className="team-logo scoreboard-team-logo"
+                        />
+                        <p className="scoreboard-team-name">Goldrush</p>
+                      </Link>
+                      <p className="scoreboard-record">(0-0-0)</p>
+                    </div>
+                    <div className="scoreboard-scores-container scoreboard-visitor-team-scores">
+                      <p id="visitor-team-score">4</p>
+                    </div>
+                  </div>
+                  <div className="scoreboard-top-players-container scoreboard-top-players">
+                    <div className="scoreboard-top-player">
+                      <Link className="player-img-name" to={''}>
+                        <img
+                          className="player-profile-pic"
+                          src={'https://i.imgur.com/aLjKQD2.jpg'}
+                          alt=""
+                        />
+                      </Link>
+                      <div className="player-stats-info">
+                        <p className="">Defense - Ducks(2)</p>
+                        <p className="">1 Goal, 2 Assists</p>
+                      </div>
+                    </div>
+                    <div className="scoreboard-top-player">
+                      <Link className="player-img-name" to={''}>
+                        <img
+                          className="player-profile-pic"
+                          src={'https://i.imgur.com/aLjKQD2.jpg'}
+                          alt=""
+                        />
+                      </Link>
+                      <div className="player-stats-info">
+                        <p className="">Defense - Ducks(2)</p>
+                        <p className="">1 Goal, 2 Assists</p>
+                      </div>
+                    </div>
+                    <div className="scoreboard-top-player">
+                      <Link className="player-img-name" to={''}>
+                        <img
+                          className="player-profile-pic"
+                          src={'https://i.imgur.com/aLjKQD2.jpg'}
+                          alt=""
+                        />
+                      </Link>
+                      <div className="player-stats-info">
+                        <p className="">Defense - Ducks(2)</p>
+                        <p className="">1 Goal, 2 Assists</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          : ''}
 
         <div id="individual-game-container">
           <h3 id="game-status">FINAL</h3>
