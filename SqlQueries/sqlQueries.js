@@ -207,7 +207,7 @@ module.exports = {
       WHERE g.game_date = '${date}' AND g.team_level = '${team_level}' AND g.division = '${league}';`);
       return response.rows;
     } catch (error) {
-      throw error;
+      console.error(error);
     }
   },
 };

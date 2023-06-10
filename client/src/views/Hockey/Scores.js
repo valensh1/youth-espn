@@ -113,6 +113,27 @@ function Scores() {
     return leagueName;
   };
 
+  // This function displays the team_name_long if it detects a team such as Ducks(2) but will only display team_name_short such as the Bears instead of California Golden Bears because there is no (2) in the name meaning there is only 1 Bears team
+  const teamNameToDisplay = (teamNameLong, teamNameShort) => {
+    if (teamNameLong.includes('(')) {
+      return <p className="scoreboard-team-name">{teamNameLong}</p>;
+    } else {
+      return <p className="scoreboard-team-name">{teamNameShort}</p>;
+    }
+  };
+
+  const gameDateHeading = () => {
+    const gameDateArray = dateOfGames.dateForHeader.split(',');
+    console.log(gameDateArray);
+    if (gameDateArray.includes('undefined')) {
+      return '';
+    } else {
+      console.log('Not seeing undefined in game date');
+      return dateOfGames.dateForHeader;
+    }
+  };
+
+  // This function fetches the scores data for page
   const fetchGameData = async (date, team_level, league) => {
     try {
       const leagueToQuery = leagueNameOnly(league);
@@ -124,14 +145,6 @@ function Scores() {
       console.log(data);
     } catch (error) {
       console.error(error);
-    }
-  };
-
-  const teamNameToDisplay = (teamNameLong, teamNameShort) => {
-    if (teamNameLong.includes('(')) {
-      return <p className="scoreboard-team-name">{teamNameLong}</p>;
-    } else {
-      return <p className="scoreboard-team-name">{teamNameShort}</p>;
     }
   };
 
@@ -181,181 +194,128 @@ function Scores() {
       </div>
 
       <div id="scoreboard-container">
-        <h1 id="game-date">{dateOfGames.dateForHeader}</h1>
+        <div className="scores-headers-container">
+          <h1 className="scores-heading" id="game-date-heading">
+            {gameDateHeading()}
+          </h1>
+          <h1
+            className="scores-heading"
+            id="league-level-heading"
+          >{`${selections.selectedLeague} ${selections.selectedLevel}`}</h1>
+        </div>
 
-        {scores
-          ? scores.map((game) => {
-              return (
-                <div id="individual-game-container">
-                  <h3 id="game-status">FINAL</h3>
-                  <div className="team-container scoreboard-home-team-container ">
-                    <div className="scoreboard-team-info scoreboard-home-team-info ">
-                      <Link
-                        className="scoreboard-team-name-logo"
-                        to={`/hockey/teams/${game.home_team_short.toLowerCase()}/roster`}
-                      >
-                        <img
-                          src={game.home_team_logo}
-                          alt=""
-                          className="team-logo scoreboard-team-logo"
-                        />
+        {scores.length ? (
+          scores.map((game) => {
+            return (
+              <div id="individual-game-container">
+                <h3 id="game-status">FINAL</h3>
+                <div className="team-container scoreboard-home-team-container ">
+                  <div className="scoreboard-team-info scoreboard-home-team-info ">
+                    <Link
+                      className="scoreboard-team-name-logo"
+                      to={`/hockey/teams/${game.home_team_short.toLowerCase()}/roster`}
+                    >
+                      <img
+                        src={game.home_team_logo}
+                        alt=""
+                        className="team-logo scoreboard-team-logo"
+                      />
 
-                        {teamNameToDisplay(
-                          game.home_team_long,
-                          game.home_team_short
-                        )}
-                      </Link>
-                      <p className="scoreboard-record">(0-0-0)</p>
-                    </div>
-                    <div className="scoreboard-scores-container scoreboard-home-team-scores">
-                      <p id="home-team-score">{game.home_team_score}</p>
+                      {teamNameToDisplay(
+                        game.home_team_long,
+                        game.home_team_short
+                      )}
+                    </Link>
+                    <p className="scoreboard-record">(0-0-0)</p>
+                  </div>
+                  <div className="scoreboard-scores-container scoreboard-home-team-scores">
+                    <p id="home-team-score">{game.home_team_score}</p>
+                  </div>
+                </div>
+                <div className="team-container scoreboard-visitor-team-container ">
+                  <div className="scoreboard-team-info scoreboard-visitor-team-info ">
+                    <Link
+                      className="scoreboard-team-name-logo"
+                      to={`/hockey/teams/${game.visitor_team_short.toLowerCase()}/roster`}
+                    >
+                      <img
+                        src={game.visitor_team_logo}
+                        alt=""
+                        className="team-logo scoreboard-team-logo"
+                      />
+
+                      {teamNameToDisplay(
+                        game.visitor_team_long,
+                        game.visitor_team_short
+                      )}
+                    </Link>
+                    <p className="scoreboard-record">(0-0-0)</p>
+                  </div>
+                  <div className="scoreboard-scores-container scoreboard-visitor-team-scores">
+                    <p id="visitor-team-score">{game.visitor_team_score}</p>
+                  </div>
+
+                  <div className="venue-gameTime-container">
+                    <p id="venue">{game.venue}</p>
+                    <p id="game-time">{game.game_time}</p>
+                  </div>
+
+                  <div className="scores-button-container">
+                    <Link to={'/hockey/scores/boxscore'}>
+                      <p className="scores-button">BOX SCORE</p>
+                    </Link>
+                    <Link to={''}>
+                      <p className="scores-button">HIGHLIGHTS</p>
+                    </Link>
+                  </div>
+                </div>
+                <div className="scoreboard-top-players-container scoreboard-top-players">
+                  <div className="scoreboard-top-player">
+                    <Link className="player-img-name" to={''}>
+                      <img
+                        className="player-profile-pic"
+                        src={'https://i.imgur.com/aLjKQD2.jpg'}
+                        alt=""
+                      />
+                    </Link>
+                    <div className="player-stats-info">
+                      <p className="">Defense - Ducks(2)</p>
+                      <p className="">1 Goal, 2 Assists</p>
                     </div>
                   </div>
-                  <div className="team-container scoreboard-visitor-team-container ">
-                    <div className="scoreboard-team-info scoreboard-visitor-team-info ">
-                      <Link
-                        className="scoreboard-team-name-logo"
-                        to={`/hockey/teams/${game.visitor_team_short.toLowerCase()}/roster`}
-                      >
-                        <img
-                          src={game.visitor_team_logo}
-                          alt=""
-                          className="team-logo scoreboard-team-logo"
-                        />
-
-                        {teamNameToDisplay(
-                          game.visitor_team_long,
-                          game.visitor_team_short
-                        )}
-                      </Link>
-                      <p className="scoreboard-record">(0-0-0)</p>
-                    </div>
-                    <div className="scoreboard-scores-container scoreboard-visitor-team-scores">
-                      <p id="visitor-team-score">{game.visitor_team_score}</p>
+                  <div className="scoreboard-top-player">
+                    <Link className="player-img-name" to={''}>
+                      <img
+                        className="player-profile-pic"
+                        src={'https://i.imgur.com/aLjKQD2.jpg'}
+                        alt=""
+                      />
+                    </Link>
+                    <div className="player-stats-info">
+                      <p className="">Defense - Ducks(2)</p>
+                      <p className="">1 Goal, 2 Assists</p>
                     </div>
                   </div>
-                  <div className="scoreboard-top-players-container scoreboard-top-players">
-                    <div className="scoreboard-top-player">
-                      <Link className="player-img-name" to={''}>
-                        <img
-                          className="player-profile-pic"
-                          src={'https://i.imgur.com/aLjKQD2.jpg'}
-                          alt=""
-                        />
-                      </Link>
-                      <div className="player-stats-info">
-                        <p className="">Defense - Ducks(2)</p>
-                        <p className="">1 Goal, 2 Assists</p>
-                      </div>
-                    </div>
-                    <div className="scoreboard-top-player">
-                      <Link className="player-img-name" to={''}>
-                        <img
-                          className="player-profile-pic"
-                          src={'https://i.imgur.com/aLjKQD2.jpg'}
-                          alt=""
-                        />
-                      </Link>
-                      <div className="player-stats-info">
-                        <p className="">Defense - Ducks(2)</p>
-                        <p className="">1 Goal, 2 Assists</p>
-                      </div>
-                    </div>
-                    <div className="scoreboard-top-player">
-                      <Link className="player-img-name" to={''}>
-                        <img
-                          className="player-profile-pic"
-                          src={'https://i.imgur.com/aLjKQD2.jpg'}
-                          alt=""
-                        />
-                      </Link>
-                      <div className="player-stats-info">
-                        <p className="">Defense - Ducks(2)</p>
-                        <p className="">1 Goal, 2 Assists</p>
-                      </div>
+                  <div className="scoreboard-top-player">
+                    <Link className="player-img-name" to={''}>
+                      <img
+                        className="player-profile-pic"
+                        src={'https://i.imgur.com/aLjKQD2.jpg'}
+                        alt=""
+                      />
+                    </Link>
+                    <div className="player-stats-info">
+                      <p className="">Defense - Ducks(2)</p>
+                      <p className="">1 Goal, 2 Assists</p>
                     </div>
                   </div>
                 </div>
-              );
-            })
-          : ''}
-
-        {/* <div id="individual-game-container">
-          <h3 id="game-status">FINAL</h3>
-          <div className="team-container scoreboard-home-team-container ">
-            <div className="scoreboard-team-info scoreboard-home-team-info ">
-              <Link className="scoreboard-team-name-logo" to={''}>
-                <img
-                  src="https://i.imgur.com/x4pIvDM.png"
-                  alt=""
-                  className="team-logo scoreboard-team-logo"
-                />
-                <p className="scoreboard-team-name">Jr. Ducks(2)</p>
-              </Link>
-              <p className="scoreboard-record">(0-0-0)</p>
-            </div>
-            <div className="scoreboard-scores-container scoreboard-home-team-scores">
-              <p id="home-team-score">3</p>
-            </div>
-          </div>
-          <div className="team-container scoreboard-visitor-team-container ">
-            <div className="scoreboard-team-info scoreboard-visitor-team-info ">
-              <Link className="scoreboard-team-name-logo" to={''}>
-                <img
-                  src="https://i.imgur.com/TfJ4Gqd.png"
-                  alt=""
-                  className="team-logo scoreboard-team-logo"
-                />
-                <p className="scoreboard-team-name">Goldrush</p>
-              </Link>
-              <p className="scoreboard-record">(0-0-0)</p>
-            </div>
-            <div className="scoreboard-scores-container scoreboard-visitor-team-scores">
-              <p id="visitor-team-score">4</p>
-            </div>
-          </div>
-          <div className="scoreboard-top-players-container scoreboard-top-players">
-            <div className="scoreboard-top-player">
-              <Link className="player-img-name" to={''}>
-                <img
-                  className="player-profile-pic"
-                  src={'https://i.imgur.com/aLjKQD2.jpg'}
-                  alt=""
-                />
-              </Link>
-              <div className="player-stats-info">
-                <p className="">Defense - Ducks(2)</p>
-                <p className="">1 Goal, 2 Assists</p>
               </div>
-            </div>
-            <div className="scoreboard-top-player">
-              <Link className="player-img-name" to={''}>
-                <img
-                  className="player-profile-pic"
-                  src={'https://i.imgur.com/aLjKQD2.jpg'}
-                  alt=""
-                />
-              </Link>
-              <div className="player-stats-info">
-                <p className="">Defense - Ducks(2)</p>
-                <p className="">1 Goal, 2 Assists</p>
-              </div>
-            </div>
-            <div className="scoreboard-top-player">
-              <Link className="player-img-name" to={''}>
-                <img
-                  className="player-profile-pic"
-                  src={'https://i.imgur.com/aLjKQD2.jpg'}
-                  alt=""
-                />
-              </Link>
-              <div className="player-stats-info">
-                <p className="">Defense - Ducks(2)</p>
-                <p className="">1 Goal, 2 Assists</p>
-              </div>
-            </div>
-          </div>
-        </div> */}
+            );
+          })
+        ) : (
+          <h1 id="no-games-message">No games played on this date</h1>
+        )}
       </div>
     </div>
   );

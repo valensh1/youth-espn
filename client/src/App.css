@@ -4,6 +4,7 @@
 @import './styling/teams.css';
 @import './styling/rosters.css';
 @import './styling/scores.css';
+@import './styling/boxscores.css';
 
 *::before,
 *::after {

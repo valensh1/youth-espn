@@ -2,6 +2,11 @@
   background-color: var(--color-lightGray);
 }
 
+.scores-headers-container {
+  display: flex;
+  justify-content: space-between;
+}
+
 #scoreboard-container {
   display: flex;
   flex-direction: column;
@@ -15,7 +20,7 @@
 }
 
 #individual-game-container {
-  border: 2px solid gray;
+  border: 0.6px solid gray;
   height: fit-content;
   position: relative;
 }
@@ -63,6 +68,45 @@
   bottom: 4.25vh;
 }
 
+.venue-gameTime-container {
+  font-size: 0.6vw;
+  position: relative;
+  bottom: 5.5vh;
+  left: 6.5vw;
+}
+
+.scores-button-container {
+  position: absolute;
+  left: 17vw;
+  top: 15vh;
+  width: 20vw;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.scores-button-container > a {
+  text-decoration: none;
+  font-weight: 400;
+  width: 7vw;
+  height: 3vh;
+  border: 1px solid blue;
+  color: blue;
+  border-radius: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.scores-button-container > a:hover {
+  background-color: blue;
+  color: white;
+}
+
+.venue-gameTime-container #game-time {
+  font-size: 0.5vw;
+  margin-top: -1vh;
+}
+
 .scoreboard-scores-container {
   /* margin-left: -2vw; */
 }
@@ -74,7 +118,6 @@
   position: absolute;
   top: 4%;
   left: 75%;
-  /* border: 2px solid red; */
 }
 
 .scoreboard-top-player {
@@ -90,6 +133,13 @@
 
 .player-profile-pic:hover {
   scale: 1.07;
+}
+
+#no-games-message {
+  margin-top: 5vh;
+  margin-left: 1vw;
+  font-style: italic;
+  color: red;
 }
 
 /*? ------------------------------------------------------- Media Queries ---------------------------------------------------------- */
