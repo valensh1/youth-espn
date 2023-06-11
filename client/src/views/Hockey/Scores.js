@@ -258,7 +258,6 @@ function Scores() {
             id="league-level-heading"
           >{`${selections.selectedLeague} ${selections.selectedLevel}`}</h1>
         </div>
-
         {scores.length ? (
           scores.map((game) => {
             return (

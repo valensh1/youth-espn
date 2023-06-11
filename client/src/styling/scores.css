@@ -25,6 +25,33 @@
   position: relative;
 }
 
+#individual-game-container:hover {
+  background-image: linear-gradient(
+      to right bottom,
+      rgba(0, 0, 0, 0.8),
+      rgba(0, 0, 0, 0.4)
+    ),
+    url('https://media.jlgarchitects.com/jlgice-blobstorage/2020/02/CC-Robson-Arena_bowl_200218.jpg');
+  background-size: cover;
+  background-position: 25%;
+  color: white;
+}
+
+#individual-game-container:hover a {
+  color: white;
+  font-weight: 700;
+}
+
+#individual-game-container:hover .scores-button-container > a {
+  color: white;
+  font-weight: 700;
+  border: 2.5px solid white;
+}
+
+#individual-game-container:hover .player-stats-info {
+  font-weight: 600;
+}
+
 #individual-game-container > #game-status {
   margin-left: 0.5vw;
 }
@@ -39,6 +66,10 @@
 .scoreboard-team-info {
   display: flex;
   flex-direction: column;
+}
+
+.scoreboard-team-info a {
+  color: black;
 }
 
 .scoreboard-team-name-logo {
@@ -112,6 +143,8 @@
 }
 
 .scoreboard-scores-container {
+  font-size: 0.8vw;
+  font-weight: 600;
   /* margin-left: -2vw; */
 }
 
