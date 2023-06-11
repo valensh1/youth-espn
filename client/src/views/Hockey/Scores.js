@@ -32,6 +32,7 @@ function Scores() {
   });
 
   const [scores, setScores] = useState([]);
+  const [teamRecords, setTeamRecords] = useState({});
 
   //?----------------------------------------------------------------- USE REF HOOKS ------------------------------------------------------------------------
 
@@ -57,53 +58,73 @@ function Scores() {
     );
   }, []);
 
+  useEffect(() => {
+    fetchTeamRecords(
+      dateOfGames.gameDate,
+      selections.selectedLevel,
+      leagueNameOnly(selections.selectedLeague)
+    );
+  }, [scores]);
+
   //?----------------------------------------------------------------- FUNCTIONS ------------------------------------------------------------------------
-  const changeSelectedLevel = (event) => {
-    setSelections({ ...selections, selectedLevel: event.target.value });
-    navigate(
-      `?date=${dateOfGames.gameDate}&level=${
+  const changeSelectedLevel = async (event) => {
+    try {
+      setSelections({ ...selections, selectedLevel: event.target.value });
+      navigate(
+        `?date=${dateOfGames.gameDate}&level=${
+          event.target.value
+        }&league=${leagueNameOnly(selections.selectedLeague)}`
+      );
+
+      await fetchGameData(
+        dateOfGames.gameDate,
+        event.target.value,
+        selections.selectedLeague
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const changeSelectedLeague = async (event) => {
+    try {
+      setSelections({ ...selections, selectedLeague: event.target.value });
+      navigate(
+        `?date=${dateOfGames.gameDate}&level=${
+          selections.selectedLevel
+        }&league=${leagueNameOnly(event.target.value)}`
+      );
+      await fetchGameData(
+        dateOfGames.gameDate,
+        selections.selectedLevel,
         event.target.value
-      }&league=${leagueNameOnly(selections.selectedLeague)}`
-    );
-    fetchGameData(
-      dateOfGames.gameDate,
-      event.target.value,
-      selections.selectedLeague
-    );
+      );
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const changeSelectedLeague = (event) => {
-    setSelections({ ...selections, selectedLeague: event.target.value });
-    navigate(
-      `?date=${dateOfGames.gameDate}&level=${
-        selections.selectedLevel
-      }&league=${leagueNameOnly(event.target.value)}`
-    );
-    fetchGameData(
-      dateOfGames.gameDate,
-      selections.selectedLevel,
-      event.target.value
-    );
-  };
-
-  const selectedDate = (event) => {
-    console.log(event.target.value);
-    const dates = GlobalFunctions.dateFormats(event.target.value);
-    setDateOfGames({
-      ...dateOfGames,
-      gameDate: dates.gameDate,
-      dateForHeader: dates.dateForHeader,
-    });
-    navigate(
-      `?date=${dates.gameDate}&level=${
-        selections.selectedLevel
-      }&league=${leagueNameOnly(selections.selectedLeague)}`
-    );
-    fetchGameData(
-      event.target.value,
-      selections.selectedLevel,
-      selections.selectedLeague
-    );
+  const selectedDate = async (event) => {
+    try {
+      const dates = GlobalFunctions.dateFormats(event.target.value);
+      setDateOfGames({
+        ...dateOfGames,
+        gameDate: dates.gameDate,
+        dateForHeader: dates.dateForHeader,
+      });
+      navigate(
+        `?date=${dates.gameDate}&level=${
+          selections.selectedLevel
+        }&league=${leagueNameOnly(selections.selectedLeague)}`
+      );
+      await fetchGameData(
+        event.target.value,
+        selections.selectedLevel,
+        selections.selectedLeague
+      );
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // This function removes the age group from the league name so left with 'Peewee' instead of '12U - Peewee'; This is to aid in making queries to the database.
@@ -124,11 +145,9 @@ function Scores() {
 
   const gameDateHeading = () => {
     const gameDateArray = dateOfGames.dateForHeader.split(',');
-    console.log(gameDateArray);
     if (gameDateArray.includes('undefined')) {
       return '';
     } else {
-      console.log('Not seeing undefined in game date');
       return dateOfGames.dateForHeader;
     }
   };
@@ -141,11 +160,47 @@ function Scores() {
         `/api/hockey/scores?date=${date}&level=${team_level}&league=${leagueToQuery}`
       );
       const data = await response.json();
+      if (data.length) console.log(data);
       setScores(data);
-      console.log(data);
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const fetchTeamRecords = async (date, team_level, league) => {
+    try {
+      if (scores.length) {
+        const response = await fetch(
+          `/api/hockey/team-records?date=${date}&level=${team_level}&league=${league}`
+        );
+        const records = await response.json();
+        console.log(records);
+        setTeamRecords(records);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const calcTeamRecords = (team) => {
+    const winningRecord = teamRecords[0]?.find((record) => {
+      return record.winning_team_long === team;
+    });
+    const losingRecord = teamRecords[1]?.find((record) => {
+      return record.losing_team_long === team;
+    });
+
+    let tiesCount = 0;
+    teamRecords?.[2]?.forEach((record) => {
+      if (record.home_team_long === team || record.visitor_team_long === team) {
+        tiesCount++;
+      }
+    });
+
+    const wins = winningRecord?.count || 0;
+    const losses = losingRecord?.count || 0;
+    const ties = tiesCount;
+    return `(${wins}-${losses}-${ties})`;
   };
 
   //?----------------------------------------------------------------- JSX ------------------------------------------------------------------------
@@ -207,7 +262,7 @@ function Scores() {
         {scores.length ? (
           scores.map((game) => {
             return (
-              <div id="individual-game-container">
+              <div id="individual-game-container" key={game.id}>
                 <h3 id="game-status">FINAL</h3>
                 <div className="team-container scoreboard-home-team-container ">
                   <div className="scoreboard-team-info scoreboard-home-team-info ">
@@ -226,7 +281,9 @@ function Scores() {
                         game.home_team_short
                       )}
                     </Link>
-                    <p className="scoreboard-record">(0-0-0)</p>
+                    <p className="scoreboard-record">
+                      {calcTeamRecords(game.home_team_long)}
+                    </p>
                   </div>
                   <div className="scoreboard-scores-container scoreboard-home-team-scores">
                     <p id="home-team-score">{game.home_team_score}</p>
@@ -249,7 +306,10 @@ function Scores() {
                         game.visitor_team_short
                       )}
                     </Link>
-                    <p className="scoreboard-record">(0-0-0)</p>
+                    <p className="scoreboard-record">
+                      {' '}
+                      {calcTeamRecords(game.visitor_team_long)}
+                    </p>
                   </div>
                   <div className="scoreboard-scores-container scoreboard-visitor-team-scores">
                     <p id="visitor-team-score">{game.visitor_team_score}</p>

@@ -102,6 +102,10 @@
   color: white;
 }
 
+.venue-gameTime-container {
+  font-style: italic;
+}
+
 .venue-gameTime-container #game-time {
   font-size: 0.5vw;
   margin-top: -1vh;

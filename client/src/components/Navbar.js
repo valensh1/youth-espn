@@ -12,6 +12,8 @@ function Navbar() {
   ];
   const otherSports = ['Tennis', 'Boxing'];
 
+  //?----------------------------------------------------------------- FUNCTIONS ------------------------------------------------------------------------
+
   // Function that clears local storage for these key/value pairs that pertain to the roster page. Don't want these values to persist if user is no longer on that page.
   const clearLocalStorage = () => {
     localStorage.removeItem('team');
@@ -22,6 +24,8 @@ function Navbar() {
     localStorage.removeItem('league');
     localStorage.removeItem('rosterData');
   };
+
+  //?----------------------------------------------------------------- JSX ------------------------------------------------------------------------
 
   return (
     <div id="navbar-container">

@@ -210,4 +210,40 @@ module.exports = {
       console.error(error);
     }
   },
+
+  getTeamRecords: async (date, level, league) => {
+    try {
+      const wins = await pool.query(`
+      SELECT winning_team_long, winning_team_short, count(*) 
+      FROM games.games 
+      WHERE game_date <= '${date}'
+      AND team_level = '${level}'
+      AND division = '${league}'
+      GROUP BY winning_team_long, winning_team_short
+      ORDER BY winning_team_long;
+      `);
+      const losses = await pool.query(`
+      SELECT losing_team_long, losing_team_short, count(*) 
+      FROM games.games 
+      WHERE game_date <= '${date}'
+      AND team_level = '${level}'
+      AND division = '${league}'
+      GROUP BY losing_team_long, losing_team_short
+      ORDER BY losing_team_long;
+      `);
+      const ties = await pool.query(`
+      SELECT home_team_long, home_team_short, visitor_team_long, visitor_team_short, tie 
+      FROM games.games 
+      WHERE game_date <= '${date}' 
+      AND tie = TRUE 
+      AND team_level = '${level}'
+      AND division = '${league}'
+      GROUP BY home_team_long, home_team_short, visitor_team_long, visitor_team_short, tie
+      ORDER BY home_team_long;
+      `);
+      return [wins.rows, losses.rows, ties.rows];
+    } catch (error) {
+      logger.log(error);
+    }
+  },
 };

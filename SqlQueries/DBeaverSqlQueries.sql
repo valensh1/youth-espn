@@ -590,14 +590,40 @@ WHERE winning_team_long = (SELECT team FROM team_cte)
 SELECT * FROM teams.rosters;
 SELECT * FROM teams.teams;
 SELECT * FROM leagues.leagues;
+SELECT * FROM games.games;
 
-ALTER TABLE teams.rosters 
-ADD CONSTRAINT fk_league_level
-FOREIGN KEY (league_level_fk) REFERENCES leagues.leagues(league_level);
+// Winning teams per game through a specified date
+SELECT winning_team_long, winning_team_short, count(*) 
+FROM games.games 
+WHERE game_date <= '10-31-2021'
+AND team_level = 'A'
+AND division = 'Peewee'
+GROUP BY winning_team_long, winning_team_short
+ORDER BY winning_team_long;
+
+// Losing teams per game through a specified date
+SELECT losing_team_long, losing_team_short, count(*) 
+FROM games.games 
+WHERE game_date <= '10-31-2021'
+AND team_level = 'A'
+AND division = 'Peewee'
+GROUP BY losing_team_long, losing_team_short
+ORDER BY losing_team_long;
+
+// Ties through a specified date
+SELECT home_team_long, home_team_short, visitor_team_long, visitor_team_short, tie 
+FROM games.games 
+WHERE game_date <= '10-31-2021' 
+AND tie = TRUE 
+AND team_level = 'A'
+AND division = 'Peewee'
+GROUP BY home_team_long, home_team_short, visitor_team_long, visitor_team_short, tie
+ORDER BY home_team_long;
 
 
 
 
-UPDATE teams.rosters 
-SET league_level_fk = 'Squirt'
-WHERE actual_team_name IN ('Red Wings');
+
+
+
+   

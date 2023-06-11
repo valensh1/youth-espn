@@ -11,9 +11,13 @@ const sqlQueries = require('./SqlQueries/sqlQueries');
 
 app.listen(5001);
 
-app.get('/api/hockey/levels', async (req, res) => {
-  const levels = await sqlQueries.getAllLevels();
-  return res.json(levels);
+app.get('/api/hockey/team-records', async (req, res) => {
+  const date = req.query.date;
+  const level = req.query.level;
+  const league = req.query.league;
+  logger.log(req.query);
+  const records = await sqlQueries.getTeamRecords(date, level, league);
+  return res.json(records);
 });
 
 app.get('/api/hockey/scores', async (req, res) => {
@@ -30,6 +34,11 @@ app.get('/api/hockey/scores', async (req, res) => {
   );
   logger.log(scores);
   return res.json(scores);
+});
+
+app.get('/api/hockey/levels', async (req, res) => {
+  const levels = await sqlQueries.getAllLevels();
+  return res.json(levels);
 });
 
 app.get(`/api/:sport/leagues`, async (req, res) => {
