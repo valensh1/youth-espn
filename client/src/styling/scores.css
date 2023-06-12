@@ -54,6 +54,7 @@
 
 #individual-game-container > #game-status {
   margin-left: 0.5vw;
+  margin-bottom: 2vh;
 }
 
 .team-container {
@@ -101,16 +102,24 @@
 
 .venue-gameTime-container {
   font-size: 0.6vw;
+  font-style: italic;
   position: relative;
+  height: fit-content;
+  width: 25vw;
   bottom: 5.5vh;
-  left: 6.5vw;
+  left: -3vw;
+  text-align: center;
+}
+
+#game-time {
+  /* text-align: center; */
 }
 
 .scores-button-container {
   position: absolute;
-  left: 17vw;
+  left: 13vw;
   top: 15vh;
-  width: 20vw;
+  width: 25vw;
   display: flex;
   justify-content: space-evenly;
 }
@@ -129,12 +138,8 @@
 }
 
 .scores-button-container > a:hover {
-  background-color: blue;
+  background-color: rgb(56, 56, 56);
   color: white;
-}
-
-.venue-gameTime-container {
-  font-style: italic;
 }
 
 .venue-gameTime-container #game-time {
@@ -145,16 +150,19 @@
 .scoreboard-scores-container {
   font-size: 0.8vw;
   font-weight: 600;
+  position: relative;
+  right: 4vw;
   /* margin-left: -2vw; */
 }
 
 .scoreboard-top-players-container {
   display: flex;
   flex-direction: column;
+  /* align-items: center; */
   width: 12vw;
   position: absolute;
-  top: 4%;
-  left: 75%;
+  top: 5.2%;
+  left: 80%;
 }
 
 .scoreboard-top-player {
@@ -163,8 +171,10 @@
 }
 
 #scoreboard-container .player-profile-pic {
-  width: 2.75vw;
-  height: 4vh;
+  /* width: 2.75vw; */
+  /* height: 4vh; */
+  width: 2.5vw;
+  height: 5vh;
   border: 2px solid orangered;
 }
 

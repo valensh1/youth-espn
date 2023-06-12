@@ -169,9 +169,11 @@ function Scores() {
 
   const fetchTeamRecords = async (date, team_level, league) => {
     try {
+      const season = GlobalFunctions.hockeySeason(date);
+      console.log(season);
       if (scores.length) {
         const response = await fetch(
-          `/api/hockey/team-records?date=${date}&level=${team_level}&league=${league}`
+          `/api/hockey/team-records?date=${date}&level=${team_level}&league=${league}&season=${season}`
         );
         const records = await response.json();
         console.log(records);

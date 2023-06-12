@@ -26,6 +26,26 @@ class GlobalFunctions {
     'December',
   ];
 
+  hockeySeasonStartMonth = 8; // August (approx month)
+  hockeySeasonEndMonth = 4; // April (approx month)
+
+  // Function to determine hockey season based on the date provided to function
+  hockeySeason = (date) => {
+    const dateArray = date.split('-');
+    const year = +dateArray[0];
+    const month = +dateArray[1];
+    console.log(dateArray);
+    console.log(year, typeof year);
+    console.log(month, typeof month);
+    if (month >= 8 && month <= 12) {
+      return `${year}-${year + 1}`;
+    } else if (month >= 1 && month <= 4) {
+      return `${year - 1}-${year}`;
+    } else {
+      return 'Not a valid regular season';
+    }
+  };
+
   // Function that gets dates in various formats to use throughout program. Function returns an object
   dateFormats = (date = new Date(), todayDate = 1) => {
     if (todayDate) {

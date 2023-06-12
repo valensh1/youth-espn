@@ -12,11 +12,9 @@ const sqlQueries = require('./SqlQueries/sqlQueries');
 app.listen(5001);
 
 app.get('/api/hockey/team-records', async (req, res) => {
-  const date = req.query.date;
-  const level = req.query.level;
-  const league = req.query.league;
-  logger.log(req.query);
-  const records = await sqlQueries.getTeamRecords(date, level, league);
+  const { date, level, league, season } = req.query; // Destructure req.query items
+  const records = await sqlQueries.getTeamRecords(date, level, league, season);
+  logger.log(records);
   return res.json(records);
 });
 
