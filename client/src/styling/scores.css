@@ -2,6 +2,23 @@
   background-color: var(--color-lightGray);
 }
 
+#dropdowns-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 25vw;
+  height: 5vh;
+  font-size: 0.6vw;
+  font-weight: 600;
+  background-color: rgb(214, 217, 219);
+  border-radius: 10px;
+}
+
+.single-dropdown-container {
+  display: flex;
+  flex-direction: column;
+}
+
 .scores-headers-container {
   display: flex;
   justify-content: space-between;

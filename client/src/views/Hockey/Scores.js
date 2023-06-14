@@ -24,6 +24,7 @@ function Scores() {
   const [dropdowns, setDropdowns] = useState({
     levels: [],
     leagues: [],
+    showCalendar: false,
   });
 
   const [selections, setSelections] = useState({
@@ -210,44 +211,54 @@ function Scores() {
     <div id="scores-page-container">
       <Navbar />
       <div id="dropdowns-container">
-        <input
-          id="date-picker"
-          type="date"
-          onChange={selectedDate}
-          value={dateOfGames.gameDate}
-        />
+        <div className="single-dropdown-container">
+          <label htmlFor="date-picker">Game Date</label>
+          <input
+            className={dropdowns.showCalendar ? 'show' : 'hidden'}
+            id="date-picker"
+            type="date"
+            onChange={selectedDate}
+            value={dateOfGames.gameDate}
+          />
+        </div>
 
-        <select
-          name="level-dropdown"
-          className="filter-dropdowns"
-          id="level-dropdown"
-          value={selections.selectedLevel}
-          onChange={changeSelectedLevel}
-        >
-          {dropdowns.levels.map((level) => {
-            return (
-              <option key={level.team_level} value={level.team_level}>
-                {level.team_level}
-              </option>
-            );
-          })}
-        </select>
+        <div className="single-dropdown-container">
+          <label htmlFor="level-dropdown">Level</label>
+          <select
+            name="level-dropdown"
+            className="filter-dropdowns"
+            id="level-dropdown"
+            value={selections.selectedLevel}
+            onChange={changeSelectedLevel}
+          >
+            {dropdowns.levels.map((level) => {
+              return (
+                <option key={level.team_level} value={level.team_level}>
+                  {level.team_level}
+                </option>
+              );
+            })}
+          </select>
+        </div>
 
-        <select
-          name="level-dropdown"
-          className="filter-dropdowns"
-          id="league-dropdown"
-          value={selections.selectedLeague}
-          onChange={changeSelectedLeague}
-        >
-          {dropdowns.leagues.map((league) => {
-            return (
-              <option key={league.league_age} value={league.league_age}>
-                {league.league_age}
-              </option>
-            );
-          })}
-        </select>
+        <div className="single-dropdown-container">
+          <label htmlFor="league-dropdown">League</label>
+          <select
+            name="league-dropdown"
+            className="filter-dropdowns"
+            id="league-dropdown"
+            value={selections.selectedLeague}
+            onChange={changeSelectedLeague}
+          >
+            {dropdowns.leagues.map((league) => {
+              return (
+                <option key={league.league_age} value={league.league_age}>
+                  {league.league_age}
+                </option>
+              );
+            })}
+          </select>
+        </div>
       </div>
 
       <div id="scoreboard-container">
