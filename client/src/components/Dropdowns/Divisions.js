@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 
 function Divisions({ dropdownSelection }) {
+  const defaultDivision = '12U - Peewee';
   //?----------------------------------------------------------------- UseState Hooks ------------------------------------------------------------------------
   const [leagueDropdown, setDivisionDropdown] = useState([]);
-  const [selectedDivision, setSelectedDivision] = useState('');
+  const [selectedDivision, setSelectedDivision] = useState(defaultDivision);
 
   //?----------------------------------------------------------------- UseEffect Hooks ------------------------------------------------------------------------
   // Fetch leagues data on initial render of component

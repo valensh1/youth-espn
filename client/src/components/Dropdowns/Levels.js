@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 
 function Levels({ dropdownSelection }) {
+  const defaultLevel = 'A';
   //?----------------------------------------------------------------- UseState Hooks ------------------------------------------------------------------------
   const [levelDropdown, setLevelDropdown] = useState([]);
-  const [selectedLevel, setSelectedLevel] = useState('');
+  const [selectedLevel, setSelectedLevel] = useState(defaultLevel);
 
   //?----------------------------------------------------------------- UseEffect Hooks ------------------------------------------------------------------------
   // Fetch levels data on initial render of component
