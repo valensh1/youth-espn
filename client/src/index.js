@@ -9,6 +9,7 @@ import Teams from './views/Teams';
 import Rosters from './views/Rosters';
 import HockeyScores from './views/Hockey/Scores';
 import HockeyBoxScore from './views/Hockey/BoxScore';
+import HockeyStandings from './views/Hockey/Standings';
 import { globalVariables } from './model/globalVariables';
 
 const router = createBrowserRouter([
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
   {
     path: 'hockey/scores',
     element: <HockeyScores />,
+  },
+  {
+    path: 'hockey/standings',
+    element: <HockeyStandings />,
   },
   {
     path: 'hockey/scores/boxscore',

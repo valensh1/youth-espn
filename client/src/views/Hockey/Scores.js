@@ -24,7 +24,6 @@ function Scores() {
   const [dropdowns, setDropdowns] = useState({
     levels: [],
     leagues: [],
-    showCalendar: false,
   });
 
   const [selections, setSelections] = useState({

@@ -249,4 +249,133 @@ module.exports = {
       logger.log(error);
     }
   },
+
+  getStandings: async (sport, season, level, division) => {
+    try {
+      const response = await pool.query(`
+      SELECT teams.team_name, games_played, teams.total_wins, COALESCE(losses.total_losses, 0) AS total_losses, COALESCE(ties.total_ties, 0) AS total_ties, COALESCE (points.total_points, 0) AS total_points
+      FROM (
+          SELECT winning_team_long AS team_name, COUNT(winning_team_points) AS total_wins
+          FROM games.games
+          WHERE sport ILIKE '${sport}'
+          AND season = '${season}'
+          AND team_level = '${level}'
+          AND division = '${division}'
+          GROUP BY winning_team_long
+      ) teams
+      LEFT JOIN (
+          SELECT losing_team_long AS team_name, COUNT(losing_team_points) AS total_losses
+          FROM games.games
+          WHERE sport ILIKE '${sport}'
+          AND season = '${season}'
+          AND team_level = '${level}'
+          AND division = '${division}'
+          GROUP BY losing_team_long
+      ) losses ON teams.team_name = losses.team_name
+      LEFT JOIN (
+          SELECT team AS team_name, sum(total_ties) AS total_ties
+          FROM (
+              SELECT home_team_long AS team, COUNT(*) AS total_ties
+              FROM games.games
+              WHERE sport ILIKE '${sport}'
+              AND season = '${season}'
+              AND team_level = '${level}'
+              AND division = '${division}'
+              AND tie = TRUE
+              GROUP BY home_team_long
+      
+              UNION ALL 
+      
+              SELECT visitor_team_long AS team, COUNT(*) AS total_ties
+              FROM games.games 
+              WHERE sport ILIKE '${sport}'
+              AND season = '${season}'
+              AND team_level = '${level}'
+              AND division = '${division}'
+              AND tie = TRUE
+              GROUP BY visitor_team_long
+          ) queryTable
+          GROUP BY team
+      ) ties ON teams.team_name = ties.team_name
+      LEFT JOIN (
+      SELECT team_long, SUM(points) AS total_points
+      FROM (
+          SELECT winning_team_long AS team_long, SUM(winning_team_points) AS points
+          FROM games.games
+          WHERE sport ILIKE '${sport}'
+          AND season = '${season}'
+          AND team_level = '${level}'
+          AND division = '${division}'
+          GROUP BY winning_team_long
+      
+          UNION ALL
+          
+          SELECT losing_team_long AS team_long, sum(losing_team_points) AS points
+          FROM games.games
+          WHERE sport ILIKE '${sport}'
+          AND season = '${season}'
+          AND team_level = '${level}'
+          AND division = '${division}'
+          GROUP BY losing_team_long
+          
+          UNION ALL
+      
+          SELECT home_team_long AS team_long, 1 AS points
+          FROM games.games
+          WHERE sport ILIKE '${sport}'
+          AND season = '${season}'
+          AND team_level = '${level}'
+          AND division = '${division}'
+          AND tie = TRUE
+      
+          UNION ALL
+      
+          SELECT visitor_team_long AS team_long, 1 AS points
+          FROM games.games
+          WHERE sport ILIKE '${sport}'
+          AND season = '${season}'
+          AND team_level = '${level}'
+          AND division = '${division}'
+          AND tie = TRUE
+      ) subquery
+      WHERE team_long IS NOT NULL
+      GROUP BY team_long
+      ORDER BY total_points DESC
+      ) points
+      ON points.team_long = teams.team_name
+      LEFT JOIN (
+      SELECT team, sum(games_played) AS games_played 
+      FROM (
+      SELECT 
+      CASE 
+        WHEN winning_team_long IS NOT NULL THEN winning_team_long
+        ELSE home_team_long
+      END AS team ,
+      COUNT(*) AS games_played
+      FROM games.games
+      GROUP BY team
+      
+      UNION ALL
+      
+      SELECT 
+      CASE 
+        WHEN losing_team_long IS NOT NULL THEN losing_team_long
+        ELSE visitor_team_long
+      END AS team , 
+      COUNT (*) AS games_played
+      FROM games.games
+      GROUP BY team
+      ) AS gp
+      
+      GROUP BY team
+      ORDER BY games_played DESC
+      ) games_played ON games_played.team = teams.team_name
+      WHERE teams.team_name IS NOT NULL 
+      ORDER BY total_points DESC;
+      `);
+      return response.rows;
+    } catch (error) {
+      logger.log(error);
+    }
+  },
 };

@@ -97,3 +97,19 @@ app.get('/api/hockey/teams/:team/multiple-team-names', async (req, res) => {
   logger.log(multipleTeamNames);
   return res.json(multipleTeamNames);
 });
+
+app.get('/api/:sport/standings', async (req, res) => {
+  const sport = req.params.sport;
+  const { season, level, division } = req.query;
+  logger.log(sport);
+  logger.log(season);
+  logger.log(level);
+  logger.log(division);
+  const standings = await sqlQueries.getStandings(
+    sport,
+    season,
+    level,
+    division
+  );
+  return res.json(standings);
+});
