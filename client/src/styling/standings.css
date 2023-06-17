@@ -84,3 +84,7 @@
   color: white;
   height: 3vh;
 }
+
+#stat-points {
+  background-color: rgb(229, 234, 249);
+}

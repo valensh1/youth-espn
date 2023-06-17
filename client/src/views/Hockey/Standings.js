@@ -161,7 +161,7 @@ function Standings() {
                     <td>{team.standingsData.total_wins}</td>
                     <td>{team.standingsData.total_losses}</td>
                     <td></td>
-                    <td>{team.standingsData.total_points}</td>
+                    <td id="stat-points">{team.standingsData.total_points}</td>
                     <td></td>
                     <td></td>
                     <td></td>
