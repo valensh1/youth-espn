@@ -48,12 +48,9 @@ module.exports = {
                               GROUP BY id, sport, team_name_short,team_name_full, logo_image, primary_team_color, secondary_team_color, third_team_color 
                               ORDER BY team_name_short;`;
 
-      const queryWithoutLevel = `SELECT id, sport, team_name_short, team_name_full, logo_image, primary_team_color, secondary_team_color, third_team_color
-                                  FROM teams.teams
-                                  WHERE sport = 'Hockey'
-                                  AND team_level IS NOT NULL
-                                  GROUP BY id, sport, team_name_short,team_name_full, logo_image, primary_team_color, secondary_team_color, third_team_color 
-                                  ORDER BY team_name_short;`;
+      const queryWithoutLevel = `SELECT DISTINCT sport, team_name_short, logo_image , primary_team_color, secondary_team_color , third_team_color  
+      FROM teams.teams
+      ORDER BY team_name_short  ;`;
 
       const sqlQueryStatement = level ? queryWithLevel : queryWithoutLevel;
 

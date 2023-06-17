@@ -1,27 +1,80 @@
 #standings-page-container {
   width: 100vw;
-  height: 100vh;
+  height: fit-content;
   position: relative;
+  background-color: lightgray;
+}
+
+.center-items {
+  width: 62vw;
+  height: fit-content;
+  margin-top: 2.5%;
+  margin-left: 18.5%;
+  background-color: white;
+  border-radius: 25px;
+}
+
+#standings-page-container #dropdowns-container {
+  background-color: white;
+  width: 50%;
+  margin-left: 25%;
+  margin-right: 25%;
 }
 
 .page-title {
   position: relative;
   left: 50%;
   margin-top: 3vh;
+  margin-bottom: 0.75vh;
 }
 
 #standings-container {
   height: fit-content;
   display: inline-block;
-  width: 100vw;
-  position: relative;
+  width: 62vw;
+  margin-left: 1vw;
+  margin-right: 1vw;
+}
+
+#standings-team-logo {
+  width: 8vw;
+  border-right: 0.5px solid lightgray;
+}
+
+#standings-container #standings-team-logo > a {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+#standings-team-logo img {
+  width: 3vw;
+  height: 5vh;
+  margin-right: 0.75vw;
 }
 
 #standings-container table {
   height: fit-content;
-  width: 50vw;
-  position: relative;
-  left: 25%;
+  width: 60vw;
+  background-color: white;
+  border: 1px solid lightgray;
+  border-collapse: collapse;
+  margin-bottom: 5vh;
+}
+
+#standings-container thead {
+  background-color: black;
+  color: white;
+}
+
+#standings-container table td {
+  border-top: 1px solid lightgray;
+  border-bottom: 1px solid lightgray;
+  line-height: 3;
+  font-size: 0.55vw;
+  color: black;
+  text-align: center;
+  vertical-align: middle;
 }
 
 #standings-container th {
@@ -30,17 +83,4 @@
   background-color: black;
   color: white;
   height: 3vh;
-  text-align: center;
-  vertical-align: middle;
-}
-
-#standings-container td {
-  font-size: 0.5vw;
-  color: black;
-  text-align: center;
-  vertical-align: middle;
-}
-
-#standings-container td:first-of-type {
-  text-align: left;
 }

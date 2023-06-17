@@ -24,11 +24,15 @@ function Standings() {
     'L',
     'OTL',
     'PTS',
+    'P%',
+    'RW',
+    'ROW',
     'GF',
     'GA',
     'DIFF',
     'HOME',
     'AWAY',
+    'S/O',
     'L10',
     'STRK',
   ];
@@ -118,40 +122,63 @@ function Standings() {
   return (
     <div id="standings-page-container">
       <Navbar />
-      <div id="dropdowns-container">
-        <Seasons dropdownSelection={changeSelection} fetchData={fetchData} />
-        <Levels dropdownSelection={changeSelection} fetchData={fetchData} />
-        <Divisions dropdownSelection={changeSelection} fetchData={fetchData} />
-      </div>
-      <h1 className="page-title">Standings</h1>
-      <div id="standings-container">
-        <table>
-          <thead>
-            {hockeyStatCategories.map((statCategory) => {
-              return <th key={statCategory}>{statCategory}</th>;
-            })}
-          </thead>
+      <div className="center-items">
+        <div id="dropdowns-container">
+          <Seasons dropdownSelection={changeSelection} fetchData={fetchData} />
+          <Levels dropdownSelection={changeSelection} fetchData={fetchData} />
+          <Divisions
+            dropdownSelection={changeSelection}
+            fetchData={fetchData}
+          />
+        </div>
+        <h1 className="page-title">Standings</h1>
+        <div id="standings-container">
+          <table>
+            <thead>
+              <tr>
+                {hockeyStatCategories.map((statCategory) => {
+                  return <th key={statCategory}>{statCategory}</th>;
+                })}
+              </tr>
+            </thead>
 
-          {combinedData.map((team) => {
-            return (
-              <tbody>
-                <td>{team.displayedTeamName}</td>
-                <td>{team.standingsData.games_played}</td>
-                <td>{team.standingsData.total_wins}</td>
-                <td>{team.standingsData.total_losses}</td>
-                <td></td>
-                <td>{team.standingsData.total_points}</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tbody>
-            );
-          })}
-        </table>
+            <tbody>
+              {combinedData.map((team) => {
+                return (
+                  <tr key={`${team.displayedTeamName}-${team.id}`}>
+                    <td id="standings-team-logo">
+                      <Link to={''}>
+                        <img
+                          src={team.logo_image}
+                          alt=""
+                          className="team-logo standings-team-logo"
+                        />
+                        <p>{team.displayedTeamName}</p>
+                      </Link>
+                    </td>
+
+                    <td>{team.standingsData.games_played}</td>
+                    <td>{team.standingsData.total_wins}</td>
+                    <td>{team.standingsData.total_losses}</td>
+                    <td></td>
+                    <td>{team.standingsData.total_points}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
