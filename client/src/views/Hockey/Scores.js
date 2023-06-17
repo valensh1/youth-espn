@@ -5,15 +5,13 @@ import Navbar from '../../components/Navbar';
 
 function Scores() {
   const navigate = useNavigate();
-  let urlPath;
 
   const location = useLocation();
   const currentPath = location.pathname;
   const sportToQuery = currentPath.split('/')[1];
 
   const defaultLevel = 'A';
-  const defaultLeague = '12U - Peewee';
-  const defaultLeageNameOnly = defaultLeague.split('-')[1].trim();
+  const defaultDivision = '12U - Peewee';
   const todaysDate = GlobalFunctions.dateFormats(undefined, 0); // Passing in a blank first argument so function defaults to default argument which is the current date
 
   //?----------------------------------------------------------------- USE STATE HOOKS ------------------------------------------------------------------------
@@ -23,80 +21,79 @@ function Scores() {
   });
   const [dropdowns, setDropdowns] = useState({
     levels: [],
-    leagues: [],
+    divisions: [],
   });
 
   const [selections, setSelections] = useState({
-    selectedLevel: defaultLevel,
-    selectedLeague: defaultLeague,
+    level: defaultLevel,
+    division: defaultDivision,
   });
 
   const [scores, setScores] = useState([]);
   const [teamRecords, setTeamRecords] = useState({});
 
-  //?----------------------------------------------------------------- USE REF HOOKS ------------------------------------------------------------------------
-
   //?----------------------------------------------------------------- USE EFFECT HOOKS ------------------------------------------------------------------------
   useEffect(() => {
     const fetchDropdownData = async () => {
-      const [levelsResponse, leaguesResponse] = await Promise.all([
+      const [levelsResponse, divisionsResponse] = await Promise.all([
         fetch(`/api/${sportToQuery}/levels`),
-        fetch(`/api/${sportToQuery}/leagues`),
+        fetch(`/api/${sportToQuery}/divisions`),
       ]);
 
       const levels = await levelsResponse.json();
-      const leagues = await leaguesResponse.json();
+      const divisions = await divisionsResponse.json();
       console.log(levels);
-      console.log(leagues);
-      setDropdowns({ levels: levels, leagues: leagues });
+      console.log(divisions);
+      setDropdowns({ levels: levels, divisions: divisions });
     };
     fetchDropdownData();
     navigate(
       `?date=${dateOfGames.gameDate}&level=${
-        selections.selectedLevel
-      }&league=${leagueNameOnly(defaultLeague)}`
+        selections.level
+      }&division=${divisionNameOnly(defaultDivision)}`
     );
+    fetchGameData(todaysDate, defaultLevel, defaultDivision);
   }, []);
 
   useEffect(() => {
     fetchTeamRecords(
       dateOfGames.gameDate,
-      selections.selectedLevel,
-      leagueNameOnly(selections.selectedLeague)
+      selections.level,
+      divisionNameOnly(selections.division)
     );
   }, [scores]);
 
   //?----------------------------------------------------------------- FUNCTIONS ------------------------------------------------------------------------
   const changeSelectedLevel = async (event) => {
     try {
-      setSelections({ ...selections, selectedLevel: event.target.value });
+      setSelections({ ...selections, level: event.target.value });
       navigate(
         `?date=${dateOfGames.gameDate}&level=${
           event.target.value
-        }&league=${leagueNameOnly(selections.selectedLeague)}`
+        }&division=${divisionNameOnly(selections.division)}`
       );
 
       await fetchGameData(
         dateOfGames.gameDate,
         event.target.value,
-        selections.selectedLeague
+        selections.division
       );
     } catch (error) {
       console.error(error);
     }
   };
 
-  const changeSelectedLeague = async (event) => {
+  const changeSelectedDivision = async (event) => {
     try {
-      setSelections({ ...selections, selectedLeague: event.target.value });
+      setSelections({ ...selections, division: event.target.value });
       navigate(
         `?date=${dateOfGames.gameDate}&level=${
-          selections.selectedLevel
-        }&league=${leagueNameOnly(event.target.value)}`
+          selections.level
+        }&division=${divisionNameOnly(event.target.value)}`
       );
       await fetchGameData(
         dateOfGames.gameDate,
-        selections.selectedLevel,
+        selections.level,
         event.target.value
       );
     } catch (error) {
@@ -114,24 +111,24 @@ function Scores() {
       });
       navigate(
         `?date=${dates.gameDate}&level=${
-          selections.selectedLevel
-        }&league=${leagueNameOnly(selections.selectedLeague)}`
+          selections.level
+        }&division=${divisionNameOnly(selections.division)}`
       );
       await fetchGameData(
         event.target.value,
-        selections.selectedLevel,
-        selections.selectedLeague
+        selections.level,
+        selections.division
       );
     } catch (error) {
       console.error(error);
     }
   };
 
-  // This function removes the age group from the league name so left with 'Peewee' instead of '12U - Peewee'; This is to aid in making queries to the database.
-  const leagueNameOnly = (league) => {
-    const leagueArray = league.split('-');
-    const leagueName = leagueArray[1].trim();
-    return leagueName;
+  // This function removes the age group from the division name so left with 'Peewee' instead of '12U - Peewee'; This is to aid in making queries to the database.
+  const divisionNameOnly = (division) => {
+    const divisionArray = division.split('-');
+    const divisionName = divisionArray[1].trim();
+    return divisionName;
   };
 
   // This function displays the team_name_long if it detects a team such as Ducks(2) but will only display team_name_short such as the Bears instead of California Golden Bears because there is no (2) in the name meaning there is only 1 Bears team
@@ -153,11 +150,11 @@ function Scores() {
   };
 
   // This function fetches the scores data for page
-  const fetchGameData = async (date, team_level, league) => {
+  const fetchGameData = async (date, team_level, division) => {
     try {
-      const leagueToQuery = leagueNameOnly(league);
+      const divisionToQuery = divisionNameOnly(division);
       const response = await fetch(
-        `/api/hockey/scores?date=${date}&level=${team_level}&league=${leagueToQuery}`
+        `/api/hockey/scores?date=${date}&level=${team_level}&division=${divisionToQuery}`
       );
       const data = await response.json();
       if (data.length) console.log(data);
@@ -167,13 +164,13 @@ function Scores() {
     }
   };
 
-  const fetchTeamRecords = async (date, team_level, league) => {
+  const fetchTeamRecords = async (date, team_level, division) => {
     try {
       const season = GlobalFunctions.hockeySeason(date);
       console.log(season);
       if (scores.length) {
         const response = await fetch(
-          `/api/hockey/team-records?date=${date}&level=${team_level}&league=${league}&season=${season}`
+          `/api/hockey/team-records?date=${date}&level=${team_level}&division=${division}&season=${season}`
         );
         const records = await response.json();
         console.log(records);
@@ -220,14 +217,13 @@ function Scores() {
             value={dateOfGames.gameDate}
           />
         </div>
-
         <div className="single-dropdown-container">
           <label htmlFor="level-dropdown">Level</label>
           <select
             name="level-dropdown"
             className="filter-dropdowns"
             id="level-dropdown"
-            value={selections.selectedLevel}
+            value={selections.level}
             onChange={changeSelectedLevel}
           >
             {dropdowns.levels.map((level) => {
@@ -241,18 +237,21 @@ function Scores() {
         </div>
 
         <div className="single-dropdown-container">
-          <label htmlFor="league-dropdown">League</label>
+          <label htmlFor="division-dropdown">Division</label>
           <select
-            name="league-dropdown"
+            name="division-dropdown"
             className="filter-dropdowns"
-            id="league-dropdown"
-            value={selections.selectedLeague}
-            onChange={changeSelectedLeague}
+            id="division-dropdown"
+            value={selections.division}
+            onChange={changeSelectedDivision}
           >
-            {dropdowns.leagues.map((league) => {
+            {dropdowns.divisions.map((division) => {
               return (
-                <option key={league.league_age} value={league.league_age}>
-                  {league.league_age}
+                <option
+                  key={division.division_age}
+                  value={division.division_age}
+                >
+                  {division.division_age}
                 </option>
               );
             })}
@@ -267,8 +266,8 @@ function Scores() {
           </h1>
           <h1
             className="scores-heading"
-            id="league-level-heading"
-          >{`${selections.selectedLeague} ${selections.selectedLevel}`}</h1>
+            id="division-level-heading"
+          >{`${selections.division} ${selections.level}`}</h1>
         </div>
         {scores.length ? (
           scores.map((game) => {

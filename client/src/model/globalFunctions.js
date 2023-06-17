@@ -34,9 +34,9 @@ class GlobalFunctions {
     const dateArray = date.split('-');
     const year = +dateArray[0];
     const month = +dateArray[1];
-    console.log(dateArray);
-    console.log(year, typeof year);
-    console.log(month, typeof month);
+    // console.log(dateArray);
+    // console.log(year, typeof year);
+    // console.log(month, typeof month);
     if (month >= 8 && month <= 12) {
       return `${year}-${year + 1}`;
     } else if (month >= 1 && month <= 4) {

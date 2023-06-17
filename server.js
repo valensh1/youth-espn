@@ -12,8 +12,13 @@ const sqlQueries = require('./SqlQueries/sqlQueries');
 app.listen(5001);
 
 app.get('/api/hockey/team-records', async (req, res) => {
-  const { date, level, league, season } = req.query; // Destructure req.query items
-  const records = await sqlQueries.getTeamRecords(date, level, league, season);
+  const { date, level, division, season } = req.query; // Destructure req.query items
+  const records = await sqlQueries.getTeamRecords(
+    date,
+    level,
+    division,
+    season
+  );
   logger.log(records);
   return res.json(records);
 });
@@ -21,14 +26,14 @@ app.get('/api/hockey/team-records', async (req, res) => {
 app.get('/api/hockey/scores', async (req, res) => {
   const dateToQuery = req.query.date;
   const levelToQuery = req.query.level;
-  const leagueToQuery = req.query.league;
+  const divisionToQuery = req.query.division;
   logger.log(dateToQuery);
   logger.log(levelToQuery);
-  logger.log(leagueToQuery);
+  logger.log(divisionToQuery);
   const scores = await sqlQueries.getScores(
     dateToQuery,
     levelToQuery,
-    leagueToQuery
+    divisionToQuery
   );
   logger.log(scores);
   return res.json(scores);
@@ -39,10 +44,10 @@ app.get('/api/hockey/levels', async (req, res) => {
   return res.json(levels);
 });
 
-app.get(`/api/:sport/leagues`, async (req, res) => {
+app.get(`/api/:sport/divisions`, async (req, res) => {
   const sport = req.params.sport;
-  const leagues = await sqlQueries.getAllLeagues(sport);
-  return res.json(leagues);
+  const divisions = await sqlQueries.getAllDivisions(sport);
+  return res.json(divisions);
 });
 
 app.get('/api/hockey/seasons', async (req, res) => {
@@ -51,7 +56,8 @@ app.get('/api/hockey/seasons', async (req, res) => {
 });
 
 app.get('/api/hockey/teams', async (req, res) => {
-  const teams = await sqlQueries.getAllTeams();
+  const level = req.query.level;
+  const teams = await sqlQueries.getAllTeams(level);
   return res.json(teams);
 });
 
@@ -64,18 +70,18 @@ app.get('/api/hockey/teams/:team/roster', async (req, res) => {
   logger.log(req.query);
   const seasonToQuery = req.query.season;
   const levelToQuery = req.query.level;
-  const leagueToQuery = req.query.league;
+  const divisionToQuery = req.query.division;
   // logger.log(levelToQuery);
   const team = req.params.team;
   const teamToQuery = req.query.teamToQuery ? req.query.teamToQuery : team; // On initial load there is no req.query params. Req.params does NOT happen until the user selects a team from the drop-down menu. So if no req.params then just take the team from the url path.
   logger.log(
-    `These are the query items -> ${teamToQuery}, ${seasonToQuery}, ${levelToQuery}, ${leagueToQuery}`
+    `These are the query items -> ${teamToQuery}, ${seasonToQuery}, ${levelToQuery}, ${divisionToQuery}`
   );
   const singleTeamRoster = await sqlQueries.getSingleTeamRoster(
     teamToQuery,
     seasonToQuery,
     levelToQuery,
-    leagueToQuery
+    divisionToQuery
   );
   return res.json(singleTeamRoster);
 });
@@ -83,16 +89,16 @@ app.get('/api/hockey/teams/:team/roster', async (req, res) => {
 app.get('/api/hockey/teams/:team/multiple-team-names', async (req, res) => {
   const team = req.params.team;
   const level = req.query.level;
-  const league = req.query.league;
+  const division = req.query.division;
   const season = req.query.season;
   logger.log(`This is the team to query --> ${team}`);
   logger.log(`This is the level to query --> ${level} `);
-  logger.log(`This is the league to query --> ${league} `);
+  logger.log(`This is the division to query --> ${division} `);
   const multipleTeamNames = await sqlQueries.getMultipleTeamNames(
     season,
     level,
     team,
-    league
+    division
   );
   logger.log(multipleTeamNames);
   return res.json(multipleTeamNames);

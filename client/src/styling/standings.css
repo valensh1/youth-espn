@@ -1,0 +1,46 @@
+#standings-page-container {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.page-title {
+  position: relative;
+  left: 50%;
+  margin-top: 3vh;
+}
+
+#standings-container {
+  height: fit-content;
+  display: inline-block;
+  width: 100vw;
+  position: relative;
+}
+
+#standings-container table {
+  height: fit-content;
+  width: 50vw;
+  position: relative;
+  left: 25%;
+}
+
+#standings-container th {
+  font-size: 0.5vw;
+  font-weight: 600;
+  background-color: black;
+  color: white;
+  height: 3vh;
+  text-align: center;
+  vertical-align: middle;
+}
+
+#standings-container td {
+  font-size: 0.5vw;
+  color: black;
+  text-align: center;
+  vertical-align: middle;
+}
+
+#standings-container td:first-of-type {
+  text-align: left;
+}

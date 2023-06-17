@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { globalVariables } from '../../model/globalVariables';
 
-function Seasons({ dropdownSelection }) {
+function Seasons({ dropdownSelection, fetchData }) {
   const defaultSeason = globalVariables.currentSeason.hockey;
 
   //?----------------------------------------------------------------- UseState Hooks ------------------------------------------------------------------------
@@ -9,7 +9,7 @@ function Seasons({ dropdownSelection }) {
   const [selectedSeason, setSelectedSeason] = useState(defaultSeason);
 
   //?----------------------------------------------------------------- UseEffect Hooks ------------------------------------------------------------------------
-  // Fetch leagues data on initial render of component
+  // Fetch seasons data on initial render of component
   useEffect(() => {
     const fetchDropdownData = async () => {
       const response = await fetch(`/api/hockey/seasons`);
@@ -24,6 +24,7 @@ function Seasons({ dropdownSelection }) {
   const changeSeason = (event) => {
     setSelectedSeason(event.target.value);
     dropdownSelection('season', event.target.value); // Callback function to pass state back to parent
+    fetchData(event.target.value, undefined, undefined);
   };
 
   //?----------------------------------------------------------------- JSX ------------------------------------------------------------------------

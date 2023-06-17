@@ -365,16 +365,24 @@ GROUP BY team
 ORDER BY games_played DESC;
 
 
--- Teams games_played (GP), wins, losses, ties and points
+   -- Teams games_played (GP), wins, losses, ties and points
 SELECT teams.team_name, games_played, teams.total_wins, COALESCE(losses.total_losses, 0) AS total_losses, COALESCE(ties.total_ties, 0) AS total_ties, COALESCE (points.total_points, 0) AS total_points
 FROM (
     SELECT winning_team_long AS team_name, COUNT(winning_team_points) AS total_wins
     FROM games.games
+    WHERE sport ILIKE 'Hockey'
+    AND season = '2021-2022'
+    AND team_level = 'A'
+    AND division = 'Peewee'
     GROUP BY winning_team_long
 ) teams
 LEFT JOIN (
     SELECT losing_team_long AS team_name, COUNT(losing_team_points) AS total_losses
     FROM games.games
+    WHERE sport ILIKE 'Hockey'
+    AND season = '2021-2022'
+    AND team_level = 'A'
+    AND division = 'Peewee'
     GROUP BY losing_team_long
 ) losses ON teams.team_name = losses.team_name
 LEFT JOIN (
@@ -382,14 +390,22 @@ LEFT JOIN (
     FROM (
         SELECT home_team_long AS team, COUNT(*) AS total_ties
         FROM games.games
-        WHERE tie = TRUE
+        WHERE sport ILIKE 'Hockey'
+    	AND season = '2021-2022'
+    	AND team_level = 'A'
+    	AND division = 'Peewee'
+        AND tie = TRUE
         GROUP BY home_team_long
 
         UNION ALL 
 
         SELECT visitor_team_long AS team, COUNT(*) AS total_ties
         FROM games.games 
-        WHERE tie = TRUE
+         WHERE sport ILIKE 'Hockey'
+    	AND season = '2021-2022'
+    	AND team_level = 'A'
+    	AND division = 'Peewee'
+        AND tie = TRUE
         GROUP BY visitor_team_long
     ) queryTable
     GROUP BY team
@@ -399,25 +415,41 @@ SELECT team_long, SUM(points) AS total_points
 FROM (
     SELECT winning_team_long AS team_long, SUM(winning_team_points) AS points
     FROM games.games
+       WHERE sport ILIKE 'Hockey'
+    	AND season = '2021-2022'
+    	AND team_level = 'A'
+    	AND division = 'Peewee'
     GROUP BY winning_team_long
 
     UNION ALL
     
     SELECT losing_team_long AS team_long, sum(losing_team_points) AS points
-    FROM games.games 
+    FROM games.games
+       WHERE sport ILIKE 'Hockey'
+    	AND season = '2021-2022'
+    	AND team_level = 'A'
+    	AND division = 'Peewee'
     GROUP BY losing_team_long
     
     UNION ALL
 
     SELECT home_team_long AS team_long, 1 AS points
     FROM games.games
-    WHERE tie = TRUE
+       WHERE sport ILIKE 'Hockey'
+    	AND season = '2021-2022'
+    	AND team_level = 'A'
+    	AND division = 'Peewee'
+    AND tie = TRUE
 
     UNION ALL
 
     SELECT visitor_team_long AS team_long, 1 AS points
     FROM games.games
-    WHERE tie = TRUE
+       WHERE sport ILIKE 'Hockey'
+    	AND season = '2021-2022'
+    	AND team_level = 'A'
+    	AND division = 'Peewee'
+    AND tie = TRUE
 ) subquery
 WHERE team_long IS NOT NULL
 GROUP BY team_long
@@ -453,6 +485,7 @@ ORDER BY games_played DESC
 ) games_played ON games_played.team = teams.team_name
 WHERE teams.team_name IS NOT NULL 
 ORDER BY total_points DESC;
+
 
 
 
@@ -594,7 +627,7 @@ SELECT * FROM games.games;
 
 // Winning teams per game through a specified date
 SELECT winning_team_long, winning_team_short, count(*) 
-FROM games.games 
+FROM games.games
 WHERE game_date <= '10-31-2021'
 AND team_level = 'A'
 AND division = 'Peewee'
@@ -620,10 +653,36 @@ AND division = 'Peewee'
 GROUP BY home_team_long, home_team_short, visitor_team_long, visitor_team_short, tie
 ORDER BY home_team_long;
 
+ SELECT winning_team_long, winning_team_short, count(*) 
+      FROM games.games
+      WHERE season = '2021-2022'
+      AND game_date <= '2021-10-31'
+      AND team_level = 'A'
+      AND division = 'Peewee'
+      GROUP BY winning_team_long, winning_team_short
+      ORDER BY winning_team_long;
+     
+      SELECT losing_team_long, losing_team_short, count(*) 
+      FROM games.games
+      WHERE season = '2021-2022'
+      AND game_date <= '2021-10-31'
+      AND team_level = 'A'
+      AND division = 'Peewee'
+      GROUP BY losing_team_long, losing_team_short
+      ORDER BY losing_team_long;
+
+ SELECT home_team_long, home_team_short, visitor_team_long, visitor_team_short, tie 
+      FROM games.games 
+      WHERE season = '2021-2022'
+      AND game_date <= '2021-10-31'
+      AND tie = TRUE 
+      AND team_level = 'A'
+      AND division = 'Peewee'
+      GROUP BY home_team_long, home_team_short, visitor_team_long, visitor_team_short, tie
+      ORDER BY home_team_long;
 
 
-
-
+  
 
 
    

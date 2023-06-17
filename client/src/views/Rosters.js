@@ -9,7 +9,7 @@ function Rosters({ currentSeason }) {
   const sportToQuery = window.location.pathname.split('/')[1];
 
   const defaultLevelToDisplay = 'A';
-  const defaultLeagueToDisplay = 'Peewee';
+  const defaultDivisionToDisplay = 'Peewee';
 
   let teamNameCapitalized = '';
 
@@ -35,7 +35,7 @@ function Rosters({ currentSeason }) {
     seasons: [],
     allTeams: [],
     levels: [],
-    leagues: [],
+    divisions: [],
     multipleTeamsWithSameName: [],
   });
 
@@ -62,7 +62,8 @@ function Rosters({ currentSeason }) {
       localStorage.getItem('season') || currentSeason[sportToQuery],
     selectedTeam: localStorage.getItem('team') || teamNameCapitalized, // Retrieve from local storage if page gets refreshed (so user stays on same page with same filters if page gets refreshed) otherwise take the team that was clicked on from teams page and render roster for that team
     selectedLevel: localStorage.getItem('level') || defaultLevelToDisplay,
-    selectedLeague: localStorage.getItem('league') || defaultLeagueToDisplay,
+    selectedDivision:
+      localStorage.getItem('division') || defaultDivisionToDisplay,
   });
 
   //?----------------------------------------------------------------- USE EFFECT HOOKS ------------------------------------------------------------------------
@@ -76,12 +77,12 @@ function Rosters({ currentSeason }) {
     const seasonToQuery =
       localStorage.getItem('season') || currentSeason[sportToQuery];
     const levelToQuery = localStorage.getItem('level') || defaultLevelToDisplay;
-    const leagueToQuery =
-      localStorage.getItem('league') || defaultLeagueToDisplay;
+    const divisionToQuery =
+      localStorage.getItem('division') || defaultDivisionToDisplay;
 
     async function fetchData() {
       const fetchRosterData = fetch(
-        `/api/${sportToQuery}/teams/${teamToSearch}/roster?season=${seasonToQuery}&level=${levelToQuery}&league=${leagueToQuery}`
+        `/api/${sportToQuery}/teams/${teamToSearch}/roster?season=${seasonToQuery}&level=${levelToQuery}&division=${divisionToQuery}`
       );
 
       const [rosterResponse, pageDataResponse] = await Promise.all([
@@ -94,7 +95,7 @@ function Rosters({ currentSeason }) {
         seasonToQuery,
         selections.selectedTeam,
         levelToQuery,
-        leagueToQuery
+        divisionToQuery
       );
 
       const teamColorsAndLogo = getTeamColorsAndLogo(selections.selectedTeam); // selections.selectedTeam because need to search by main team such as the Ducks and not Ducks(1) like the fetch query above is doing
@@ -115,13 +116,13 @@ function Rosters({ currentSeason }) {
     localStorage.setItem('team', selections.selectedTeam);
     localStorage.setItem('season', selections.selectedSeason);
     localStorage.setItem('level', selections.selectedLevel);
-    localStorage.setItem('league', selections.selectedLeague);
+    localStorage.setItem('division', selections.selectedDivision);
     localStorage.setItem('rosterData', JSON.stringify(rosterData));
   }, [
     selections.selectedTeam,
     selections.selectedSeason,
     selections.selectedLevel,
-    selections.selectedLeague,
+    selections.selectedDivision,
     rosterData,
   ]);
 
@@ -155,18 +156,22 @@ function Rosters({ currentSeason }) {
         fetch(`/api/${sportToQuery}/seasons`),
         fetch(`/api/${sportToQuery}/teams`),
         fetch(`/api/${sportToQuery}/levels`),
-        fetch(`/api/${sportToQuery}/leagues`),
+        fetch(`/api/${sportToQuery}/divisions`),
       ];
-      const [seasonsDropdown, teamsDropdown, levelsDropdown, leaguesDropdown] =
-        await Promise.all(
-          APICalls.map((call) => call.then((response) => response.json()))
-        );
+      const [
+        seasonsDropdown,
+        teamsDropdown,
+        levelsDropdown,
+        divisionsDropdown,
+      ] = await Promise.all(
+        APICalls.map((call) => call.then((response) => response.json()))
+      );
 
       pageData.current = {
         seasons: seasonsDropdown,
         allTeams: teamsDropdown,
         levels: levelsDropdown,
-        leagues: leaguesDropdown,
+        divisions: divisionsDropdown,
         teamNumber: localStorage.getItem('teamNumber'),
       };
     } catch (error) {
@@ -179,11 +184,11 @@ function Rosters({ currentSeason }) {
     season,
     team,
     level,
-    league
+    division
   ) => {
     pageData.current.multipleTeamsWithSameName = [];
     const response = await fetch(
-      `/api/${sportToQuery}/teams/${team}/multiple-team-names?level=${level}&season=${season}&league=${league}`
+      `/api/${sportToQuery}/teams/${team}/multiple-team-names?level=${level}&season=${season}&division=${division}`
     );
 
     const multipleTeamData = await response.json();
@@ -202,12 +207,12 @@ function Rosters({ currentSeason }) {
     localStorage.setItem('teamNumber', Number(teamNumber));
 
     localStorage.setItem('actualTeam', team);
-    const { selectedSeason, selectedLevel, selectedLeague } = selections; // Destructure of selections UseState to use to fetch data below
+    const { selectedSeason, selectedLevel, selectedDivision } = selections; // Destructure of selections UseState to use to fetch data below
     const roster = await fetchDataDueToSelectionChange(
       selectedSeason,
       team,
       selectedLevel,
-      selectedLeague,
+      selectedDivision,
       teamNumber
     );
     if (roster.length) {
@@ -241,11 +246,11 @@ function Rosters({ currentSeason }) {
     season,
     team,
     level,
-    league,
+    division,
     teamNumber
   ) => {
     const response = await fetch(
-      `/api/${sportToQuery}/teams/${team}/roster?season=${season}&level=${level}&teamNumber=${teamNumber}&league=${league}`
+      `/api/${sportToQuery}/teams/${team}/roster?season=${season}&level=${level}&teamNumber=${teamNumber}&division=${division}`
     );
     const roster = await response.json();
     return roster;
@@ -284,12 +289,12 @@ function Rosters({ currentSeason }) {
       await setSelections({ ...selections, selectedSeason: season }); // Change state to selected season
 
       // Fetch new roster data due to selection change
-      const { selectedTeam, selectedLevel, selectedLeague } = selections; // destructuring of selections useState to pass into fetchDataDueToSelectionChange function
+      const { selectedTeam, selectedLevel, selectedDivision } = selections; // destructuring of selections useState to pass into fetchDataDueToSelectionChange function
       const roster = await fetchDataDueToSelectionChange(
         season,
         selectedTeam,
         selectedLevel,
-        selectedLeague,
+        selectedDivision,
         1
       );
 
@@ -326,12 +331,12 @@ function Rosters({ currentSeason }) {
       modifyTeamNameToPlaceInURL(team);
       const teamColorsAndLogo = getTeamColorsAndLogo(team);
 
-      const { selectedSeason, selectedLevel, selectedLeague } = selections; // destructuring of selections useState to pass into fetchDataDueToSelectionChange function
+      const { selectedSeason, selectedLevel, selectedDivision } = selections; // destructuring of selections useState to pass into fetchDataDueToSelectionChange function
       const roster = await fetchDataDueToSelectionChange(
         selectedSeason,
         team,
         selectedLevel,
-        selectedLeague,
+        selectedDivision,
         1
       );
 
@@ -339,7 +344,7 @@ function Rosters({ currentSeason }) {
         selectedSeason,
         team,
         selectedLevel,
-        selectedLeague
+        selectedDivision
       );
 
       if (roster.length) {
@@ -372,12 +377,12 @@ function Rosters({ currentSeason }) {
       const level = event.target.value;
       await setSelections({ ...selections, selectedLevel: level });
 
-      const { selectedSeason, selectedTeam, selectedLeague } = selections; // destructuring of selections useState to pass into fetchDataDueToSelectionChange function
+      const { selectedSeason, selectedTeam, selectedDivision } = selections; // destructuring of selections useState to pass into fetchDataDueToSelectionChange function
       const roster = await fetchDataDueToSelectionChange(
         selectedSeason,
         selectedTeam,
         level,
-        selectedLeague,
+        selectedDivision,
         1
       );
 
@@ -385,7 +390,7 @@ function Rosters({ currentSeason }) {
         selectedSeason,
         selectedTeam,
         level,
-        selectedLeague
+        selectedDivision
       );
 
       if (roster.length) {
@@ -408,18 +413,18 @@ function Rosters({ currentSeason }) {
     } catch (error) {}
   };
 
-  const changeSelectedLeague = async (event) => {
+  const changeSelectedDivision = async (event) => {
     try {
       clearLocalStorageForMultipleTeamData();
-      const league = event.target.value;
-      await setSelections({ ...selections, selectedLeague: league });
+      const division = event.target.value;
+      await setSelections({ ...selections, selectedDivision: division });
 
       const { selectedSeason, selectedTeam, selectedLevel } = selections; // destructuring of selections useState to pass into fetchDataDueToSelectionChange function
       const roster = await fetchDataDueToSelectionChange(
         selectedSeason,
         selectedTeam,
         selectedLevel,
-        league,
+        division,
         1
       );
 
@@ -427,7 +432,7 @@ function Rosters({ currentSeason }) {
         selectedSeason,
         selectedTeam,
         selectedLevel,
-        league
+        division
       );
 
       if (roster.length) {
@@ -599,18 +604,18 @@ function Rosters({ currentSeason }) {
             </select>
           </div>
 
-          <div className="filter-dropdowns" id="league-dropdown-container">
-            <label htmlFor="league-dropdown">League</label>
+          <div className="filter-dropdowns" id="division-dropdown-container">
+            <label htmlFor="division-dropdown">Division</label>
             <select
-              name="league-dropdown"
-              id="league-dropdown"
-              value={selections.selectedLeague}
-              onChange={changeSelectedLeague}
+              name="division-dropdown"
+              id="division-dropdown"
+              value={selections.selectedDivision}
+              onChange={changeSelectedDivision}
             >
-              {pageData.current.leagues.map((league) => {
+              {pageData.current.divisions.map((division) => {
                 return (
-                  <option value={league.league_level}>
-                    {league.league_age}
+                  <option value={division.division_level}>
+                    {division.division_age}
                   </option>
                 );
               })}

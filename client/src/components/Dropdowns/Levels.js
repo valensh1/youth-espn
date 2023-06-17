@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-function Levels({ dropdownSelection }) {
+function Levels({ dropdownSelection, fetchData }) {
   const defaultLevel = 'A';
   //?----------------------------------------------------------------- UseState Hooks ------------------------------------------------------------------------
   const [levelDropdown, setLevelDropdown] = useState([]);
@@ -22,6 +22,7 @@ function Levels({ dropdownSelection }) {
   const changeLevel = (event) => {
     setSelectedLevel(event.target.value);
     dropdownSelection('level', event.target.value); // Callback function to pass state back to parent
+    fetchData(undefined, event.target.value, undefined);
   };
 
   //?----------------------------------------------------------------- JSX ------------------------------------------------------------------------

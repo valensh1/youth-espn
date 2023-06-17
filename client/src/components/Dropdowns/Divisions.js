@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 
-function Divisions({ dropdownSelection }) {
+function Divisions({ dropdownSelection, fetchData }) {
   const defaultDivision = '12U - Peewee';
   //?----------------------------------------------------------------- UseState Hooks ------------------------------------------------------------------------
-  const [leagueDropdown, setDivisionDropdown] = useState([]);
+  const [divisionDropdown, setDivisionDropdown] = useState([]);
   const [selectedDivision, setSelectedDivision] = useState(defaultDivision);
 
   //?----------------------------------------------------------------- UseEffect Hooks ------------------------------------------------------------------------
-  // Fetch leagues data on initial render of component
+  // Fetch divisions data on initial render of component
   useEffect(() => {
     const fetchDropdownData = async () => {
-      const response = await fetch(`/api/hockey/leagues`);
+      const response = await fetch(`/api/hockey/divisions`);
       const data = await response.json();
       console.log(await data);
       setDivisionDropdown(data);
@@ -22,6 +22,7 @@ function Divisions({ dropdownSelection }) {
   const changeDivision = (event) => {
     setSelectedDivision(event.target.value);
     dropdownSelection('division', event.target.value); // Callback function to pass state back to parent
+    fetchData(undefined, undefined, event.target.value);
   };
 
   //?----------------------------------------------------------------- JSX ------------------------------------------------------------------------
@@ -35,10 +36,10 @@ function Divisions({ dropdownSelection }) {
         value={selectedDivision}
         onChange={changeDivision}
       >
-        {leagueDropdown?.map((el) => {
+        {divisionDropdown?.map((el) => {
           return (
-            <option key={el.league_level} value={el.league_age}>
-              {el.league_age}
+            <option key={el.division_level} value={el.division_age}>
+              {el.division_age}
             </option>
           );
         })}
