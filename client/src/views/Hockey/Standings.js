@@ -45,7 +45,6 @@ function Standings() {
     season: defaultSeason,
   });
 
-  const [standings, setStandings] = useState([]);
   const [teamsData, setTeamsData] = useState([]);
   const [combinedData, setCombinedData] = useState([]);
 
@@ -64,7 +63,9 @@ function Standings() {
   };
 
   const teamNameToRender = (teamLong, teamShort) => {
-    return teamLong.includes('(') ? teamLong : teamShort;
+    if (teamLong || teamShort) {
+      return teamLong.includes('(') ? teamLong : teamShort;
+    }
   };
 
   // Function to remove the age group from division in order to query the database
@@ -82,6 +83,28 @@ function Standings() {
     return pointsPercentage;
   };
 
+  // const fetchData = async (
+  //   season = selections.season,
+  //   level = selections.level,
+  //   division = selections.division
+  // ) => {
+  //   console.log(season, level, division);
+  //   const team_division = divisionToQuery(division);
+  //   const [standingsData, teams] = await Promise.all([
+  //     fetch(
+  //       `/api/${sportToQuery}/standings?season=${season}&level=${level}&division=${team_division}`
+  //     ),
+  //     fetch(`/api/${sportToQuery}/teams?level=${level}`),
+  //   ]);
+  //   const standings = await standingsData.json();
+  //   const teamsData = await teams.json();
+  //   console.log(standings);
+  //   console.log(teamsData);
+  //   setStandings(standings);
+  //   setTeamsData(teamsData);
+  //   getCombinedDataToRender(standings, teamsData);
+  // };
+
   const fetchData = async (
     season = selections.season,
     level = selections.level,
@@ -89,39 +112,55 @@ function Standings() {
   ) => {
     console.log(season, level, division);
     const team_division = divisionToQuery(division);
-    const [standingsData, teams] = await Promise.all([
+    const [winsLossRecord, GF_GA_DIFF, teams] = await Promise.all([
       fetch(
         `/api/${sportToQuery}/standings?season=${season}&level=${level}&division=${team_division}`
       ),
+      fetch(
+        `/api/${sportToQuery}/GF_GA_DIFF?season=${season}&level=${level}&division=${team_division}`
+      ),
       fetch(`/api/${sportToQuery}/teams?level=${level}`),
     ]);
-    const standings = await standingsData.json();
+    const winsLossesPoints = await winsLossRecord.json();
     const teamsData = await teams.json();
-    console.log(standings);
+    const GF_GA = await GF_GA_DIFF.json();
+    console.log(winsLossesPoints);
+    console.log(GF_GA);
     console.log(teamsData);
-    setStandings(standings);
     setTeamsData(teamsData);
-    getCombinedDataToRender(standings, teamsData);
+    const combinedStandingsData = { winsLossesPoints, GF_GA };
+    getCombinedDataToRender(combinedStandingsData, teamsData);
   };
 
-  const getCombinedDataToRender = (standings, teamData) => {
-    console.log(teamData);
-    let finalData = standings.map((standingsData) => {
-      const teams = teamData.find((team) => {
+  const getCombinedDataToRender = (combinedData, teamsData) => {
+    console.log(teamsData);
+    console.log(combinedData);
+    let finalData = combinedData.winsLossesPoints.map((winsLossPoints) => {
+      const teams = teamsData.find((team) => {
         return (
-          team.team_name_full === standingsData.team_name_long ||
-          team.team_name_short === standingsData.team_name_short
+          team.team_name_full === winsLossPoints.team_name_long ||
+          team.team_name_short === winsLossPoints.team_name_short
         );
       });
+
+      const GF_GA_DIFF = combinedData.GF_GA.find((stat) => {
+        return (
+          stat.team_long === winsLossPoints.team_name_long ||
+          stat.team_short === winsLossPoints.team_name_short
+        );
+      });
+
       return {
         ...teams,
-        standingsData,
+        winsLossPoints,
+        GF_GA_DIFF,
         displayedTeamName: teamNameToRender(
-          standingsData.team_name_long,
-          standingsData.team_name_short
+          winsLossPoints.team_name_long,
+          winsLossPoints.team_name_short
         ),
       };
     });
+    console.log(finalData);
     setCombinedData(finalData);
   };
 
@@ -165,16 +204,16 @@ function Standings() {
                       </Link>
                     </td>
 
-                    <td>{team.standingsData.games_played}</td>
-                    <td>{team.standingsData.total_wins}</td>
-                    <td>{team.standingsData.total_losses}</td>
+                    <td>{team.winsLossPoints.games_played}</td>
+                    <td>{team.winsLossPoints.total_wins}</td>
+                    <td>{team.winsLossPoints.total_losses}</td>
                     <td></td>
-                    <td>{team.standingsData.total_ties}</td>
-                    <td id="stat-points">{team.standingsData.total_points}</td>
+                    <td>{team.winsLossPoints.total_ties}</td>
+                    <td id="stat-points">{team.winsLossPoints.total_points}</td>
                     <td>
                       {pointsPercentageCalc(
-                        team.standingsData.games_played,
-                        team.standingsData.total_points
+                        team.winsLossPoints.games_played,
+                        team.winsLossPoints.total_points
                       )}
                     </td>
                     <td></td>

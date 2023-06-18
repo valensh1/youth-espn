@@ -383,4 +383,36 @@ module.exports = {
       logger.log(error);
     }
   },
+
+  getGoalsData_GA_GF_DIFF: async (sport, season, level, division) => {
+    try {
+      const response = await pool.query(`
+      SELECT team_long, team_short, sum(GF) AS "GF", sum(GA) AS "GA", sum(GF - GA) AS "DIFF"
+      FROM (
+      SELECT home_team_long AS team_long, home_team_short AS team_short, sum(home_team_score ) AS GF, sum(visitor_team_score) AS GA, sum(home_team_score - visitor_team_score)
+      FROM games.games
+      WHERE sport ILIKE '${sport}'
+      AND team_level = '${level}' 
+      AND division = '${division}' 
+      AND season = '${season}'
+      GROUP BY home_team_long, home_team_short
+      
+      UNION ALL 
+      
+      SELECT visitor_team_long AS team_long, visitor_team_short AS team_short, sum(visitor_team_score) AS GF, sum(home_team_score) AS GA, sum(visitor_team_score - home_team_score)
+      FROM games.games
+      WHERE sport ILIKE '${sport}'
+      AND team_level = '${level}' 
+      AND division = '${division}' 
+      AND season = '${season}'
+      GROUP BY visitor_team_long, visitor_team_short
+      
+      ) AS gf_ga_table
+      GROUP BY team_long, team_short
+      ORDER BY "DIFF" DESC ;`);
+      return response.rows;
+    } catch (error) {
+      logger.log(error);
+    }
+  },
 };

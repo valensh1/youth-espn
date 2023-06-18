@@ -119,3 +119,15 @@ app.get('/api/:sport/standings', async (req, res) => {
   );
   return res.json(standings);
 });
+
+app.get('/api/:sport/GF_GA_DIFF', async (req, res) => {
+  const sport = req.params.sport;
+  const { season, level, division } = req.query;
+  const goalsData = await sqlQueries.getGoalsData_GA_GF_DIFF(
+    sport,
+    season,
+    level,
+    division
+  );
+  return res.json(goalsData);
+});
