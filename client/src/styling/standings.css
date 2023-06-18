@@ -12,6 +12,7 @@
   margin-left: 18.5%;
   background-color: white;
   border-radius: 25px;
+  box-shadow: 1px 3px 3px 3px rgba(0, 0, 0, 0.4);
 }
 
 #standings-page-container #dropdowns-container {

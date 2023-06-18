@@ -23,6 +23,7 @@ function Standings() {
     'W',
     'L',
     'OTL',
+    'TIES',
     'PTS',
     'P%',
     'RW',
@@ -72,6 +73,13 @@ function Standings() {
       ? division.split('-')[1].trim()
       : division;
     return divisionNameOnly;
+  };
+
+  const pointsPercentageCalc = (gamesPlayed, totalPoints) => {
+    const maxPointsPerGamesPlayed = gamesPlayed * 2;
+    let pointsPercentage = (totalPoints / maxPointsPerGamesPlayed).toFixed(3);
+    pointsPercentage = pointsPercentage.replace(/^0+/, '');
+    return pointsPercentage;
   };
 
   const fetchData = async (
@@ -161,8 +169,14 @@ function Standings() {
                     <td>{team.standingsData.total_wins}</td>
                     <td>{team.standingsData.total_losses}</td>
                     <td></td>
+                    <td>{team.standingsData.total_ties}</td>
                     <td id="stat-points">{team.standingsData.total_points}</td>
-                    <td></td>
+                    <td>
+                      {pointsPercentageCalc(
+                        team.standingsData.games_played,
+                        team.standingsData.total_points
+                      )}
+                    </td>
                     <td></td>
                     <td></td>
                     <td></td>
