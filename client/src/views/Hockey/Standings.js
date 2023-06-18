@@ -135,6 +135,7 @@ function Standings() {
   const getCombinedDataToRender = (combinedData, teamsData) => {
     console.log(teamsData);
     console.log(combinedData);
+
     let finalData = combinedData.winsLossesPoints.map((winsLossPoints) => {
       const teams = teamsData.find((team) => {
         return (
@@ -190,45 +191,53 @@ function Standings() {
             </thead>
 
             <tbody>
-              {combinedData.map((team) => {
-                return (
-                  <tr key={`${team.displayedTeamName}-${team.id}`}>
-                    <td id="standings-team-logo">
-                      <Link to={''}>
-                        <img
-                          src={team.logo_image}
-                          alt=""
-                          className="team-logo standings-team-logo"
-                        />
-                        <p>{team.displayedTeamName}</p>
-                      </Link>
-                    </td>
+              {combinedData.map(
+                ({
+                  displayedTeamName,
+                  id,
+                  logo_image,
+                  winsLossPoints,
+                  GF_GA_DIFF,
+                }) => {
+                  return (
+                    <tr key={`${displayedTeamName}-${id}`}>
+                      <td id="standings-team-logo">
+                        <Link to={''}>
+                          <img
+                            src={logo_image}
+                            alt=""
+                            className="team-logo standings-team-logo"
+                          />
+                          <p>{displayedTeamName}</p>
+                        </Link>
+                      </td>
 
-                    <td>{team.winsLossPoints.games_played}</td>
-                    <td>{team.winsLossPoints.total_wins}</td>
-                    <td>{team.winsLossPoints.total_losses}</td>
-                    <td></td>
-                    <td>{team.winsLossPoints.total_ties}</td>
-                    <td id="stat-points">{team.winsLossPoints.total_points}</td>
-                    <td>
-                      {pointsPercentageCalc(
-                        team.winsLossPoints.games_played,
-                        team.winsLossPoints.total_points
-                      )}
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                );
-              })}
+                      <td>{winsLossPoints.games_played}</td>
+                      <td>{winsLossPoints.total_wins}</td>
+                      <td>{winsLossPoints.total_losses}</td>
+                      <td></td>
+                      <td>{winsLossPoints.total_ties}</td>
+                      <td id="stat-points">{winsLossPoints.total_points}</td>
+                      <td>
+                        {pointsPercentageCalc(
+                          winsLossPoints.games_played,
+                          winsLossPoints.total_points
+                        )}
+                      </td>
+                      <td></td>
+                      <td></td>
+                      <td>{GF_GA_DIFF.GF}</td>
+                      <td>{GF_GA_DIFF.GA}</td>
+                      <td>{GF_GA_DIFF.DIFF}</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                  );
+                }
+              )}
             </tbody>
           </table>
         </div>
