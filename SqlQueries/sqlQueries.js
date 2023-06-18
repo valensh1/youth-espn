@@ -415,4 +415,20 @@ module.exports = {
       logger.log(error);
     }
   },
+
+  getHomeWinsLossRecords: async (sport, season, level, division) => {
+    try {
+      const response = await pool.query(`
+      SELECT id AS game_id, home_team_short, home_team_long ,  winning_team_short, winning_team_long, tie
+      FROM games.games
+      WHERE sport ILIKE '${sport}'
+      AND team_level = '${level}' 
+      AND division = '${division}' 
+      AND season = '${season}'
+      ORDER BY home_team_short, home_team_long ;`);
+      return response.rows;
+    } catch (error) {
+      logger.log(error);
+    }
+  },
 };

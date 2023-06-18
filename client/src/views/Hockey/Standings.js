@@ -112,23 +112,33 @@ function Standings() {
   ) => {
     console.log(season, level, division);
     const team_division = divisionToQuery(division);
-    const [winsLossRecord, GF_GA_DIFF, teams] = await Promise.all([
-      fetch(
-        `/api/${sportToQuery}/standings?season=${season}&level=${level}&division=${team_division}`
-      ),
-      fetch(
-        `/api/${sportToQuery}/GF_GA_DIFF?season=${season}&level=${level}&division=${team_division}`
-      ),
-      fetch(`/api/${sportToQuery}/teams?level=${level}`),
-    ]);
+    const [winsLossRecord, GF_GA_DIFF, homeWinLossRecord, teams] =
+      await Promise.all([
+        fetch(
+          `/api/${sportToQuery}/standings?season=${season}&level=${level}&division=${team_division}`
+        ),
+        fetch(
+          `/api/${sportToQuery}/teams/GF_GA_DIFF?season=${season}&level=${level}&division=${team_division}`
+        ),
+        fetch(
+          `/api/${sportToQuery}/teams/home-records?season=${season}&level=${level}&division=${team_division}`
+        ),
+        fetch(`/api/${sportToQuery}/teams?level=${level}`),
+      ]);
     const winsLossesPoints = await winsLossRecord.json();
     const teamsData = await teams.json();
     const GF_GA = await GF_GA_DIFF.json();
+    const homeWinsLossRecord = await homeWinLossRecord.json();
     console.log(winsLossesPoints);
     console.log(GF_GA);
+    console.log(homeWinsLossRecord);
     console.log(teamsData);
     setTeamsData(teamsData);
-    const combinedStandingsData = { winsLossesPoints, GF_GA };
+    const combinedStandingsData = {
+      winsLossesPoints,
+      GF_GA,
+      homeWinsLossRecord,
+    };
     getCombinedDataToRender(combinedStandingsData, teamsData);
   };
 
@@ -151,10 +161,20 @@ function Standings() {
         );
       });
 
+      const homeWinsLossRecords = combinedData.homeWinsLossRecord.find(
+        (stat) => {
+          return (
+            stat.home_team_long === winsLossPoints.team_name_long ||
+            stat.home_team_short === winsLossPoints.team_name_short
+          );
+        }
+      );
+
       return {
         ...teams,
         winsLossPoints,
         GF_GA_DIFF,
+        homeWinsLossRecords,
         displayedTeamName: teamNameToRender(
           winsLossPoints.team_name_long,
           winsLossPoints.team_name_short

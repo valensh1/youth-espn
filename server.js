@@ -120,7 +120,7 @@ app.get('/api/:sport/standings', async (req, res) => {
   return res.json(standings);
 });
 
-app.get('/api/:sport/GF_GA_DIFF', async (req, res) => {
+app.get('/api/:sport/teams/GF_GA_DIFF', async (req, res) => {
   const sport = req.params.sport;
   const { season, level, division } = req.query;
   const goalsData = await sqlQueries.getGoalsData_GA_GF_DIFF(
@@ -130,4 +130,18 @@ app.get('/api/:sport/GF_GA_DIFF', async (req, res) => {
     division
   );
   return res.json(goalsData);
+});
+
+app.get('/api/:sport/teams/home-records', async (req, res) => {
+  const sport = req.params.sport;
+  const { season, level, division } = req.query;
+  logger.log(sport);
+  logger.log(season, level, division);
+  const data = await sqlQueries.getHomeWinsLossRecords(
+    sport,
+    season,
+    level,
+    division
+  );
+  return res.json(data);
 });
