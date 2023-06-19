@@ -145,3 +145,17 @@ app.get('/api/:sport/teams/home-records', async (req, res) => {
   );
   return res.json(data);
 });
+
+app.get('/api/:sport/teams/away-records', async (req, res) => {
+  const sport = req.params.sport;
+  const { season, level, division } = req.query;
+  logger.log(sport);
+  logger.log(season, level, division);
+  const data = await sqlQueries.getAwayWinsLossRecords(
+    sport,
+    season,
+    level,
+    division
+  );
+  return res.json(data);
+});

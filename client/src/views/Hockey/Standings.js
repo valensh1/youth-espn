@@ -83,27 +83,13 @@ function Standings() {
     return pointsPercentage;
   };
 
-  // const fetchData = async (
-  //   season = selections.season,
-  //   level = selections.level,
-  //   division = selections.division
-  // ) => {
-  //   console.log(season, level, division);
-  //   const team_division = divisionToQuery(division);
-  //   const [standingsData, teams] = await Promise.all([
-  //     fetch(
-  //       `/api/${sportToQuery}/standings?season=${season}&level=${level}&division=${team_division}`
-  //     ),
-  //     fetch(`/api/${sportToQuery}/teams?level=${level}`),
-  //   ]);
-  //   const standings = await standingsData.json();
-  //   const teamsData = await teams.json();
-  //   console.log(standings);
-  //   console.log(teamsData);
-  //   setStandings(standings);
-  //   setTeamsData(teamsData);
-  //   getCombinedDataToRender(standings, teamsData);
-  // };
+  // Function used to pass game object in and determine the wins, losses or ties for a team
+  const calcWinsLossesTies = ({ wins, losses, ties }) => {
+    const won = wins.length;
+    const loss = losses.length;
+    const tie = ties.length;
+    return `${won} - ${loss} - ${tie}`;
+  };
 
   const fetchData = async (
     season = selections.season,
@@ -112,32 +98,43 @@ function Standings() {
   ) => {
     console.log(season, level, division);
     const team_division = divisionToQuery(division);
-    const [winsLossRecord, GF_GA_DIFF, homeWinLossRecord, teams] =
-      await Promise.all([
-        fetch(
-          `/api/${sportToQuery}/standings?season=${season}&level=${level}&division=${team_division}`
-        ),
-        fetch(
-          `/api/${sportToQuery}/teams/GF_GA_DIFF?season=${season}&level=${level}&division=${team_division}`
-        ),
-        fetch(
-          `/api/${sportToQuery}/teams/home-records?season=${season}&level=${level}&division=${team_division}`
-        ),
-        fetch(`/api/${sportToQuery}/teams?level=${level}`),
-      ]);
+    const [
+      winsLossRecord,
+      GF_GA_DIFF,
+      homeWinLossRecord,
+      awayWinLossRecord,
+      teams,
+    ] = await Promise.all([
+      fetch(
+        `/api/${sportToQuery}/standings?season=${season}&level=${level}&division=${team_division}`
+      ),
+      fetch(
+        `/api/${sportToQuery}/teams/GF_GA_DIFF?season=${season}&level=${level}&division=${team_division}`
+      ),
+      fetch(
+        `/api/${sportToQuery}/teams/home-records?season=${season}&level=${level}&division=${team_division}`
+      ),
+      fetch(
+        `/api/${sportToQuery}/teams/away-records?season=${season}&level=${level}&division=${team_division}`
+      ),
+      fetch(`/api/${sportToQuery}/teams?level=${level}`),
+    ]);
     const winsLossesPoints = await winsLossRecord.json();
     const teamsData = await teams.json();
     const GF_GA = await GF_GA_DIFF.json();
     const homeWinsLossRecord = await homeWinLossRecord.json();
+    const awayWinsLossRecord = await awayWinLossRecord.json();
     console.log(winsLossesPoints);
     console.log(GF_GA);
     console.log(homeWinsLossRecord);
+    console.log(awayWinsLossRecord);
     console.log(teamsData);
     setTeamsData(teamsData);
     const combinedStandingsData = {
       winsLossesPoints,
       GF_GA,
       homeWinsLossRecord,
+      awayWinsLossRecord,
     };
     getCombinedDataToRender(combinedStandingsData, teamsData);
   };
@@ -161,20 +158,64 @@ function Standings() {
         );
       });
 
-      const homeWinsLossRecords = combinedData.homeWinsLossRecord.find(
-        (stat) => {
-          return (
-            stat.home_team_long === winsLossPoints.team_name_long ||
-            stat.home_team_short === winsLossPoints.team_name_short
-          );
+      const homeWinsLossRecords = {
+        wins: [],
+        losses: [],
+        ties: [],
+      };
+
+      combinedData.homeWinsLossRecord.map((stat) => {
+        if (
+          stat.home_team_long === winsLossPoints.team_name_long &&
+          stat.winning_team_long === stat.home_team_long
+        ) {
+          homeWinsLossRecords.wins.push(stat);
+        } else if (
+          stat.home_team_long === winsLossPoints.team_name_long &&
+          stat.winning_team_long !== stat.home_team_long &&
+          stat.tie === false
+        ) {
+          homeWinsLossRecords.losses.push(stat);
+        } else if (
+          stat.home_team_long === winsLossPoints.team_name_long &&
+          stat.tie === true
+        ) {
+          homeWinsLossRecords.ties.push(stat);
         }
-      );
+      });
+
+      const awayWinsLossRecords = {
+        wins: [],
+        losses: [],
+        ties: [],
+      };
+
+      combinedData.awayWinsLossRecord.map((stat) => {
+        if (
+          stat.visitor_team_long === winsLossPoints.team_name_long &&
+          stat.winning_team_long === stat.visitor_team_long
+        ) {
+          awayWinsLossRecords.wins.push(stat);
+        } else if (
+          stat.visitor_team_long === winsLossPoints.team_name_long &&
+          stat.winning_team_long !== stat.visitor_team_long &&
+          stat.tie === false
+        ) {
+          awayWinsLossRecords.losses.push(stat);
+        } else if (
+          stat.visitor_team_long === winsLossPoints.team_name_long &&
+          stat.tie === true
+        ) {
+          awayWinsLossRecords.ties.push(stat);
+        }
+      });
 
       return {
         ...teams,
         winsLossPoints,
         GF_GA_DIFF,
         homeWinsLossRecords,
+        awayWinsLossRecords,
         displayedTeamName: teamNameToRender(
           winsLossPoints.team_name_long,
           winsLossPoints.team_name_short
@@ -218,6 +259,8 @@ function Standings() {
                   logo_image,
                   winsLossPoints,
                   GF_GA_DIFF,
+                  homeWinsLossRecords,
+                  awayWinsLossRecords,
                 }) => {
                   return (
                     <tr key={`${displayedTeamName}-${id}`}>
@@ -249,8 +292,8 @@ function Standings() {
                       <td>{GF_GA_DIFF.GF}</td>
                       <td>{GF_GA_DIFF.GA}</td>
                       <td>{GF_GA_DIFF.DIFF}</td>
-                      <td></td>
-                      <td></td>
+                      <td>{calcWinsLossesTies(homeWinsLossRecords)}</td>
+                      <td>{calcWinsLossesTies(awayWinsLossRecords)}</td>
                       <td></td>
                       <td></td>
                       <td></td>

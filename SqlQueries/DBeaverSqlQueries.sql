@@ -927,10 +927,35 @@ ORDER BY home_team_long;
       ORDER BY home_team_long;
 
 
-  
+  SELECT team_long, team_short, sum(GF) AS "GF", sum(GA) AS "GA", sum(GF - GA) AS "DIFF"
+FROM (
+SELECT home_team_long AS team_long, home_team_short AS team_short, sum(home_team_score ) AS GF, sum(visitor_team_score) AS GA, sum(home_team_score - visitor_team_score)
+FROM games.games
+WHERE sport ILIKE 'Hockey' AND team_level = 'A' AND division = 'Peewee' AND season = '2021-2022'
+GROUP BY home_team_long, home_team_short
 
+UNION ALL 
 
+SELECT visitor_team_long AS team_long, visitor_team_short AS team_short, sum(visitor_team_score) AS GF, sum(home_team_score) AS GA, sum(visitor_team_score - home_team_score)
+FROM games.games
+WHERE sport ILIKE 'Hockey'
+AND team_level = 'A' AND division = 'Peewee' AND season = '2021-2022'
+GROUP BY visitor_team_long, visitor_team_short
 
+) AS gf_ga_table
+GROUP BY team_long, team_short
+ORDER BY "DIFF" DESC ;
+
+SELECT * 
+FROM games.games ;
+
+SELECT id, home_team_short, home_team_long ,  winning_team_short, winning_team_long, tie
+FROM games.games
+WHERE sport ILIKE 'Hockey'
+AND season = '2021-2022'
+AND team_level = 'A'
+AND division = 'Peewee'
+ORDER BY home_team_short, home_team_long ;
 
 
  
