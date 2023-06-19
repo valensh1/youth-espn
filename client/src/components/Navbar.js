@@ -22,6 +22,7 @@ function Navbar() {
     localStorage.removeItem('season');
     localStorage.removeItem('level');
     localStorage.removeItem('division');
+    localStorage.removeItem('date');
     localStorage.removeItem('rosterData');
   };
 

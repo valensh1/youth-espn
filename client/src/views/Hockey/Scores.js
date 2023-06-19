@@ -10,7 +10,7 @@ function Scores() {
   const currentPath = location.pathname;
   const sportToQuery = currentPath.split('/')[1];
 
-  const defaultLevel = 'A';
+  const defaultLevel = localStorage.getItem('level') || 'A';
   const defaultDivision = '12U - Peewee';
   const todaysDate = GlobalFunctions.dateFormats(undefined, 0); // Passing in a blank first argument so function defaults to default argument which is the current date
 
@@ -78,6 +78,7 @@ function Scores() {
         event.target.value,
         selections.division
       );
+      localStorage.setItem('level', event.target.value);
     } catch (error) {
       console.error(error);
     }
@@ -96,6 +97,7 @@ function Scores() {
         selections.level,
         event.target.value
       );
+      localStorage.setItem('division', divisionNameOnly(event.target.value));
     } catch (error) {
       console.error(error);
     }
@@ -119,6 +121,7 @@ function Scores() {
         selections.level,
         selections.division
       );
+      localStorage.setItem('date', event.target.value);
     } catch (error) {
       console.error(error);
     }

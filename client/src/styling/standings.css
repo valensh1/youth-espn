@@ -22,6 +22,10 @@
   margin-right: 25%;
 }
 
+.single-dropdown-container label {
+  text-align: center;
+}
+
 .page-title {
   position: relative;
   left: 45%;
@@ -46,6 +50,7 @@
   text-decoration: none;
   display: flex;
   align-items: center;
+  margin-left: 0.25vw;
 }
 
 #standings-team-logo img {
