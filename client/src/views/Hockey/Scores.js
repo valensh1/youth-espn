@@ -9,15 +9,21 @@ function Scores() {
   const location = useLocation();
   const currentPath = location.pathname;
   const sportToQuery = currentPath.split('/')[1];
-
-  const defaultLevel = localStorage.getItem('level') || 'A';
-  const defaultDivision = '12U - Peewee';
-  const todaysDate = GlobalFunctions.dateFormats(undefined, 0); // Passing in a blank first argument so function defaults to default argument which is the current date
+  const localStorageDate = localStorage.getItem('date');
+  const localStorageLevel = localStorage.getItem('level');
+  const localStorageDivision = localStorage.getItem('division');
+  const localStorageDivisionDropdown =
+    localStorage.getItem('division-dropdown');
+  const defaultLevel = localStorageLevel || 'A';
+  const defaultDivision = localStorageDivision || '12U - Peewee';
+  const todaysDate = localStorageDate
+    ? GlobalFunctions.dateFormats(localStorageDate, 1)
+    : GlobalFunctions.dateFormats(undefined, 0); // Passing in a blank first argument so function defaults to default argument which is the current date
 
   //?----------------------------------------------------------------- USE STATE HOOKS ------------------------------------------------------------------------
   const [dateOfGames, setDateOfGames] = useState({
     dateForHeader: todaysDate.dateForHeader,
-    gameDate: todaysDate.gameDate,
+    gameDate: localStorageDate || todaysDate.gameDate,
   });
   const [dropdowns, setDropdowns] = useState({
     levels: [],
@@ -44,7 +50,10 @@ function Scores() {
       const divisions = await divisionsResponse.json();
       console.log(levels);
       console.log(divisions);
-      setDropdowns({ levels: levels, divisions: divisions });
+      setDropdowns({
+        levels: levels,
+        divisions: divisions,
+      });
     };
     fetchDropdownData();
     navigate(
@@ -52,14 +61,35 @@ function Scores() {
         selections.level
       }&division=${divisionNameOnly(defaultDivision)}`
     );
-    fetchGameData(todaysDate, defaultLevel, defaultDivision);
+
+    console.log(
+      `Fetching of game date on original load of page -> ${
+        localStorageDate || todaysDate
+      }`
+    );
+    console.log(
+      `Fetching of game date on original load of page -> ${
+        localStorageLevel || defaultLevel
+      }`
+    );
+    console.log(
+      `Fetching of game date on original load of page -> ${
+        localStorageDivision || defaultDivision
+      }`
+    );
+
+    fetchGameData(
+      localStorageDate || todaysDate,
+      defaultLevel,
+      defaultDivision
+    );
   }, []);
 
   useEffect(() => {
     fetchTeamRecords(
       dateOfGames.gameDate,
       selections.level,
-      divisionNameOnly(selections.division)
+      localStorageDivision || divisionNameOnly(selections.division)
     );
   }, [scores]);
 
@@ -97,7 +127,7 @@ function Scores() {
         selections.level,
         event.target.value
       );
-      localStorage.setItem('division', divisionNameOnly(event.target.value));
+      localStorage.setItem('division', event.target.value);
     } catch (error) {
       console.error(error);
     }
@@ -121,6 +151,7 @@ function Scores() {
         selections.level,
         selections.division
       );
+
       localStorage.setItem('date', event.target.value);
     } catch (error) {
       console.error(error);
@@ -129,9 +160,15 @@ function Scores() {
 
   // This function removes the age group from the division name so left with 'Peewee' instead of '12U - Peewee'; This is to aid in making queries to the database.
   const divisionNameOnly = (division) => {
-    const divisionArray = division.split('-');
-    const divisionName = divisionArray[1].trim();
-    return divisionName;
+    console.log(`Division passed in ---> ${division}`);
+    if (division.includes('-')) {
+      console.log('Division includes -');
+      const divisionArray = division.split('-');
+      const divisionName = divisionArray[1]?.trim();
+      return divisionName;
+    } else {
+      return division;
+    }
   };
 
   // This function displays the team_name_long if it detects a team such as Ducks(2) but will only display team_name_short such as the Bears instead of California Golden Bears because there is no (2) in the name meaning there is only 1 Bears team
@@ -213,7 +250,6 @@ function Scores() {
         <div className="single-dropdown-container">
           <label htmlFor="date-picker">Game Date</label>
           <input
-            className={dropdowns.showCalendar ? 'show' : 'hidden'}
             id="date-picker"
             type="date"
             onChange={selectedDate}

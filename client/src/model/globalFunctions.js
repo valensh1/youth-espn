@@ -68,6 +68,7 @@ class GlobalFunctions {
         gameDate: datePickerFormattedDate,
       };
     } else {
+      console.log(date);
       let month = date.getMonth() + 1;
       const monthSpelledOut = this.monthsOfYear[month - 1];
       month = String(month).padStart(2, '0');
@@ -75,8 +76,10 @@ class GlobalFunctions {
       dayOfMonth = String(dayOfMonth).padStart(2, '0');
       const year = date.getFullYear();
       const dayOfWeek = this.daysOfWeek[date.getDay() - 1];
+      console.log(dayOfWeek);
 
       const dateForHeader = `${dayOfWeek}, ${monthSpelledOut} ${dayOfMonth}, ${year}`;
+      console.log(dateForHeader);
       const datePickerFormattedDate = `${year}-${month}-${dayOfMonth}`;
 
       return {
