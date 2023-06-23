@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import Seasons from '../../components/Dropdowns/Seasons';
 import Levels from '../../components/Dropdowns/Levels';
@@ -7,8 +7,6 @@ import Divisions from '../../components/Dropdowns/Divisions';
 import { globalVariables } from '../../model/globalVariables';
 
 function Standings() {
-  const navigate = useNavigate();
-
   const location = useLocation();
   const currentPath = location.pathname;
   const sportToQuery = currentPath.split('/')[1];
@@ -72,15 +70,14 @@ function Standings() {
     fetchData();
   }, [combinedData]);
 
-  useEffect(() => {
-    calcLast10Streak('Bears');
-  }, [last10]);
-
   //?----------------------------------------------------------------- Functions ------------------------------------------------------------------------
   // Function that takes child state (selected level, division, season, etc) from dropdown components and sets children states at the parent level
   const changeSelection = (dropdown, childState) => {
-    console.log(childState);
-    setSelections({ ...selections, [dropdown]: childState });
+    let division = '';
+    if (dropdown === 'division') {
+      division = divisionToQuery(childState);
+    }
+    setSelections({ ...selections, [dropdown]: division || childState });
   };
 
   const teamNameToRender = (teamLong, teamShort) => {
@@ -154,36 +151,6 @@ function Standings() {
     getCombinedDataToRender(combinedStandingsData, teamsData);
   };
 
-  // const getLast10GamesData = async (
-  //   sport = 'Hockey',
-  //   season,
-  //   level,
-  //   division
-  // ) => {
-  //   try {
-  //     const teamsArray = combinedData.map((team) => {
-  //       return team.displayedTeamName;
-  //     });
-  //     console.log(teamsArray);
-  //     const data = await Promise.all(
-  //       teamsArray.map(async (team) => {
-  //         const response = await fetch(
-  //           `/api/${sport}/teams/last-10-streak?team=${team}&season=${season}&level=${level}&division=${division}`
-  //         );
-  //         const data = await response.json();
-  //         return [{ data, team: team }];
-  //       })
-  //     );
-  //     const finalData = data.filter((team) => team.length > 0);
-  //     console.log(finalData);
-  //     console.log(combinedData);
-  //     setLast10(finalData);
-  //     return finalData;
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
   const getLast10GamesData = async (
     sport = 'Hockey',
     season,
@@ -194,7 +161,6 @@ function Standings() {
       const teamsArray = combinedData.map((team) => {
         return team.displayedTeamName;
       });
-      console.log(teamsArray);
       const data = await Promise.all(
         teamsArray.map(async (team) => {
           const response = await fetch(
@@ -204,7 +170,6 @@ function Standings() {
           return { data: jsonData, team: team };
         })
       );
-      console.log(data);
       setLast10(data);
       return data;
     } catch (error) {
@@ -213,12 +178,9 @@ function Standings() {
   };
 
   const calcLast10Streak = (team) => {
-    console.log(last10);
-    console.log(team);
     const teamData = last10.find((el) => {
       return el.team === team;
     });
-    console.log(teamData);
     const last10Record = {
       wins: 0,
       losses: 0,
@@ -236,10 +198,6 @@ function Standings() {
         last10Record.ties += 1;
       }
     });
-    console.log(last10Record);
-    console.log(
-      `${last10Record.wins}-${last10Record.losses}-${last10Record.ties}`
-    );
     return `${last10Record.wins}-${last10Record.losses}-${last10Record.ties}`;
   };
 

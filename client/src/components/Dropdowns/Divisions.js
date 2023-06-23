@@ -23,6 +23,7 @@ function Divisions({ dropdownSelection, fetchData }) {
     setSelectedDivision(event.target.value);
     dropdownSelection('division', event.target.value); // Callback function to pass state back to parent
     fetchData(undefined, undefined, event.target.value);
+    console.log(event.target.value);
   };
 
   //?----------------------------------------------------------------- JSX ------------------------------------------------------------------------
