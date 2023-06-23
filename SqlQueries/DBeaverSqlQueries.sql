@@ -927,28 +927,59 @@ ORDER BY home_team_long;
       ORDER BY home_team_long;
 
 
-  SELECT team_long, team_short, sum(GF) AS "GF", sum(GA) AS "GA", sum(GF - GA) AS "DIFF"
-FROM (
-SELECT home_team_long AS team_long, home_team_short AS team_short, sum(home_team_score ) AS GF, sum(visitor_team_score) AS GA, sum(home_team_score - visitor_team_score)
-FROM games.games
-WHERE sport ILIKE 'Hockey' AND team_level = 'A' AND division = 'Peewee' AND season = '2021-2022'
-GROUP BY home_team_long, home_team_short
-
-UNION ALL 
-
-SELECT visitor_team_long AS team_long, visitor_team_short AS team_short, sum(visitor_team_score) AS GF, sum(home_team_score) AS GA, sum(visitor_team_score - home_team_score)
-FROM games.games
-WHERE sport ILIKE 'Hockey'
-AND team_level = 'A' AND division = 'Peewee' AND season = '2021-2022'
-GROUP BY visitor_team_long, visitor_team_short
+  SELECT
+	team_long,
+	team_short,
+	sum(GF) AS "GF",
+	sum(GA) AS "GA",
+	sum(GF - GA) AS "DIFF"
+FROM
+	(
+	SELECT
+		home_team_long AS team_long,
+		home_team_short AS team_short,
+		sum(home_team_score) AS GF,
+		sum(visitor_team_score) AS GA,
+		sum(home_team_score - visitor_team_score)
+	FROM
+		games.games
+	WHERE
+		sport ILIKE 'Hockey'
+		AND team_level = 'A'
+		AND division = 'Peewee'
+		AND season = '2021-2022'
+	GROUP BY
+		home_team_long,
+		home_team_short
+UNION ALL
+	SELECT
+		visitor_team_long AS team_long,
+		visitor_team_short AS team_short,
+		sum(visitor_team_score) AS GF,
+		sum(home_team_score) AS GA,
+		sum(visitor_team_score - home_team_score)
+	FROM
+		games.games
+	WHERE
+		sport ILIKE 'Hockey'
+		AND team_level = 'A'
+		AND division = 'Peewee'
+		AND season = '2021-2022'
+	GROUP BY
+		visitor_team_long,
+		visitor_team_short
 
 ) AS gf_ga_table
-GROUP BY team_long, team_short
-ORDER BY "DIFF" DESC ;
+GROUP BY
+	team_long,
+	team_short
+ORDER BY
+	"DIFF" DESC ;
 
 SELECT * 
 FROM games.games ;
 
+-- Home Team Win/Loss/Tie Records
 SELECT id, home_team_short, home_team_long ,  winning_team_short, winning_team_long, tie
 FROM games.games
 WHERE sport ILIKE 'Hockey'
@@ -958,8 +989,84 @@ AND division = 'Peewee'
 ORDER BY home_team_short, home_team_long ;
 
 
- 
+ -- Visitor Team Win/Loss/Tie Records
+SELECT id, visitor_team_short, visitor_team_long ,  winning_team_short, winning_team_long, tie
+FROM games.games
+WHERE sport ILIKE 'Hockey'
+AND season = '2021-2022'
+AND team_level = 'A'
+AND division = 'Peewee'
+ORDER BY visitor_team_short, visitor_team_long ;
+
+
+SELECT game_date
+from (
+SELECT DISTINCT game_date
+FROM games.games
+ORDER BY game_date
+LIMIT 15
+) subquery
+LIMIT 1;
+
+SELECT * 
+FROM games.games 
+WHERE game_date >=
+(SELECT game_date
+from (
+SELECT DISTINCT game_date
+FROM games.games
+WHERE sport = 'Hockey'
+AND season = '2021-2022'
+AND team_level = 'A'
+AND division = 'Peewee'
+ORDER BY game_date ASC
+LIMIT 15
+) subquery
+LIMIT 1)
+AND sport = 'Hockey'
+AND season = '2021-2022'
+AND team_level = 'A'
+AND division = 'Peewee'
+ORDER BY game_date DESC;
+
+SELECT *
+FROM teams.teams;
+
+SELECT game_date
+FROM games.games
+GROUP BY game_date
+ORDER BY game_date DESC;
+
+
+SELECT DISTINCT team
+FROM (
+SELECT home_team_long AS team
+FROM games.games 
+WHERE season = '2021-2022'
+AND team_level = 'A'
+AND division = 'Peewee'
+
+UNION ALL
+
+SELECT visitor_team_long AS team
+FROM games.games 
+WHERE season = '2021-2022'
+AND team_level = 'A'
+AND division = 'Peewee'
+) subquery
+ORDER BY  team;
 
 
 
-   
+SELECT *
+FROM games.games
+WHERE sport ILIKE  'Hockey'
+AND ((home_team_long = 'Jr. Ducks(2)' OR visitor_team_long = 'Jr. Ducks(2)') OR (home_team_short = 'Jr. Ducks(2)' OR visitor_team_short = 'Jr. Ducks(2)'))
+AND team_level = 'A'
+AND division = 'Peewee'
+AND season = '2021-2022'
+ORDER BY game_date DESC
+LIMIT 10;
+
+
+

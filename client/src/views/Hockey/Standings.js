@@ -46,6 +46,7 @@ function Standings() {
   });
 
   const [teamsData, setTeamsData] = useState([]);
+  const [last10, setLast10] = useState([]);
   const [combinedData, setCombinedData] = useState([]);
 
   //?----------------------------------------------------------------- UseEffect Hooks ------------------------------------------------------------------------
@@ -54,12 +55,32 @@ function Standings() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await getLast10GamesData(
+          sportToQuery,
+          selections.season,
+          selections.level,
+          selections.division
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, [combinedData]);
+
+  useEffect(() => {
+    calcLast10Streak('Bears');
+  }, [last10]);
+
   //?----------------------------------------------------------------- Functions ------------------------------------------------------------------------
   // Function that takes child state (selected level, division, season, etc) from dropdown components and sets children states at the parent level
   const changeSelection = (dropdown, childState) => {
     console.log(childState);
     setSelections({ ...selections, [dropdown]: childState });
-    console.log(childState);
   };
 
   const teamNameToRender = (teamLong, teamShort) => {
@@ -96,7 +117,6 @@ function Standings() {
     level = selections.level,
     division = selections.division
   ) => {
-    console.log(season, level, division);
     const team_division = divisionToQuery(division);
     const [
       winsLossRecord,
@@ -124,11 +144,6 @@ function Standings() {
     const GF_GA = await GF_GA_DIFF.json();
     const homeWinsLossRecord = await homeWinLossRecord.json();
     const awayWinsLossRecord = await awayWinLossRecord.json();
-    console.log(winsLossesPoints);
-    console.log(GF_GA);
-    console.log(homeWinsLossRecord);
-    console.log(awayWinsLossRecord);
-    console.log(teamsData);
     setTeamsData(teamsData);
     const combinedStandingsData = {
       winsLossesPoints,
@@ -139,10 +154,96 @@ function Standings() {
     getCombinedDataToRender(combinedStandingsData, teamsData);
   };
 
-  const getCombinedDataToRender = (combinedData, teamsData) => {
-    console.log(teamsData);
-    console.log(combinedData);
+  // const getLast10GamesData = async (
+  //   sport = 'Hockey',
+  //   season,
+  //   level,
+  //   division
+  // ) => {
+  //   try {
+  //     const teamsArray = combinedData.map((team) => {
+  //       return team.displayedTeamName;
+  //     });
+  //     console.log(teamsArray);
+  //     const data = await Promise.all(
+  //       teamsArray.map(async (team) => {
+  //         const response = await fetch(
+  //           `/api/${sport}/teams/last-10-streak?team=${team}&season=${season}&level=${level}&division=${division}`
+  //         );
+  //         const data = await response.json();
+  //         return [{ data, team: team }];
+  //       })
+  //     );
+  //     const finalData = data.filter((team) => team.length > 0);
+  //     console.log(finalData);
+  //     console.log(combinedData);
+  //     setLast10(finalData);
+  //     return finalData;
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
+  const getLast10GamesData = async (
+    sport = 'Hockey',
+    season,
+    level,
+    division
+  ) => {
+    try {
+      const teamsArray = combinedData.map((team) => {
+        return team.displayedTeamName;
+      });
+      console.log(teamsArray);
+      const data = await Promise.all(
+        teamsArray.map(async (team) => {
+          const response = await fetch(
+            `/api/${sport}/teams/last-10-streak?team=${team}&season=${season}&level=${level}&division=${division}`
+          );
+          const jsonData = await response.json();
+          return { data: jsonData, team: team };
+        })
+      );
+      console.log(data);
+      setLast10(data);
+      return data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const calcLast10Streak = (team) => {
+    console.log(last10);
+    console.log(team);
+    const teamData = last10.find((el) => {
+      return el.team === team;
+    });
+    console.log(teamData);
+    const last10Record = {
+      wins: 0,
+      losses: 0,
+      ties: 0,
+    };
+    teamData?.data.forEach((el) => {
+      if (el.winning_team_long === team || el.winning_team_short === team) {
+        last10Record.wins += 1;
+      } else if (
+        el.losing_team_long === team ||
+        el.losing_team_short === team
+      ) {
+        last10Record.losses += 1;
+      } else {
+        last10Record.ties += 1;
+      }
+    });
+    console.log(last10Record);
+    console.log(
+      `${last10Record.wins}-${last10Record.losses}-${last10Record.ties}`
+    );
+    return `${last10Record.wins}-${last10Record.losses}-${last10Record.ties}`;
+  };
+
+  const getCombinedDataToRender = (combinedData, teamsData) => {
     let finalData = combinedData.winsLossesPoints.map((winsLossPoints) => {
       const teams = teamsData.find((team) => {
         return (
@@ -222,7 +323,6 @@ function Standings() {
         ),
       };
     });
-    console.log(finalData);
     setCombinedData(finalData);
   };
 
@@ -295,7 +395,7 @@ function Standings() {
                       <td>{calcWinsLossesTies(homeWinsLossRecords)}</td>
                       <td>{calcWinsLossesTies(awayWinsLossRecords)}</td>
                       <td></td>
-                      <td></td>
+                      <td>{calcLast10Streak(displayedTeamName)}</td>
                       <td></td>
                     </tr>
                   );

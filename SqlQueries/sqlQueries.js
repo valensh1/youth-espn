@@ -447,4 +447,24 @@ module.exports = {
       logger.log(error);
     }
   },
+
+  getLast10Streak: async (sport, season, level, division, team) => {
+    try {
+      logger.log(sport, season, level, division, team);
+      const response = await pool.query(`
+      SELECT *
+        FROM games.games
+        WHERE sport ILIKE '${sport}'
+        AND ((home_team_long = '${team}' OR visitor_team_long = '${team}') OR (home_team_short = '${team}' OR visitor_team_short = '${team}'))
+        AND team_level = '${level}' 
+        AND division = '${division}' 
+        AND season = '${season}'
+        ORDER BY game_date DESC
+        LIMIT 10;
+      `);
+      return response.rows;
+    } catch (error) {
+      logger.log(error);
+    }
+  },
 };
