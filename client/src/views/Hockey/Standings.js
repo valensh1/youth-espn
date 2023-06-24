@@ -45,6 +45,7 @@ function Standings() {
 
   const [teamsData, setTeamsData] = useState([]);
   const [last10, setLast10] = useState([]);
+  const [gameStreak, setGameStreak] = useState([]);
   const [combinedData, setCombinedData] = useState([]);
 
   //?----------------------------------------------------------------- UseEffect Hooks ------------------------------------------------------------------------
@@ -73,10 +74,7 @@ function Standings() {
   useEffect(() => {
     const dataCheck = () => {
       try {
-        const wins = [];
-        const losses = [];
-        const ties = [];
-
+        const allTeamStreaks = [];
         const fetchMoreDataCheck = async (team, gamesArray) => {
           console.log(team);
           console.log(gamesArray);
@@ -100,11 +98,12 @@ function Standings() {
               game.winning_team_long === team ||
               game.winning_team_short === team
           );
+
           let lossesCheck = gamesArray.every(
             (game) =>
               game.losing_team_long === team || game.losing_team_short === team
           );
-          lossesCheck = true;
+
           let tiesCheck = gamesArray.every(
             (game) =>
               game.winning_team_long === null ||
@@ -158,13 +157,7 @@ function Standings() {
                 console.log('There is no default');
             }
           }
-          // if (
-          //   gamesArray[0].winning_team_long === team ||
-          //   gamesArray[0].winning_team_short === team
-          // ) {
-          //   wins.push('W');
-          //   console.log(wins);
-          // }
+
           const winsLossTieArray = [];
           gamesArray.map((game) => {
             if (
@@ -193,17 +186,22 @@ function Standings() {
               streak = `${(streakNumber += 1)}${winsLossTieArray[0]}`;
             } else {
               streak = `${streakNumber}${winsLossTieArray[0]}`;
+              break;
             }
           }
           console.log(streak);
-          return streak;
+
+          const teamDataToAdd = { team: team, streak: streak };
+          console.log(teamDataToAdd);
+          allTeamStreaks.push(teamDataToAdd);
+          setGameStreak(allTeamStreaks);
         };
         const dataCheck = last10.forEach((team) => {
-          // fetchMoreDataCheck(team.team, team.data);
           console.log(team.team, team.data);
+          fetchMoreDataCheck(team.team, team.data);
         });
 
-        // fetchMoreDataCheck('Jr. Ducks(2)', globalVariables.testData);
+        // fetchMoreDataCheck('Goldrush', globalVariables.testData);
       } catch (error) {
         console.error(error);
       }
@@ -495,7 +493,13 @@ function Standings() {
                       <td>{calcWinsLossesTies(awayWinsLossRecords)}</td>
                       <td></td>
                       <td>{calcLast10Streak(displayedTeamName)}</td>
-                      <td></td>
+                      <td>
+                        {gameStreak.map((streak) => {
+                          if (streak.team === displayedTeamName) {
+                            return <>{streak.streak}</>;
+                          }
+                        })}
+                      </td>
                     </tr>
                   );
                 }
