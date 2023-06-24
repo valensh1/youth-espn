@@ -165,33 +165,45 @@ function Standings() {
           //   wins.push('W');
           //   console.log(wins);
           // }
-          const statArray = [];
+          const winsLossTieArray = [];
           gamesArray.map((game) => {
             if (
               game.winning_team_long === team ||
               game.winning_team_short === team
             ) {
-              statArray.push('W');
+              winsLossTieArray.push('W');
             } else if (
               game.losing_team_long === team ||
               game.losing_team_short === team
             ) {
-              statArray.push('L');
+              winsLossTieArray.push('L');
             } else if (
               game.winning_team_long === null ||
               game.winning_team_short === null
             ) {
-              statArray.push('Tie');
+              winsLossTieArray.push('T');
             }
-            return statArray;
+            return winsLossTieArray;
           });
-          console.log(statArray);
+          let streakNumber = 1;
+          console.log(winsLossTieArray);
+          let streak = `${streakNumber}${winsLossTieArray[0]}`;
+          for (let i = 0; i < winsLossTieArray.length; i++) {
+            if (winsLossTieArray[i] === winsLossTieArray[i + 1]) {
+              streak = `${(streakNumber += 1)}${winsLossTieArray[0]}`;
+            } else {
+              streak = `${streakNumber}${winsLossTieArray[0]}`;
+            }
+          }
+          console.log(streak);
+          return streak;
         };
-        // const dataCheck = last10.forEach((team) => {
-        //   fetchMoreDataCheck(team.team, team.data);
-        // });
+        const dataCheck = last10.forEach((team) => {
+          // fetchMoreDataCheck(team.team, team.data);
+          console.log(team.team, team.data);
+        });
 
-        fetchMoreDataCheck('Jr. Ducks(2)', globalVariables.testData);
+        // fetchMoreDataCheck('Jr. Ducks(2)', globalVariables.testData);
       } catch (error) {
         console.error(error);
       }
