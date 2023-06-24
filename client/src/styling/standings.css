@@ -1,6 +1,6 @@
 #standings-page-container {
   width: 100vw;
-  height: fit-content;
+  height: 105vh;
   position: relative;
   background-color: lightgray;
 }

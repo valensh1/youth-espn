@@ -448,20 +448,36 @@ module.exports = {
     }
   },
 
-  getLast10Streak: async (sport, season, level, division, team) => {
+  getLast10Streak: async (
+    sport,
+    season,
+    level,
+    division,
+    team,
+    earliestGame
+  ) => {
     try {
-      logger.log(sport, season, level, division, team);
-      const response = await pool.query(`
-      SELECT *
+      logger.log(sport, season, level, division, team, earliestGame);
+      let query = `
+        SELECT *
         FROM games.games
         WHERE sport ILIKE '${sport}'
         AND ((home_team_long = '${team}' OR visitor_team_long = '${team}') OR (home_team_short = '${team}' OR visitor_team_short = '${team}'))
         AND team_level = '${level}' 
         AND division = '${division}' 
         AND season = '${season}'
+      `;
+
+      if (earliestGame) {
+        query += ` AND game_date < '${earliestGame}'`;
+      }
+
+      query += `
         ORDER BY game_date DESC
         LIMIT 10;
-      `);
+      `;
+
+      const response = await pool.query(query);
       return response.rows;
     } catch (error) {
       logger.log(error);

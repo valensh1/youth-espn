@@ -70,6 +70,135 @@ function Standings() {
     fetchData();
   }, [combinedData]);
 
+  useEffect(() => {
+    const dataCheck = () => {
+      try {
+        const wins = [];
+        const losses = [];
+        const ties = [];
+
+        const fetchMoreDataCheck = async (team, gamesArray) => {
+          console.log(team);
+          console.log(gamesArray);
+
+          let earliestGameDate = new Date(
+            gamesArray[gamesArray.length - 1].game_date
+          );
+
+          const year = earliestGameDate.getFullYear();
+          const month = earliestGameDate.getMonth() + 1;
+          const dayOfMonth = earliestGameDate.getDate();
+          earliestGameDate = `${year}-${month}-${dayOfMonth}`;
+          console.log(earliestGameDate);
+
+          const season = gamesArray[0].season;
+          const level = gamesArray[0].team_level;
+          const division = gamesArray[0].division;
+
+          let winsCheck = gamesArray.every(
+            (game) =>
+              game.winning_team_long === team ||
+              game.winning_team_short === team
+          );
+          let lossesCheck = gamesArray.every(
+            (game) =>
+              game.losing_team_long === team || game.losing_team_short === team
+          );
+          lossesCheck = true;
+          let tiesCheck = gamesArray.every(
+            (game) =>
+              game.winning_team_long === null ||
+              game.winning_team_short === null
+          );
+
+          console.log(winsCheck, lossesCheck, tiesCheck);
+
+          const statStreak = winsCheck
+            ? 'winsStreak'
+            : lossesCheck
+            ? 'lossesStreak'
+            : tiesCheck
+            ? 'tiesStreak'
+            : '';
+          console.log(statStreak);
+
+          while (winsCheck || lossesCheck || tiesCheck) {
+            const response = await fetch(
+              `/api/${sportToQuery}/teams/last-10-streak?season=${season}&level=${level}&division=${division}&team=${team}&earliestGame=${earliestGameDate}`
+            );
+            console.log(
+              `/api/${sportToQuery}/teams/last-10-streak?season=${season}&level=${level}&division=${division}&team=${team}&earliestGame=${earliestGameDate}`
+            );
+            const data = await response.json();
+            console.log(data);
+
+            switch (statStreak) {
+              case 'winsStreak':
+                winsCheck = data.every(
+                  (game) =>
+                    game.winning_team_long === team ||
+                    game.winning_team_short === team
+                );
+                break;
+              case 'lossesStreak':
+                lossesCheck = data.every(
+                  (game) =>
+                    game.losing_team_long === team ||
+                    game.losing_team_short === team
+                );
+                break;
+              case 'tiesStreak':
+                tiesCheck = gamesArray.every(
+                  (game) =>
+                    game.winning_team_long === null ||
+                    game.winning_team_short === null
+                );
+                break;
+              default:
+                console.log('There is no default');
+            }
+          }
+          // if (
+          //   gamesArray[0].winning_team_long === team ||
+          //   gamesArray[0].winning_team_short === team
+          // ) {
+          //   wins.push('W');
+          //   console.log(wins);
+          // }
+          const statArray = [];
+          gamesArray.map((game) => {
+            if (
+              game.winning_team_long === team ||
+              game.winning_team_short === team
+            ) {
+              statArray.push('W');
+            } else if (
+              game.losing_team_long === team ||
+              game.losing_team_short === team
+            ) {
+              statArray.push('L');
+            } else if (
+              game.winning_team_long === null ||
+              game.winning_team_short === null
+            ) {
+              statArray.push('Tie');
+            }
+            return statArray;
+          });
+          console.log(statArray);
+        };
+        // const dataCheck = last10.forEach((team) => {
+        //   fetchMoreDataCheck(team.team, team.data);
+        // });
+
+        fetchMoreDataCheck('Jr. Ducks(2)', globalVariables.testData);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    dataCheck();
+  }, [last10]);
+
   //?----------------------------------------------------------------- Functions ------------------------------------------------------------------------
   // Function that takes child state (selected level, division, season, etc) from dropdown components and sets children states at the parent level
   const changeSelection = (dropdown, childState) => {
