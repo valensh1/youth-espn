@@ -3,10 +3,13 @@ import { globalVariables } from '../../model/globalVariables';
 
 function Seasons({ dropdownSelection, fetchData }) {
   const defaultSeason = globalVariables.currentSeason.hockey;
+  const localStorageSeason = localStorage.getItem('season');
 
   //?----------------------------------------------------------------- UseState Hooks ------------------------------------------------------------------------
   const [seasonDropdown, setSeasonDropdown] = useState([]);
-  const [selectedSeason, setSelectedSeason] = useState(defaultSeason);
+  const [selectedSeason, setSelectedSeason] = useState(
+    localStorageSeason || defaultSeason
+  );
 
   //?----------------------------------------------------------------- UseEffect Hooks ------------------------------------------------------------------------
   // Fetch seasons data on initial render of component

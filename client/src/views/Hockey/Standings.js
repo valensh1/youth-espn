@@ -14,6 +14,9 @@ function Standings() {
   const defaultLevel = 'A';
   const defaultDivision = 'Peewee';
   const defaultSeason = globalVariables.currentSeason.hockey;
+  const localStorageLevel = localStorage.getItem('level');
+  const localStorageDivision = localStorage.getItem('division');
+  const localStorageSeason = localStorage.getItem('season');
 
   const hockeyStatCategories = [
     'TEAM',
@@ -38,9 +41,9 @@ function Standings() {
 
   //?----------------------------------------------------------------- UseState Hooks ------------------------------------------------------------------------
   const [selections, setSelections] = useState({
-    level: defaultLevel,
-    division: defaultDivision,
-    season: defaultSeason,
+    level: localStorageLevel || defaultLevel,
+    division: localStorageDivision || defaultDivision,
+    season: localStorageSeason || defaultSeason,
   });
 
   const [teamsData, setTeamsData] = useState([]);
@@ -200,8 +203,6 @@ function Standings() {
           console.log(team.team, team.data);
           fetchMoreDataCheck(team.team, team.data);
         });
-
-        // fetchMoreDataCheck('Goldrush', globalVariables.testData);
       } catch (error) {
         console.error(error);
       }
@@ -217,6 +218,7 @@ function Standings() {
       division = divisionToQuery(childState);
     }
     setSelections({ ...selections, [dropdown]: division || childState });
+    localStorage.setItem(`${dropdown}`, childState);
   };
 
   const teamNameToRender = (teamLong, teamShort) => {

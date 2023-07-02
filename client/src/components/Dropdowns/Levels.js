@@ -2,9 +2,12 @@ import { useState, useEffect } from 'react';
 
 function Levels({ dropdownSelection, fetchData }) {
   const defaultLevel = 'A';
+  const localStorageLevel = localStorage.getItem('level');
   //?----------------------------------------------------------------- UseState Hooks ------------------------------------------------------------------------
   const [levelDropdown, setLevelDropdown] = useState([]);
-  const [selectedLevel, setSelectedLevel] = useState(defaultLevel);
+  const [selectedLevel, setSelectedLevel] = useState(
+    localStorageLevel || defaultLevel
+  );
 
   //?----------------------------------------------------------------- UseEffect Hooks ------------------------------------------------------------------------
   // Fetch levels data on initial render of component

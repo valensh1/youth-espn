@@ -2,9 +2,12 @@ import { useState, useEffect } from 'react';
 
 function Divisions({ dropdownSelection, fetchData }) {
   const defaultDivision = '12U - Peewee';
+  const localStorageDivision = localStorage.getItem('division');
   //?----------------------------------------------------------------- UseState Hooks ------------------------------------------------------------------------
   const [divisionDropdown, setDivisionDropdown] = useState([]);
-  const [selectedDivision, setSelectedDivision] = useState(defaultDivision);
+  const [selectedDivision, setSelectedDivision] = useState(
+    localStorageDivision || defaultDivision
+  );
 
   //?----------------------------------------------------------------- UseEffect Hooks ------------------------------------------------------------------------
   // Fetch divisions data on initial render of component
