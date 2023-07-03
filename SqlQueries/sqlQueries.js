@@ -123,6 +123,7 @@ module.exports = {
       p.date_of_birth,
       p.height_inches,
       p.weight_lbs,
+      p.hand,
       t.team_name_full,
       t.team_name_short,
       t.team_level,
@@ -158,6 +159,7 @@ module.exports = {
         p.date_of_birth,
         p.height_inches,
         p.weight_lbs,
+        p.hand,
         t.team_name_full,
         t.team_name_short,
         t.team_level,
@@ -419,7 +421,7 @@ module.exports = {
   getHomeWinsLossRecords: async (sport, season, level, division) => {
     try {
       const response = await pool.query(`
-      SELECT id AS game_id, home_team_short, home_team_long ,  winning_team_short, winning_team_long, tie
+      SELECT id AS game_id, home_team_short, home_team_long , winning_team_short, winning_team_long, tie
       FROM games.games
       WHERE sport ILIKE '${sport}'
       AND team_level = '${level}' 

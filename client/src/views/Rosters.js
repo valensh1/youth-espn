@@ -90,6 +90,7 @@ function Rosters({ currentSeason }) {
         fetchPageData(),
       ]);
       const roster = await rosterResponse.json();
+      console.log(roster);
 
       await fetchMultipleTeamsWithSameName(
         seasonToQuery,
@@ -673,7 +674,10 @@ function Rosters({ currentSeason }) {
               return (
                 <tr className="roster-table-data" key={player.id}>
                   <td className="shaded">
-                    <Link className="player-img-name" to={''}>
+                    <Link
+                      className="player-img-name"
+                      to={`player/${player.id}`}
+                    >
                       <img
                         className="player-profile-pic"
                         src={player.profile_img_1}
@@ -692,7 +696,7 @@ function Rosters({ currentSeason }) {
                     </Link>
                   </td>
                   <td className="centered">{player.jersey_number}</td>
-                  <td></td>
+                  <td>{player.hand}</td>
                   <td></td>
                   <td></td>
                   <td className="centered">
@@ -729,7 +733,10 @@ function Rosters({ currentSeason }) {
               return (
                 <tr className="roster-table-data" key={player.id}>
                   <td className="shaded">
-                    <Link className="player-img-name" to={''}>
+                    <Link
+                      className="player-img-name"
+                      to={`player/${player.id}`}
+                    >
                       <img
                         className="player-profile-pic"
                         src={player.profile_img_1}
@@ -748,7 +755,7 @@ function Rosters({ currentSeason }) {
                     </Link>
                   </td>
                   <td className="centered">{player.jersey_number}</td>
-                  <td></td>
+                  <td>{player.hand}</td>
                   <td></td>
                   <td></td>
                   <td className="centered">
@@ -784,7 +791,10 @@ function Rosters({ currentSeason }) {
               return (
                 <tr className="roster-table-data" key={player.id}>
                   <td className="shaded">
-                    <Link className="player-img-name" to={''}>
+                    <Link
+                      className="player-img-name"
+                      to={`player/${player.id}`}
+                    >
                       <img
                         className="player-profile-pic"
                         src={player.profile_img_1}

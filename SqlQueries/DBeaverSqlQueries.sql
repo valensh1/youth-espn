@@ -1065,8 +1065,34 @@ AND ((home_team_long = 'Jr. Ducks(2)' OR visitor_team_long = 'Jr. Ducks(2)') OR 
 AND team_level = 'A'
 AND division = 'Peewee'
 AND season = '2021-2022'
+''
 ORDER BY game_date DESC
 LIMIT 10;
 
+SELECT *
+FROM players.player_profiles;
 
+SELECT *, initcap(hand) 
+FROM players.player_profiles;
+
+UPDATE players.player_profiles 
+SET hand = 'Right'
+WHERE last_name IN ('Martin', 'Vega', 'Garcia', 'Karpontinis');
+
+SELECT * FROM 
+games.games
+WHERE game_date = '2022-12-11';
+
+UPDATE games.games 
+SET home_team_id_fk = '11b32925-f52e-46c2-93eb-825703d05c33'
+WHERE home_team_long = 'Orange Country Hockey Club';
+
+SELECT * 
+FROM teams.teams 
+WHERE team_level = 'AA'
+ORDER BY team_name_short ;
+
+UPDATE games.games
+SET home_team_id_fk = '06d45da2-7a58-42e5-bb4c-8102624aa7f7'
+WHERE visitor_team_short = 'Heat' AND team_level = 'AA';
 

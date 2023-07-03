@@ -123,8 +123,8 @@ function Standings() {
             ? 'tiesStreak'
             : '';
           console.log(statStreak);
-
-          while (winsCheck || lossesCheck || tiesCheck) {
+          let fetchTries = 0;
+          while ((winsCheck || lossesCheck || tiesCheck) && fetchTries < 20) {
             const response = await fetch(
               `/api/${sportToQuery}/teams/last-10-streak?season=${season}&level=${level}&division=${division}&team=${team}&earliestGame=${earliestGameDate}`
             );
@@ -159,6 +159,8 @@ function Standings() {
               default:
                 console.log('There is no default');
             }
+            fetchTries += 1;
+            console.log(++fetchTries);
           }
 
           const winsLossTieArray = [];
