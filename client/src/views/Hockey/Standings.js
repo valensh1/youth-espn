@@ -227,6 +227,7 @@ function Standings() {
   };
 
   const calcTeamGameStreak = (teamGames) => {
+    console.log(teamGames);
     let allTeamStreaks = [];
     for (let i = 0; i < teamGames.length; i++) {
       let streakNumber = 1;
@@ -235,6 +236,8 @@ function Standings() {
         streak = teamGames[i][j]?.game_result;
         if (teamGames[i][j]?.game_result === teamGames[i][j + 1]?.game_result) {
           streakNumber++;
+        } else {
+          break;
         }
       }
       allTeamStreaks.push({
