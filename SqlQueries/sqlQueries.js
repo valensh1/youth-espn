@@ -360,6 +360,10 @@ module.exports = {
    END AS team ,
    COUNT(*) AS games_played
    FROM games.games
+   WHERE sport ILIKE '${sport}'
+   AND season = '${season}'
+   AND team_level = '${level}'
+   AND division = '${division}'
    GROUP BY team
 
    UNION ALL
@@ -371,6 +375,10 @@ module.exports = {
    END AS team ,
    COUNT (*) AS games_played
    FROM games.games
+   WHERE sport ILIKE '${sport}'
+   AND season = '${season}'
+   AND team_level = '${level}'
+   AND division = '${division}'
    GROUP BY team
    ) AS gp
 
@@ -456,7 +464,8 @@ module.exports = {
     level,
     division,
     team,
-    earliestGame
+    earliestGame,
+    limitAmount = 10
   ) => {
     try {
       logger.log(sport, season, level, division, team, earliestGame);
@@ -476,10 +485,75 @@ module.exports = {
 
       query += `
         ORDER BY game_date DESC
-        LIMIT 10;
+        LIMIT '${limitAmount}';
       `;
 
       const response = await pool.query(query);
+      return response.rows;
+    } catch (error) {
+      logger.log(error);
+    }
+  },
+
+  getTeamStreak: async (sport, season, level, division, team) => {
+    try {
+      const response = await pool.query(`
+      SELECT id, game_date, team_long, team_short, game_result 
+      FROM (
+        SELECT id, game_date, winning_team_long AS team_long, winning_team_short AS team_short,
+              CASE 
+                  WHEN winning_team_long = '${team}' OR winning_team_short = '${team}'
+                  THEN 'W'
+              END AS game_result
+        FROM games.games
+        WHERE season = '${season}'
+          AND team_level = '${level}'
+          AND division = '${division}'
+          AND (winning_team_long = '${team}' OR winning_team_short = '${team}')
+      
+        UNION ALL
+      
+        SELECT id, game_date, losing_team_long AS team_long, losing_team_short AS team_short, 
+              CASE 
+                  WHEN losing_team_long = '${team}' OR losing_team_short = '${team}'
+                  THEN 'L'
+              END AS game_result
+        FROM games.games
+        WHERE season = '${season}'
+          AND team_level = '${level}'
+          AND division = '${division}'
+          AND (losing_team_long = '${team}' OR losing_team_short = '${team}') 
+          
+          UNION ALL
+          
+          SELECT id, game_date, team_long, team_short, game_result
+      FROM (
+        SELECT id, game_date,
+          CASE 
+            WHEN (home_team_long = '${team}' OR home_team_short = '${team}')
+              OR 
+              (visitor_team_long = '${team}' OR visitor_team_short = '${team}')
+              THEN 'Jr. Gulls'
+          END AS team_long,
+          CASE 
+            WHEN (home_team_long = '${team}' OR home_team_short = '${team}')
+              OR 
+              (visitor_team_long = '${team}' OR visitor_team_short = '${team}')
+              THEN 'Gulls'
+          END AS team_short,
+          'T' AS game_result
+        FROM games.games
+        WHERE season = '${season}'
+        AND team_level = '${level}'
+        AND division = '${division}'
+          AND tie = TRUE
+          ORDER BY game_date DESC
+      ) AS TIES
+      WHERE team_short = '${team}'
+          
+      ) AS combined_results
+      ORDER BY game_date DESC
+      ;`);
       return response.rows;
     } catch (error) {
       logger.log(error);

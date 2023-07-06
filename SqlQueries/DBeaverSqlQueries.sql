@@ -1069,30 +1069,281 @@ AND season = '2021-2022'
 ORDER BY game_date DESC
 LIMIT 10;
 
-SELECT *
-FROM players.player_profiles;
+SELECT teams.team_name_long, teams.team_name_short, games_played, teams.total_wins, COALESCE(losses.total_losses, 0) AS total_losses, COALESCE(ties.total_ties, 0) AS total_ties, COALESCE (points.total_points, 0) AS total_points
+   FROM (
+       SELECT winning_team_long AS team_name_long, winning_team_short AS team_name_short, COUNT(winning_team_points) AS total_wins
+       FROM games.games
+     WHERE sport ILIKE 'Hockey'
+       AND season = '2021-2022'
+       AND team_level = 'A'
+       AND division = 'Peewee'
+       GROUP BY winning_team_long, winning_team_short
+   ) teams
+   LEFT JOIN (
+       SELECT losing_team_long AS team_name_long, losing_team_short AS team_name_short, COUNT(losing_team_points) AS total_losses
+       FROM games.games
+    WHERE sport ILIKE 'Hockey'
+       AND season = '2021-2022'
+       AND team_level = 'A'
+       AND division = 'Peewee'
+       GROUP BY losing_team_long, losing_team_short
+   ) losses ON teams.team_name_long = losses.team_name_long
+   LEFT JOIN (
+       SELECT team_name_long AS team_name_long, team_name_short AS team_name_short, sum(total_ties) AS total_ties
+       FROM (
+           SELECT home_team_long AS team_name_long, home_team_short AS team_name_short, COUNT(*) AS total_ties
+           FROM games.games
+           WHERE sport ILIKE 'Hockey'
+       AND season = '2021-2022'
+       AND team_level = 'A'
+       AND division = 'Peewee'
+           AND tie = TRUE
+           GROUP BY home_team_long, home_team_short
 
-SELECT *, initcap(hand) 
-FROM players.player_profiles;
+           UNION ALL
 
-UPDATE players.player_profiles 
-SET hand = 'Right'
-WHERE last_name IN ('Martin', 'Vega', 'Garcia', 'Karpontinis');
+           SELECT visitor_team_long AS team_name_long, visitor_team_short AS team_name_short, COUNT(*) AS total_ties
+           FROM games.games
+          WHERE sport ILIKE 'Hockey'
+       AND season = '2021-2022'
+       AND team_level = 'A'
+       AND division = 'Peewee'
+           AND tie = TRUE
+           GROUP BY visitor_team_long, visitor_team_short
+       ) queryTable
+       GROUP BY team_name_long, team_name_short
+   ) ties ON teams.team_name_long = ties.team_name_long
+   LEFT JOIN (
+   SELECT team_long, team_short, SUM(points) AS total_points
+   FROM (
+       SELECT winning_team_long AS team_long, winning_team_short AS team_short, SUM(winning_team_points) AS points
+       FROM games.games
+      WHERE sport ILIKE 'Hockey'
+       AND season = '2021-2022'
+       AND team_level = 'A'
+       AND division = 'Peewee'
+       GROUP BY winning_team_long, winning_team_short
 
-SELECT * FROM 
-games.games
-WHERE game_date = '2022-12-11';
+       UNION ALL
 
-UPDATE games.games 
-SET home_team_id_fk = '11b32925-f52e-46c2-93eb-825703d05c33'
-WHERE home_team_long = 'Orange Country Hockey Club';
+       SELECT losing_team_long AS team_long, losing_team_short AS team_short, sum(losing_team_points) AS points
+       FROM games.games
+       WHERE sport ILIKE 'Hockey'
+       AND season = '2021-2022'
+       AND team_level = 'A'
+       AND division = 'Peewee'
+       GROUP BY losing_team_long, losing_team_short
 
-SELECT * 
-FROM teams.teams 
-WHERE team_level = 'AA'
-ORDER BY team_name_short ;
+       UNION ALL
 
-UPDATE games.games
-SET home_team_id_fk = '06d45da2-7a58-42e5-bb4c-8102624aa7f7'
-WHERE visitor_team_short = 'Heat' AND team_level = 'AA';
+       SELECT home_team_long AS team_long, home_team_short AS team_short, 1 AS points
+       FROM games.games
+    WHERE sport ILIKE 'Hockey'
+       AND season = '2021-2022'
+       AND team_level = 'A'
+       AND division = 'Peewee'
+       AND tie = TRUE
 
+       UNION ALL
+
+       SELECT visitor_team_long AS team_long, visitor_team_short , 1 AS points
+       FROM games.games
+      WHERE sport ILIKE 'Hockey'
+       AND season = '2021-2022'
+       AND team_level = 'A'
+       AND division = 'Peewee'
+       AND tie = TRUE
+   ) subquery
+   WHERE team_long IS NOT NULL
+   GROUP BY team_long, team_short
+   ORDER BY total_points DESC
+   ) points
+   ON points.team_long = teams.team_name_long
+   LEFT JOIN (
+   SELECT team, sum(games_played) AS games_played
+   FROM (
+   SELECT
+   CASE
+     WHEN winning_team_long IS NOT NULL THEN winning_team_long
+     ELSE home_team_long
+   END AS team ,
+   COUNT(*) AS games_played
+   FROM games.games
+  WHERE sport ILIKE 'Hockey'
+       AND season = '2021-2022'
+       AND team_level = 'A'
+       AND division = 'Peewee'
+  		
+   GROUP BY team
+
+   UNION ALL
+
+   SELECT
+   CASE
+     WHEN losing_team_long IS NOT NULL THEN losing_team_long
+     ELSE visitor_team_long
+   END AS team ,
+   COUNT (*) AS games_played
+   FROM games.games
+  WHERE sport ILIKE 'Hockey'
+       AND season = '2021-2022'
+       AND team_level = 'A'
+       AND division = 'Peewee'
+   GROUP BY team
+   ) AS gp
+
+   GROUP BY team
+   ORDER BY games_played DESC
+   ) games_played ON games_played.team = teams.team_name_long
+   WHERE teams.team_name_long IS NOT NULL
+   ORDER BY total_points DESC;
+   
+  SELECT *,
+  CASE
+  	WHEN home_team_long = 'Jr. Ducks(3)'
+  	THEN sum(visitor_team_score)
+  END AS GF,
+    CASE
+  	WHEN visitor_team_long = 'Jr. Ducks(3)'
+  	THEN sum(home_team_score)
+  END AS GF2
+  
+  
+  FROM games.games 
+  WHERE home_team_long = 'Jr. Ducks(3)' OR visitor_team_long = 'Jr. Ducks(3)'
+  AND season = '2021-2022'
+  AND team_level = 'A'
+  AND division = 'Peewee'
+   GROUP BY id;
+  
+  SELECT team_long, team_short, sum(GF) AS "GF", sum(GA) AS "GA", sum(GF - GA) AS "DIFF"
+      FROM (
+      SELECT home_team_long AS team_long, home_team_short AS team_short, sum(home_team_score ) AS GF, sum(visitor_team_score) AS GA, sum(home_team_score - visitor_team_score)
+      FROM games.games
+      WHERE sport ILIKE 'Hockey'
+      AND team_level = 'A' 
+      AND division = 'Peewee' 
+      AND season = '2021-2022'
+      GROUP BY home_team_long, home_team_short
+      
+      UNION ALL 
+      
+      SELECT visitor_team_long AS team_long, visitor_team_short AS team_short, sum(visitor_team_score) AS GF, sum(home_team_score) AS GA, sum(visitor_team_score - home_team_score)
+      FROM games.games
+      WHERE sport ILIKE 'Hockey'
+      AND team_level = 'A' 
+      AND division = 'Peewee' 
+      AND season = '2021-2022'
+      GROUP BY visitor_team_long, visitor_team_short
+      
+      ) AS gf_ga_table
+      GROUP BY team_long, team_short
+      ORDER BY "DIFF" DESC ;
+     
+         
+       SELECT id, game_date, winning_team_long, winning_team_short, losing_team_long, losing_team_short, home_team_long, home_team_short, visitor_team_long, visitor_team_short
+       FROM games.games
+       WHERE season = '2022-2023'
+       AND team_level = 'AA'
+       AND division = 'Peewee'
+       ORDER BY game_date DESC;
+      
+      
+
+
+--? Win/Loss game fetching   
+SELECT id, game_date, team_long, team_short, game_result 
+FROM (
+  SELECT id, game_date, winning_team_long AS team_long, winning_team_short AS team_short,
+        CASE 
+            WHEN winning_team_long = 'Jr. Gulls' OR winning_team_short = 'Gulls'
+            THEN 'W'
+        END AS game_result
+  FROM games.games
+  WHERE season = '2022-2023'
+    AND team_level = 'AA'
+    AND division = 'Peewee'
+    AND (winning_team_long = 'Jr. Gulls' OR winning_team_short = 'Gulls')
+
+  UNION ALL
+
+  SELECT id, game_date, losing_team_long AS team_long, losing_team_short AS team_short, 
+        CASE 
+            WHEN losing_team_long = 'Jr. Gulls' OR losing_team_short = 'Gulls'
+            THEN 'L'
+        END AS game_result
+  FROM games.games
+  WHERE season = '2022-2023'
+    AND team_level = 'AA'
+    AND division = 'Peewee'
+    AND (losing_team_long = 'Jr. Gulls' OR losing_team_short = 'Gulls') 
+    
+    UNION ALL
+    
+    SELECT id, game_date, team_long, team_short, game_result
+FROM (
+  SELECT id, game_date,
+    CASE 
+      WHEN (home_team_long = 'Jr. Gulls' OR home_team_short = 'Gulls')
+        OR 
+        (visitor_team_long = 'Jr. Gulls' OR visitor_team_short = 'Gulls')
+        THEN 'Jr. Gulls'
+    END AS team_long,
+    CASE 
+      WHEN (home_team_long = 'Jr. Gulls' OR home_team_short = 'Gulls')
+        OR 
+        (visitor_team_long = 'Jr. Gulls' OR visitor_team_short = 'Gulls')
+        THEN 'Gulls'
+    END AS team_short,
+    'T' AS game_result
+  FROM games.games
+  WHERE season = '2022-2023'
+    AND team_level = 'AA'
+    AND division = 'Peewee'
+    AND tie = TRUE
+    ORDER BY game_date DESC
+) AS TIES
+WHERE team_short = 'Gulls'
+    
+) AS combined_results
+ORDER BY game_date DESC;
+
+
+ 
+
+
+
+
+SELECT id, game_date, team_long, team_short, game_result
+FROM (
+  SELECT id, game_date,
+    CASE 
+      WHEN (home_team_long = 'Jr. Gulls' OR home_team_short = 'Gulls')
+        OR 
+        (visitor_team_long = 'Jr. Gulls' OR visitor_team_short = 'Gulls')
+        THEN 'Jr. Gulls'
+    END AS team_long,
+    CASE 
+      WHEN (home_team_long = 'Jr. Gulls' OR home_team_short = 'Gulls')
+        OR 
+        (visitor_team_long = 'Jr. Gulls' OR visitor_team_short = 'Gulls')
+        THEN 'Gulls'
+    END AS team_short,
+    'T' AS game_result
+  FROM games.games
+  WHERE season = '2022-2023'
+    AND team_level = 'AA'
+    AND division = 'Peewee'
+    AND tie = TRUE
+    ORDER BY game_date DESC
+) AS TIES
+WHERE team_short = 'Gulls';
+
+
+
+
+
+
+
+	
+ 

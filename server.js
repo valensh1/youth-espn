@@ -162,7 +162,7 @@ app.get('/api/:sport/teams/away-records', async (req, res) => {
 
 app.get('/api/:sport/teams/last-10-streak', async (req, res) => {
   const sport = req.params.sport;
-  const { season, level, division, team, earliestGame } = req.query;
+  const { season, level, division, team, earliestGame, limit } = req.query;
   logger.log(sport);
   logger.log(season, level, division, team, earliestGame);
   const data = await sqlQueries.getLast10Streak(
@@ -171,7 +171,22 @@ app.get('/api/:sport/teams/last-10-streak', async (req, res) => {
     level,
     division,
     team,
-    earliestGame
+    earliestGame,
+    limit
+  );
+  return res.json(data);
+});
+
+app.get('/api/:sport/teams/game-streak', async (req, res) => {
+  const sport = req.params.sport;
+  const { season, level, division, team } = req.query;
+
+  const data = await sqlQueries.getTeamStreak(
+    sport,
+    season,
+    level,
+    division,
+    team
   );
   return res.json(data);
 });

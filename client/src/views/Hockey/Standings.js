@@ -66,6 +66,17 @@ function Standings() {
           selections.level,
           selections.division
         );
+
+        const teamGames = await Promise.all(
+          combinedData.map(async (team) => {
+            console.log(team.displayedTeamName);
+            const teamGameStreak = await getTeamGames(team.displayedTeamName);
+            console.log(teamGameStreak);
+            return teamGameStreak;
+          })
+        );
+        console.log(teamGames);
+        calcTeamGameStreak(teamGames);
       } catch (error) {
         console.error(error);
       }
@@ -73,144 +84,6 @@ function Standings() {
 
     fetchData();
   }, [combinedData]);
-
-  useEffect(() => {
-    const dataCheck = () => {
-      try {
-        const allTeamStreaks = [];
-        const fetchMoreDataCheck = async (team, gamesArray) => {
-          console.log(team);
-          console.log(gamesArray);
-
-          let earliestGameDate = new Date(
-            gamesArray[gamesArray.length - 1].game_date
-          );
-
-          const year = earliestGameDate.getFullYear();
-          const month = earliestGameDate.getMonth() + 1;
-          const dayOfMonth = earliestGameDate.getDate();
-          earliestGameDate = `${year}-${month}-${dayOfMonth}`;
-          console.log(earliestGameDate);
-
-          const season = gamesArray[0].season;
-          const level = gamesArray[0].team_level;
-          const division = gamesArray[0].division;
-
-          let winsCheck = gamesArray.every(
-            (game) =>
-              game.winning_team_long === team ||
-              game.winning_team_short === team
-          );
-
-          let lossesCheck = gamesArray.every(
-            (game) =>
-              game.losing_team_long === team || game.losing_team_short === team
-          );
-
-          let tiesCheck = gamesArray.every(
-            (game) =>
-              game.winning_team_long === null ||
-              game.winning_team_short === null
-          );
-
-          console.log(winsCheck, lossesCheck, tiesCheck);
-
-          const statStreak = winsCheck
-            ? 'winsStreak'
-            : lossesCheck
-            ? 'lossesStreak'
-            : tiesCheck
-            ? 'tiesStreak'
-            : '';
-          console.log(statStreak);
-          let fetchTries = 0;
-          while ((winsCheck || lossesCheck || tiesCheck) && fetchTries < 20) {
-            const response = await fetch(
-              `/api/${sportToQuery}/teams/last-10-streak?season=${season}&level=${level}&division=${division}&team=${team}&earliestGame=${earliestGameDate}`
-            );
-            console.log(
-              `/api/${sportToQuery}/teams/last-10-streak?season=${season}&level=${level}&division=${division}&team=${team}&earliestGame=${earliestGameDate}`
-            );
-            const data = await response.json();
-            console.log(data);
-
-            switch (statStreak) {
-              case 'winsStreak':
-                winsCheck = data.every(
-                  (game) =>
-                    game.winning_team_long === team ||
-                    game.winning_team_short === team
-                );
-                break;
-              case 'lossesStreak':
-                lossesCheck = data.every(
-                  (game) =>
-                    game.losing_team_long === team ||
-                    game.losing_team_short === team
-                );
-                break;
-              case 'tiesStreak':
-                tiesCheck = gamesArray.every(
-                  (game) =>
-                    game.winning_team_long === null ||
-                    game.winning_team_short === null
-                );
-                break;
-              default:
-                console.log('There is no default');
-            }
-            fetchTries += 1;
-            console.log(++fetchTries);
-          }
-
-          const winsLossTieArray = [];
-          gamesArray.map((game) => {
-            if (
-              game.winning_team_long === team ||
-              game.winning_team_short === team
-            ) {
-              winsLossTieArray.push('W');
-            } else if (
-              game.losing_team_long === team ||
-              game.losing_team_short === team
-            ) {
-              winsLossTieArray.push('L');
-            } else if (
-              game.winning_team_long === null ||
-              game.winning_team_short === null
-            ) {
-              winsLossTieArray.push('T');
-            }
-            return winsLossTieArray;
-          });
-          let streakNumber = 1;
-          console.log(winsLossTieArray);
-          let streak = `${streakNumber}${winsLossTieArray[0]}`;
-          for (let i = 0; i < winsLossTieArray.length; i++) {
-            if (winsLossTieArray[i] === winsLossTieArray[i + 1]) {
-              streak = `${(streakNumber += 1)}${winsLossTieArray[0]}`;
-            } else {
-              streak = `${streakNumber}${winsLossTieArray[0]}`;
-              break;
-            }
-          }
-          console.log(streak);
-
-          const teamDataToAdd = { team: team, streak: streak };
-          console.log(teamDataToAdd);
-          allTeamStreaks.push(teamDataToAdd);
-          setGameStreak(allTeamStreaks);
-        };
-        const dataCheck = last10.forEach((team) => {
-          console.log(team.team, team.data);
-          fetchMoreDataCheck(team.team, team.data);
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    dataCheck();
-  }, [last10]);
 
   //?----------------------------------------------------------------- Functions ------------------------------------------------------------------------
   // Function that takes child state (selected level, division, season, etc) from dropdown components and sets children states at the parent level
@@ -344,6 +217,36 @@ function Standings() {
     return `${last10Record.wins}-${last10Record.losses}-${last10Record.ties}`;
   };
 
+  const getTeamGames = async (team) => {
+    const response = await fetch(
+      `/api/${sportToQuery}/teams/game-streak?season=${selections.season}&level=${selections.level}&division=${selections.division}&team=${team}`
+    );
+    const data = await response.json();
+    console.log(team, data);
+    return data;
+  };
+
+  const calcTeamGameStreak = (teamGames) => {
+    let allTeamStreaks = [];
+    for (let i = 0; i < teamGames.length; i++) {
+      let streakNumber = 1;
+      let streak = '';
+      for (let j = 0; j < teamGames[i]?.length; j++) {
+        streak = teamGames[i][j]?.game_result;
+        if (teamGames[i][j]?.game_result === teamGames[i][j + 1]?.game_result) {
+          streakNumber++;
+        }
+      }
+      allTeamStreaks.push({
+        team_long: teamGames[i][0].team_long,
+        team_short: teamGames[i][0].team_short,
+        streak: `${streakNumber}${streak}`,
+      });
+    }
+    setGameStreak(allTeamStreaks);
+    console.log(allTeamStreaks);
+  };
+
   const getCombinedDataToRender = (combinedData, teamsData) => {
     let finalData = combinedData.winsLossesPoints.map((winsLossPoints) => {
       const teams = teamsData.find((team) => {
@@ -355,7 +258,7 @@ function Standings() {
 
       const GF_GA_DIFF = combinedData.GF_GA.find((stat) => {
         return (
-          stat.team_long === winsLossPoints.team_name_long ||
+          stat.team_long === winsLossPoints.team_name_long &&
           stat.team_short === winsLossPoints.team_name_short
         );
       });
@@ -499,7 +402,10 @@ function Standings() {
                       <td>{calcLast10Streak(displayedTeamName)}</td>
                       <td>
                         {gameStreak.map((streak) => {
-                          if (streak.team === displayedTeamName) {
+                          if (
+                            streak.team_long === displayedTeamName ||
+                            streak.team_short === displayedTeamName
+                          ) {
                             return <>{streak.streak}</>;
                           }
                         })}
