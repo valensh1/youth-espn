@@ -12,12 +12,15 @@ const sqlQueries = require('./SqlQueries/sqlQueries');
 app.listen(5001);
 
 app.get('/api/hockey/team-records', async (req, res) => {
-  const { date, level, division, season } = req.query; // Destructure req.query items
+  const { date, level, division, season, gameType } = req.query; // Destructure req.query items
+  logger.log(date, level, division, season, gameType);
+
   const records = await sqlQueries.getTeamRecords(
     date,
     level,
     division,
-    season
+    season,
+    gameType
   );
   logger.log(records);
   return res.json(records);
@@ -55,9 +58,24 @@ app.get('/api/hockey/seasons', async (req, res) => {
   return res.json(seasons);
 });
 
+// Endpoint returns all teams based on certain level (i.e. B, BB, A, AA, AAA)
 app.get('/api/hockey/teams', async (req, res) => {
   const level = req.query.level;
   const teams = await sqlQueries.getAllTeams(level);
+  return res.json(teams);
+});
+
+// Endpoint returns all teams that played based on a certain season, level and division. Not all teams have a team each season so this retrieves the teams that played in that season
+app.get('/api/:sport/teams-season', async (req, res) => {
+  const sport = req.params.sport;
+  const { season, level, division } = req.query;
+
+  const teams = await sqlQueries.getTeamsForSeason(
+    sport,
+    season,
+    level,
+    division
+  );
   return res.json(teams);
 });
 
@@ -106,18 +124,30 @@ app.get('/api/hockey/teams/:team/multiple-team-names', async (req, res) => {
 
 app.get('/api/:sport/standings', async (req, res) => {
   const sport = req.params.sport;
-  const { season, level, division } = req.query;
+  const { season, level, division, gameType } = req.query;
   logger.log(sport);
   logger.log(season);
   logger.log(level);
   logger.log(division);
-  const standings = await sqlQueries.getStandings(
+  logger.log(gameType);
+
+  const records = await sqlQueries.getTeamRecords(
+    '',
+    level,
+    division,
+    season,
+    gameType
+  );
+
+  const points = await sqlQueries.getStandingsPoints(
     sport,
     season,
     level,
-    division
+    division,
+    gameType
   );
-  return res.json(standings);
+  logger.log(records);
+  return res.json({ records: records, points: points });
 });
 
 app.get('/api/:sport/teams/GF_GA_DIFF', async (req, res) => {

@@ -61,6 +61,51 @@ module.exports = {
     }
   },
 
+  getTeamsForSeason: async (sport, season, level, division) => {
+    try {
+      response = await pool.query(`
+      SELECT team_long, team_short, logo_image, primary_team_color, secondary_team_color, third_team_color
+      FROM 
+      (
+      SELECT home_team_long AS team_long, home_team_short AS team_short
+      FROM games.games
+      WHERE sport ILIKE '${sport}'
+      AND season = '${season}'
+      AND team_level = '${level}'
+      AND division = '${division}'
+      AND game_type = 'Regular Season'
+      GROUP BY team_long, team_short
+
+      UNION ALL 
+
+      SELECT visitor_team_long AS team_long, visitor_team_short AS team_short
+      FROM games.games
+      WHERE sport ILIKE '${sport}'
+      AND season = '${season}'
+      AND team_level = '${level}'
+      AND division = '${division}'
+      AND game_type = 'Regular Season'
+      GROUP BY team_long, team_short
+      ) AS games
+
+      LEFT JOIN 
+      (
+      SELECT team_name_full, team_name_short, logo_image, primary_team_color, secondary_team_color, third_team_color
+      FROM teams.teams
+      GROUP BY team_name_short, team_name_full, logo_image, primary_team_color, secondary_team_color, third_team_color
+      ORDER BY team_name_short, team_name_full
+      ) AS teams
+      ON teams.team_name_short = games.team_short
+
+      GROUP BY team_long, team_short ,logo_image, primary_team_color, secondary_team_color, third_team_color
+      ORDER BY team_short, team_long;
+      `);
+      return response.rows;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   getAllDivisions: async (sport) => {
     try {
       response = await pool.query(`
@@ -217,178 +262,197 @@ module.exports = {
     }
   },
 
-  getTeamRecords: async (date, level, division, season) => {
+  getTeamRecords: async (date = null, level, division, season, gameType) => {
     try {
-      const wins = await pool.query(`
-      SELECT winning_team_long, winning_team_short, count(*) 
-      FROM games.games
-      WHERE season = '${season}'
-      AND game_date <= '${date}'
-      AND team_level = '${level}'
-      AND division = '${division}'
-      GROUP BY winning_team_long, winning_team_short
-      ORDER BY winning_team_long;
-      `);
-      const losses = await pool.query(`
-      SELECT losing_team_long, losing_team_short, count(*) 
-      FROM games.games 
-      WHERE season = '${season}'
-      AND game_date <= '${date}'
-      AND team_level = '${level}'
-      AND division = '${division}'
-      GROUP BY losing_team_long, losing_team_short
-      ORDER BY losing_team_long;
-      `);
-      const ties = await pool.query(`
-      SELECT home_team_long, home_team_short, visitor_team_long, visitor_team_short, tie 
-      FROM games.games 
-      WHERE season = '${season}'
-      AND game_date <= '${date}'
-      AND tie = TRUE 
-      AND team_level = '${level}'
-      AND division = '${division}'
-      GROUP BY home_team_long, home_team_short, visitor_team_long, visitor_team_short, tie
-      ORDER BY home_team_long;
-      `);
-      return [wins.rows, losses.rows, ties.rows];
+      if (date) {
+        const wins = await pool.query(`
+          SELECT winning_team_long, winning_team_short, count(*) as wins
+          FROM games.games
+          WHERE season = '${season}'
+          AND game_date <= '${date}'
+          AND team_level = '${level}'
+          AND division = '${division}'
+          AND game_type = '${gameType}'
+          GROUP BY winning_team_long, winning_team_short
+          ORDER BY winning_team_long;
+    `);
+        const losses = await pool.query(`
+          SELECT losing_team_long, losing_team_short, count(*)  as losses
+          FROM games.games
+          WHERE season = '${season}'
+          AND game_date <= '${date}'
+          AND team_level = '${level}'
+          AND division = '${division}'
+          AND game_type = '${gameType}'
+          GROUP BY losing_team_long, losing_team_short
+          ORDER BY losing_team_long;
+    `);
+        const ties = await pool.query(`
+            SELECT home_team_long, home_team_short, visitor_team_long, visitor_team_short, tie
+            FROM games.games
+            WHERE season = '${season}'
+            AND game_date <= '${date}'
+            AND tie = TRUE
+            AND team_level = '${level}'
+            AND division = '${division}'
+            AND game_type = '${gameType}'
+            GROUP BY home_team_long, home_team_short, visitor_team_long, visitor_team_short, tie
+            ORDER BY home_team_long;
+    `);
+        return [wins.rows, losses.rows, ties.rows];
+      } else {
+        const wins = await pool.query(`
+            SELECT winning_team_long as team_long, winning_team_short as team_short, count(*) as wins
+            FROM games.games
+            WHERE season = '${season}'
+            AND team_level = '${level}'
+            AND division = '${division}'
+            AND game_type = '${gameType}'
+            GROUP BY team_long, team_short
+            ORDER BY team_long;
+    `);
+        const losses = await pool.query(`
+            SELECT losing_team_long as team_long, losing_team_short as team_short, count(*) as losses
+            FROM games.games
+            WHERE season = '${season}'
+            AND team_level = '${level}'
+            AND division = '${division}'
+            AND game_type = '${gameType}'
+            GROUP BY team_long, team_short
+            ORDER BY team_long;
+    `);
+        const ties = await pool.query(`
+            SELECT team_long, team_short, sum(ties) AS ties
+            FROM
+            (
+              SELECT home_team_long AS team_long, home_team_short AS team_short, count(*) AS ties
+            FROM games.games
+            WHERE tie = TRUE
+            AND season = '${season}'
+            AND team_level = '${level}'
+            AND division = '${division}'
+            AND game_type = '${gameType}'
+            GROUP BY team_long , team_short
+
+            UNION ALL
+
+            SELECT visitor_team_long AS team_long, visitor_team_short AS team_short, count(*) AS ties
+            FROM games.games
+            WHERE tie = TRUE
+            AND season = '${season}'
+            AND team_level = '${level}'
+            AND division = '${division}'
+            AND game_type = '${gameType}'
+            GROUP BY team_long , team_short
+            ) AS ties
+            GROUP BY team_long, team_short
+            ORDER BY ties ;
+    `);
+        return { wins: wins.rows, losses: losses.rows, ties: ties.rows };
+      }
     } catch (error) {
       logger.log(error);
     }
   },
 
-  getStandings: async (sport, season, level, division) => {
+  getStandingsPoints: async (sport, season, level, division, gameType) => {
     try {
-      const response = await pool.query(`
-
-   SELECT teams.team_name_long, teams.team_name_short, games_played, teams.total_wins, COALESCE(losses.total_losses, 0) AS total_losses, COALESCE(ties.total_ties, 0) AS total_ties, COALESCE (points.total_points, 0) AS total_points
-   FROM (
-       SELECT winning_team_long AS team_name_long, winning_team_short AS team_name_short, COUNT(winning_team_points) AS total_wins
-       FROM games.games
-       WHERE sport ILIKE '${sport}'
-       AND season = '${season}'
-       AND team_level = '${level}'
-       AND division = '${division}'
-       GROUP BY winning_team_long, winning_team_short
-   ) teams
-   LEFT JOIN (
-       SELECT losing_team_long AS team_name_long, losing_team_short AS team_name_short, COUNT(losing_team_points) AS total_losses
-       FROM games.games
-       WHERE sport ILIKE '${sport}'
-       AND season = '${season}'
-       AND team_level = '${level}'
-       AND division = '${division}'
-       GROUP BY losing_team_long, losing_team_short
-   ) losses ON teams.team_name_long = losses.team_name_long
-   LEFT JOIN (
-       SELECT team_name_long AS team_name_long, team_name_short AS team_name_short, sum(total_ties) AS total_ties
-       FROM (
-           SELECT home_team_long AS team_name_long, home_team_short AS team_name_short, COUNT(*) AS total_ties
-           FROM games.games
-           WHERE sport ILIKE '${sport}'
-           AND season = '${season}'
-           AND team_level = '${level}'
-           AND division = '${division}'
-           AND tie = TRUE
-           GROUP BY home_team_long, home_team_short
-
-           UNION ALL
-
-           SELECT visitor_team_long AS team_name_long, visitor_team_short AS team_name_short, COUNT(*) AS total_ties
-           FROM games.games
-           WHERE sport ILIKE '${sport}'
-           AND season = '${season}'
-           AND team_level = '${level}'
-           AND division = '${division}'
-           AND tie = TRUE
-           GROUP BY visitor_team_long, visitor_team_short
-       ) queryTable
-       GROUP BY team_name_long, team_name_short
-   ) ties ON teams.team_name_long = ties.team_name_long
-   LEFT JOIN (
-   SELECT team_long, team_short, SUM(points) AS total_points
-   FROM (
-       SELECT winning_team_long AS team_long, winning_team_short AS team_short, SUM(winning_team_points) AS points
-       FROM games.games
-       WHERE sport ILIKE '${sport}'
-       AND season = '${season}'
-       AND team_level = '${level}'
-       AND division = '${division}'
-       GROUP BY winning_team_long, winning_team_short
-
-       UNION ALL
-
-       SELECT losing_team_long AS team_long, losing_team_short AS team_short, sum(losing_team_points) AS points
-       FROM games.games
-       WHERE sport ILIKE '${sport}'
-       AND season = '${season}'
-       AND team_level = '${level}'
-       AND division = '${division}'
-       GROUP BY losing_team_long, losing_team_short
-
-       UNION ALL
-
-       SELECT home_team_long AS team_long, home_team_short AS team_short, 1 AS points
-       FROM games.games
-       WHERE sport ILIKE '${sport}'
-       AND season = '${season}'
-       AND team_level = '${level}'
-       AND division = '${division}'
-       AND tie = TRUE
-
-       UNION ALL
-
-       SELECT visitor_team_long AS team_long, visitor_team_short , 1 AS points
-       FROM games.games
-       WHERE sport ILIKE '${sport}'
-       AND season = '${season}'
-       AND team_level = '${level}'
-       AND division = '${division}'
-       AND tie = TRUE
-   ) subquery
-   WHERE team_long IS NOT NULL
-   GROUP BY team_long, team_short
-   ORDER BY total_points DESC
-   ) points
-   ON points.team_long = teams.team_name_long
-   LEFT JOIN (
-   SELECT team, sum(games_played) AS games_played
-   FROM (
-   SELECT
-   CASE
-     WHEN winning_team_long IS NOT NULL THEN winning_team_long
-     ELSE home_team_long
-   END AS team ,
-   COUNT(*) AS games_played
-   FROM games.games
-   WHERE sport ILIKE '${sport}'
-   AND season = '${season}'
-   AND team_level = '${level}'
-   AND division = '${division}'
-   GROUP BY team
-
-   UNION ALL
-
-   SELECT
-   CASE
-     WHEN losing_team_long IS NOT NULL THEN losing_team_long
-     ELSE visitor_team_long
-   END AS team ,
-   COUNT (*) AS games_played
-   FROM games.games
-   WHERE sport ILIKE '${sport}'
-   AND season = '${season}'
-   AND team_level = '${level}'
-   AND division = '${division}'
-   GROUP BY team
-   ) AS gp
-
-   GROUP BY team
-   ORDER BY games_played DESC
-   ) games_played ON games_played.team = teams.team_name_long
-   WHERE teams.team_name_long IS NOT NULL
-   ORDER BY total_points DESC;
+      const points = await pool.query(`
+      SELECT
+      games.winning_team_long AS team_long,
+      games.winning_team_short AS team_short,
+      COALESCE(wins.count,
+      0) AS wins,
+      COALESCE(tie_games.ties,
+      0) AS TIES,
+      COALESCE(wins.count,
+      0) * 2 + COALESCE(tie_games.TIES,
+      0) AS points
+    FROM
+      games.games
+    JOIN (
+      SELECT
+        winning_team_long,
+        winning_team_short,
+        COUNT(*) AS count
+      FROM
+        games.games
+      WHERE
+        sport ILIKE '${sport}'
+        AND season = '${season}'
+        AND team_level = '${level}'
+        AND division = '${division}'
+        AND game_type = '${gameType}'
+      GROUP BY
+        winning_team_long,
+        winning_team_short
+    ) AS wins ON
+      games.winning_team_long = wins.winning_team_long
+      AND games.winning_team_short = wins.winning_team_short
+    LEFT JOIN (
+      SELECT
+        team_long,
+        team_short,
+        SUM(TIES) AS TIES
+      FROM
+        (
+        SELECT
+          home_team_long AS team_long,
+          home_team_short AS team_short,
+          COUNT(*) AS TIES
+        FROM
+          games.games
+        WHERE
+          tie = TRUE
+        AND sport ILIKE '${sport}'
+        AND season = '${season}'
+        AND team_level = '${level}'
+        AND division = '${division}'
+        AND game_type = '${gameType}'
+        GROUP BY
+          home_team_long,
+          home_team_short
+      UNION ALL
+        SELECT
+          visitor_team_long AS team_long,
+          visitor_team_short AS team_short,
+          COUNT(*) AS TIES
+        FROM
+          games.games
+        WHERE
+          tie = TRUE
+        AND sport ILIKE '${sport}'
+        AND season = '${season}'
+        AND team_level = '${level}'
+        AND division = '${division}'
+        AND game_type = '${gameType}'
+        GROUP BY
+          visitor_team_long,
+          visitor_team_short
+        ) AS TIES
+      GROUP BY
+        team_long,
+        team_short
+      ORDER BY
+        TIES
+    ) AS tie_games ON
+      tie_games.team_long = games.winning_team_long
+      AND tie_games.team_short = games.winning_team_short
+    WHERE
+    sport ILIKE '${sport}'
+    AND season = '${season}'
+    AND team_level = '${level}'
+    AND division = '${division}'
+    AND game_type = '${gameType}'
+    GROUP BY
+      games.winning_team_long,
+      games.winning_team_short,
+      wins.count,
+      tie_games.TIES
+    ORDER BY
+      points DESC;    
         `);
-      return response.rows;
+      return points.rows;
     } catch (error) {
       logger.log(error);
     }

@@ -196,6 +196,9 @@ function Scores() {
       const response = await fetch(
         `/api/hockey/scores?date=${date}&level=${team_level}&division=${divisionToQuery}`
       );
+      console.log(
+        `/api/hockey/scores?date=${date}&level=${team_level}&division=${divisionToQuery}`
+      );
       const data = await response.json();
       if (data.length) console.log(data);
       setScores(data);
@@ -210,7 +213,7 @@ function Scores() {
       console.log(season);
       if (scores.length) {
         const response = await fetch(
-          `/api/hockey/team-records?date=${date}&level=${team_level}&division=${division}&season=${season}`
+          `/api/hockey/team-records?date=${date}&level=${team_level}&division=${division}&season=${season}&gameType=Regular Season`
         );
         const records = await response.json();
         console.log(records);
@@ -236,8 +239,8 @@ function Scores() {
       }
     });
 
-    const wins = winningRecord?.count || 0;
-    const losses = losingRecord?.count || 0;
+    const wins = winningRecord?.wins || 0;
+    const losses = losingRecord?.losses || 0;
     const ties = tiesCount;
     return `(${wins}-${losses}-${ties})`;
   };

@@ -53,6 +53,10 @@
   margin-left: 0.25vw;
 }
 
+#standings-container #standings-team-logo > a > p:hover {
+  transform: scale(1.05);
+}
+
 #standings-team-logo img {
   width: 3vw;
   height: 5vh;

@@ -139,7 +139,7 @@ function Standings() {
       teams,
     ] = await Promise.all([
       fetch(
-        `/api/${sportToQuery}/standings?season=${season}&level=${level}&division=${team_division}`
+        `/api/${sportToQuery}/standings?season=${season}&level=${level}&division=${team_division}&gameType=Regular Season`
       ),
       fetch(
         `/api/${sportToQuery}/teams/GF_GA_DIFF?season=${season}&level=${level}&division=${team_division}`
@@ -150,16 +150,18 @@ function Standings() {
       fetch(
         `/api/${sportToQuery}/teams/away-records?season=${season}&level=${level}&division=${team_division}`
       ),
-      fetch(`/api/${sportToQuery}/teams?level=${level}`),
+      fetch(
+        `/api/${sportToQuery}/teams-season?season=${season}&level=${level}&division=${team_division}`
+      ),
     ]);
-    const winsLossesPoints = await winsLossRecord.json();
-    const teamsData = await teams.json();
+    const teamRecordsAndPoints = await winsLossRecord.json();
     const GF_GA = await GF_GA_DIFF.json();
     const homeWinsLossRecord = await homeWinLossRecord.json();
     const awayWinsLossRecord = await awayWinLossRecord.json();
+    const teamsData = await teams.json();
     setTeamsData(teamsData);
     const combinedStandingsData = {
-      winsLossesPoints,
+      teamRecordsAndPoints,
       GF_GA,
       homeWinsLossRecord,
       awayWinsLossRecord,
@@ -250,87 +252,132 @@ function Standings() {
     console.log(allTeamStreaks);
   };
 
+  // const getCombinedDataToRender = (combinedData, teamsData) => {
+  //   //?! NEED TO FIX THIS FUNCTION!!!!
+  //   console.log(combinedData);
+  //   let finalData = combinedData.teamRecordsAndPoints.map((winsLossPoints) => {
+  //     const teams = teamsData.find((team) => {
+  //       return (
+  //         team.team_name_full === winsLossPoints.team_name_long ||
+  //         team.team_name_short === winsLossPoints.team_name_short
+  //       );
+  //     });
+
+  //     const GF_GA_DIFF = combinedData.GF_GA.find((stat) => {
+  //       return (
+  //         stat.team_long === winsLossPoints.team_name_long &&
+  //         stat.team_short === winsLossPoints.team_name_short
+  //       );
+  //     });
+
+  //     const homeWinsLossRecords = {
+  //       wins: [],
+  //       losses: [],
+  //       ties: [],
+  //     };
+
+  //     combinedData.homeWinsLossRecord.map((stat) => {
+  //       if (
+  //         stat.home_team_long === winsLossPoints.team_name_long &&
+  //         stat.winning_team_long === stat.home_team_long
+  //       ) {
+  //         homeWinsLossRecords.wins.push(stat);
+  //       } else if (
+  //         stat.home_team_long === winsLossPoints.team_name_long &&
+  //         stat.winning_team_long !== stat.home_team_long &&
+  //         stat.tie === false
+  //       ) {
+  //         homeWinsLossRecords.losses.push(stat);
+  //       } else if (
+  //         stat.home_team_long === winsLossPoints.team_name_long &&
+  //         stat.tie === true
+  //       ) {
+  //         homeWinsLossRecords.ties.push(stat);
+  //       }
+  //     });
+
+  //     const awayWinsLossRecords = {
+  //       wins: [],
+  //       losses: [],
+  //       ties: [],
+  //     };
+
+  //     combinedData.awayWinsLossRecord.map((stat) => {
+  //       if (
+  //         stat.visitor_team_long === winsLossPoints.team_name_long &&
+  //         stat.winning_team_long === stat.visitor_team_long
+  //       ) {
+  //         awayWinsLossRecords.wins.push(stat);
+  //       } else if (
+  //         stat.visitor_team_long === winsLossPoints.team_name_long &&
+  //         stat.winning_team_long !== stat.visitor_team_long &&
+  //         stat.tie === false
+  //       ) {
+  //         awayWinsLossRecords.losses.push(stat);
+  //       } else if (
+  //         stat.visitor_team_long === winsLossPoints.team_name_long &&
+  //         stat.tie === true
+  //       ) {
+  //         awayWinsLossRecords.ties.push(stat);
+  //       }
+  //     });
+
+  //     return {
+  //       ...teams,
+  //       winsLossPoints,
+  //       GF_GA_DIFF,
+  //       homeWinsLossRecords,
+  //       awayWinsLossRecords,
+  //       displayedTeamName: teamNameToRender(
+  //         winsLossPoints.team_name_long,
+  //         winsLossPoints.team_name_short
+  //       ),
+  //     };
+  //   });
+  //   setCombinedData(finalData);
+  // };
+
+  //?----------------------------------------------------------------- JSX ------------------------------------------------------------------------
+
   const getCombinedDataToRender = (combinedData, teamsData) => {
-    let finalData = combinedData.winsLossesPoints.map((winsLossPoints) => {
-      const teams = teamsData.find((team) => {
-        return (
-          team.team_name_full === winsLossPoints.team_name_long ||
-          team.team_name_short === winsLossPoints.team_name_short
-        );
+    console.log(combinedData);
+    console.log(teamsData);
+    let finalDataToRender = [];
+
+    teamsData.forEach((team, index) => {
+      finalDataToRender.push({
+        team: team.team_long,
+        wins: 0,
+        losses: 0,
+        ties: 0,
+        points: 0,
       });
-
-      const GF_GA_DIFF = combinedData.GF_GA.find((stat) => {
-        return (
-          stat.team_long === winsLossPoints.team_name_long &&
-          stat.team_short === winsLossPoints.team_name_short
-        );
-      });
-
-      const homeWinsLossRecords = {
-        wins: [],
-        losses: [],
-        ties: [],
-      };
-
-      combinedData.homeWinsLossRecord.map((stat) => {
-        if (
-          stat.home_team_long === winsLossPoints.team_name_long &&
-          stat.winning_team_long === stat.home_team_long
-        ) {
-          homeWinsLossRecords.wins.push(stat);
-        } else if (
-          stat.home_team_long === winsLossPoints.team_name_long &&
-          stat.winning_team_long !== stat.home_team_long &&
-          stat.tie === false
-        ) {
-          homeWinsLossRecords.losses.push(stat);
-        } else if (
-          stat.home_team_long === winsLossPoints.team_name_long &&
-          stat.tie === true
-        ) {
-          homeWinsLossRecords.ties.push(stat);
+      combinedData.teamRecordsAndPoints.records?.wins.forEach((el) => {
+        if (el.team_long === team.team_long) {
+          finalDataToRender[index].wins = el.wins;
         }
       });
 
-      const awayWinsLossRecords = {
-        wins: [],
-        losses: [],
-        ties: [],
-      };
-
-      combinedData.awayWinsLossRecord.map((stat) => {
-        if (
-          stat.visitor_team_long === winsLossPoints.team_name_long &&
-          stat.winning_team_long === stat.visitor_team_long
-        ) {
-          awayWinsLossRecords.wins.push(stat);
-        } else if (
-          stat.visitor_team_long === winsLossPoints.team_name_long &&
-          stat.winning_team_long !== stat.visitor_team_long &&
-          stat.tie === false
-        ) {
-          awayWinsLossRecords.losses.push(stat);
-        } else if (
-          stat.visitor_team_long === winsLossPoints.team_name_long &&
-          stat.tie === true
-        ) {
-          awayWinsLossRecords.ties.push(stat);
+      combinedData.teamRecordsAndPoints.records?.losses.forEach((el) => {
+        if (el.team_long === team.team_long) {
+          finalDataToRender[index].losses = el.losses;
         }
       });
 
-      return {
-        ...teams,
-        winsLossPoints,
-        GF_GA_DIFF,
-        homeWinsLossRecords,
-        awayWinsLossRecords,
-        displayedTeamName: teamNameToRender(
-          winsLossPoints.team_name_long,
-          winsLossPoints.team_name_short
-        ),
-      };
+      combinedData.teamRecordsAndPoints.records?.ties.forEach((el) => {
+        if (el.team_long === team.team_long) {
+          finalDataToRender[index].ties = el.ties;
+        }
+      });
+
+      combinedData.teamRecordsAndPoints?.points?.forEach((el) => {
+        if (el.team_long === team.team_long) {
+          finalDataToRender[index].points = el.points;
+        }
+      });
     });
-    setCombinedData(finalData);
+
+    console.log(finalDataToRender);
   };
 
   //?----------------------------------------------------------------- JSX ------------------------------------------------------------------------
