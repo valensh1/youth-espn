@@ -346,6 +346,8 @@ function Standings() {
 
     teamsData.forEach((team, index) => {
       finalDataToRender.push({
+        id: team.id,
+        displayedTeamName: teamNameToRender(team.team_long, team.team_short),
         team: team.team_long,
         wins: 0,
         losses: 0,
@@ -378,6 +380,7 @@ function Standings() {
     });
 
     console.log(finalDataToRender);
+    // setCombinedData(finalDataToRender);
   };
 
   //?----------------------------------------------------------------- JSX ------------------------------------------------------------------------

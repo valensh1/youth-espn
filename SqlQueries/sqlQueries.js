@@ -64,40 +64,42 @@ module.exports = {
   getTeamsForSeason: async (sport, season, level, division) => {
     try {
       response = await pool.query(`
-      SELECT team_long, team_short, logo_image, primary_team_color, secondary_team_color, third_team_color
+      SELECT teams.id, team_long, team_short, logo_image, primary_team_color, secondary_team_color, third_team_color
       FROM 
       (
-      SELECT home_team_long AS team_long, home_team_short AS team_short
+      SELECT home_team_id_fk AS id, home_team_long AS team_long, home_team_short AS team_short
       FROM games.games
       WHERE sport ILIKE '${sport}'
       AND season = '${season}'
       AND team_level = '${level}'
       AND division = '${division}'
       AND game_type = 'Regular Season'
-      GROUP BY team_long, team_short
+      GROUP BY id, team_long, team_short
 
       UNION ALL 
 
-      SELECT visitor_team_long AS team_long, visitor_team_short AS team_short
+      SELECT visitor_team_id_fk AS id, visitor_team_long AS team_long, visitor_team_short AS team_short
       FROM games.games
       WHERE sport ILIKE '${sport}'
       AND season = '${season}'
       AND team_level = '${level}'
       AND division = '${division}'
       AND game_type = 'Regular Season'
-      GROUP BY team_long, team_short
+      GROUP BY id, team_long, team_short
       ) AS games
 
       LEFT JOIN 
       (
-      SELECT team_name_full, team_name_short, logo_image, primary_team_color, secondary_team_color, third_team_color
+      SELECT id, team_name_full, team_name_short, logo_image, primary_team_color, secondary_team_color, third_team_color
       FROM teams.teams
-      GROUP BY team_name_short, team_name_full, logo_image, primary_team_color, secondary_team_color, third_team_color
+      WHERE sport ILIKE '${sport}'
+      AND team_level = '${level}'
+      GROUP BY id, team_name_short, team_name_full, logo_image, primary_team_color, secondary_team_color, third_team_color
       ORDER BY team_name_short, team_name_full
       ) AS teams
       ON teams.team_name_short = games.team_short
 
-      GROUP BY team_long, team_short ,logo_image, primary_team_color, secondary_team_color, third_team_color
+      GROUP BY teams.id, team_long, team_short ,logo_image, primary_team_color, secondary_team_color, third_team_color
       ORDER BY team_short, team_long;
       `);
       return response.rows;
