@@ -346,35 +346,57 @@ function Standings() {
 
     teamsData.forEach((team, index) => {
       finalDataToRender.push({
-        id: team.id,
+        teamInfo: { ...team },
         displayedTeamName: teamNameToRender(team.team_long, team.team_short),
-        team: team.team_long,
-        wins: 0,
-        losses: 0,
-        ties: 0,
-        points: 0,
+        winsLossesTiesPoints: { wins: 0, losses: 0, ties: 0, points: 0 },
       });
+
       combinedData.teamRecordsAndPoints.records?.wins.forEach((el) => {
         if (el.team_long === team.team_long) {
-          finalDataToRender[index].wins = el.wins;
+          finalDataToRender[index].winsLossesTiesPoints = {
+            ...finalDataToRender[index].winsLossesTiesPoints,
+            wins: el.wins,
+          };
         }
       });
 
       combinedData.teamRecordsAndPoints.records?.losses.forEach((el) => {
         if (el.team_long === team.team_long) {
-          finalDataToRender[index].losses = el.losses;
+          finalDataToRender[index].winsLossesTiesPoints = {
+            ...finalDataToRender[index].winsLossesTiesPoints,
+            losses: el.losses,
+          };
         }
       });
 
       combinedData.teamRecordsAndPoints.records?.ties.forEach((el) => {
         if (el.team_long === team.team_long) {
-          finalDataToRender[index].ties = el.ties;
+          finalDataToRender[index].winsLossesTiesPoints = {
+            ...finalDataToRender[index].winsLossesTiesPoints,
+            ties: el.ties,
+          };
         }
       });
 
       combinedData.teamRecordsAndPoints?.points?.forEach((el) => {
         if (el.team_long === team.team_long) {
-          finalDataToRender[index].points = el.points;
+          finalDataToRender[index].winsLossesTiesPoints = {
+            ...finalDataToRender[index].winsLossesTiesPoints,
+            points: el.points,
+          };
+        }
+      });
+
+      combinedData.GF_GA.forEach((goalStat) => {
+        if (
+          goalStat.team_long === team.team_long &&
+          goalStat.team_short === team.team_short
+        ) {
+          finalDataToRender[index].GF_GA_DIFF = {
+            GF: goalStat.GF,
+            GA: goalStat.GA,
+            DIFF: goalStat.DIFF,
+          };
         }
       });
     });
