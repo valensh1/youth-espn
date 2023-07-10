@@ -69,13 +69,10 @@ function Standings() {
 
         const teamGames = await Promise.all(
           combinedData.map(async (team) => {
-            console.log(team.displayedTeamName);
             const teamGameStreak = await getTeamGames(team.displayedTeamName);
-            console.log(teamGameStreak);
             return teamGameStreak;
           })
         );
-        console.log(teamGames);
         calcTeamGameStreak(teamGames);
       } catch (error) {
         console.error(error);
@@ -145,10 +142,10 @@ function Standings() {
         `/api/${sportToQuery}/teams/GF_GA_DIFF?season=${season}&level=${level}&division=${team_division}`
       ),
       fetch(
-        `/api/${sportToQuery}/teams/home-records?season=${season}&level=${level}&division=${team_division}`
+        `/api/${sportToQuery}/teams/home-records?season=${season}&level=${level}&division=${team_division}&gameType=Regular Season`
       ),
       fetch(
-        `/api/${sportToQuery}/teams/away-records?season=${season}&level=${level}&division=${team_division}`
+        `/api/${sportToQuery}/teams/away-records?season=${season}&level=${level}&division=${team_division}&gameType=Regular Season`
       ),
       fetch(
         `/api/${sportToQuery}/teams-season?season=${season}&level=${level}&division=${team_division}`
@@ -221,10 +218,9 @@ function Standings() {
 
   const getTeamGames = async (team) => {
     const response = await fetch(
-      `/api/${sportToQuery}/teams/game-streak?season=${selections.season}&level=${selections.level}&division=${selections.division}&team=${team}`
+      `/api/${sportToQuery}/teams/game-streak?season=${selections.season}&level=${selections.level}&division=${selections.division}&team=${team}&gameType=Regular Season`
     );
     const data = await response.json();
-    console.log(team, data);
     return data;
   };
 
@@ -249,106 +245,28 @@ function Standings() {
       });
     }
     setGameStreak(allTeamStreaks);
-    console.log(allTeamStreaks);
   };
 
-  // const getCombinedDataToRender = (combinedData, teamsData) => {
-  //   //?! NEED TO FIX THIS FUNCTION!!!!
-  //   console.log(combinedData);
-  //   let finalData = combinedData.teamRecordsAndPoints.map((winsLossPoints) => {
-  //     const teams = teamsData.find((team) => {
-  //       return (
-  //         team.team_name_full === winsLossPoints.team_name_long ||
-  //         team.team_name_short === winsLossPoints.team_name_short
-  //       );
-  //     });
-
-  //     const GF_GA_DIFF = combinedData.GF_GA.find((stat) => {
-  //       return (
-  //         stat.team_long === winsLossPoints.team_name_long &&
-  //         stat.team_short === winsLossPoints.team_name_short
-  //       );
-  //     });
-
-  //     const homeWinsLossRecords = {
-  //       wins: [],
-  //       losses: [],
-  //       ties: [],
-  //     };
-
-  //     combinedData.homeWinsLossRecord.map((stat) => {
-  //       if (
-  //         stat.home_team_long === winsLossPoints.team_name_long &&
-  //         stat.winning_team_long === stat.home_team_long
-  //       ) {
-  //         homeWinsLossRecords.wins.push(stat);
-  //       } else if (
-  //         stat.home_team_long === winsLossPoints.team_name_long &&
-  //         stat.winning_team_long !== stat.home_team_long &&
-  //         stat.tie === false
-  //       ) {
-  //         homeWinsLossRecords.losses.push(stat);
-  //       } else if (
-  //         stat.home_team_long === winsLossPoints.team_name_long &&
-  //         stat.tie === true
-  //       ) {
-  //         homeWinsLossRecords.ties.push(stat);
-  //       }
-  //     });
-
-  //     const awayWinsLossRecords = {
-  //       wins: [],
-  //       losses: [],
-  //       ties: [],
-  //     };
-
-  //     combinedData.awayWinsLossRecord.map((stat) => {
-  //       if (
-  //         stat.visitor_team_long === winsLossPoints.team_name_long &&
-  //         stat.winning_team_long === stat.visitor_team_long
-  //       ) {
-  //         awayWinsLossRecords.wins.push(stat);
-  //       } else if (
-  //         stat.visitor_team_long === winsLossPoints.team_name_long &&
-  //         stat.winning_team_long !== stat.visitor_team_long &&
-  //         stat.tie === false
-  //       ) {
-  //         awayWinsLossRecords.losses.push(stat);
-  //       } else if (
-  //         stat.visitor_team_long === winsLossPoints.team_name_long &&
-  //         stat.tie === true
-  //       ) {
-  //         awayWinsLossRecords.ties.push(stat);
-  //       }
-  //     });
-
-  //     return {
-  //       ...teams,
-  //       winsLossPoints,
-  //       GF_GA_DIFF,
-  //       homeWinsLossRecords,
-  //       awayWinsLossRecords,
-  //       displayedTeamName: teamNameToRender(
-  //         winsLossPoints.team_name_long,
-  //         winsLossPoints.team_name_short
-  //       ),
-  //     };
-  //   });
-  //   setCombinedData(finalData);
-  // };
-
-  //?----------------------------------------------------------------- JSX ------------------------------------------------------------------------
+  // Function to sort the standings by points in DESC order and then by displayed team name in ASC order
+  const sortData = (data) => {
+    data.sort((a, b) => {
+      if (b.winsLossesTiesPoints.points !== a.winsLossesTiesPoints.points) {
+        return b.winsLossesTiesPoints.points - a.winsLossesTiesPoints.points;
+      } else {
+        return a.displayedTeamName.localeCompare(b.displayedTeamName);
+      }
+    });
+  };
 
   const getCombinedDataToRender = (combinedData, teamsData) => {
-    console.log(combinedData);
-    console.log(teamsData);
     let finalDataToRender = [];
 
     teamsData.forEach((team, index) => {
       finalDataToRender.push({
         teamInfo: { ...team },
         displayedTeamName: teamNameToRender(team.team_long, team.team_short),
-        winsLossesTiesPoints: { wins: 0, losses: 0, ties: 0, points: 0 },
+        winsLossesTiesPoints: { GP: 0, wins: 0, losses: 0, ties: 0, points: 0 },
+        GF_GA_DIFF: { GF: 0, GA: 0, DIFF: 0 },
       });
 
       combinedData.teamRecordsAndPoints.records?.wins.forEach((el) => {
@@ -356,6 +274,9 @@ function Standings() {
           finalDataToRender[index].winsLossesTiesPoints = {
             ...finalDataToRender[index].winsLossesTiesPoints,
             wins: el.wins,
+            GP: (finalDataToRender[index].winsLossesTiesPoints.GP += Number(
+              el.wins
+            )),
           };
         }
       });
@@ -365,6 +286,9 @@ function Standings() {
           finalDataToRender[index].winsLossesTiesPoints = {
             ...finalDataToRender[index].winsLossesTiesPoints,
             losses: el.losses,
+            GP: (finalDataToRender[index].winsLossesTiesPoints.GP += Number(
+              el.losses
+            )),
           };
         }
       });
@@ -374,6 +298,9 @@ function Standings() {
           finalDataToRender[index].winsLossesTiesPoints = {
             ...finalDataToRender[index].winsLossesTiesPoints,
             ties: el.ties,
+            GP: (finalDataToRender[index].winsLossesTiesPoints.GP += Number(
+              el.ties
+            )),
           };
         }
       });
@@ -399,10 +326,83 @@ function Standings() {
           };
         }
       });
+
+      const homeWinsLossRecords = {
+        wins: [],
+        losses: [],
+        ties: [],
+      };
+
+      combinedData.homeWinsLossRecord.forEach((stat) => {
+        if (
+          stat.home_team_long === team.team_long &&
+          stat.winning_team_long === stat.home_team_long
+        ) {
+          homeWinsLossRecords.wins.push(stat);
+        } else if (
+          stat.home_team_long === team.team_long &&
+          stat.winning_team_long !== stat.home_team_long &&
+          stat.tie === false
+        ) {
+          homeWinsLossRecords.losses.push(stat);
+        } else if (
+          stat.home_team_long === team.team_long &&
+          stat.tie === true
+        ) {
+          homeWinsLossRecords.ties.push(stat);
+        }
+        const homeRecord = calcWinsLossesTies(homeWinsLossRecords);
+        finalDataToRender[index].homeAwayRecords = {
+          ...finalDataToRender[index].homeAwayRecords,
+          homeRecord: homeRecord,
+        };
+      });
+
+      console.log(
+        teamNameToRender(team.team_long, team.team_short),
+        homeWinsLossRecords
+      );
+
+      const awayWinsLossRecords = {
+        wins: [],
+        losses: [],
+        ties: [],
+      };
+
+      combinedData.awayWinsLossRecord.forEach((stat) => {
+        if (
+          stat.visitor_team_long === team.team_long &&
+          stat.winning_team_long === stat.visitor_team_long
+        ) {
+          awayWinsLossRecords.wins.push(stat);
+        } else if (
+          stat.visitor_team_long === team.team_long &&
+          stat.winning_team_long !== stat.visitor_team_long &&
+          stat.tie === false
+        ) {
+          awayWinsLossRecords.losses.push(stat);
+        } else if (
+          stat.visitor_team_long === team.team_long &&
+          stat.tie === true
+        ) {
+          awayWinsLossRecords.ties.push(stat);
+        }
+        const awayRecord = calcWinsLossesTies(awayWinsLossRecords);
+        finalDataToRender[index].homeAwayRecords = {
+          ...finalDataToRender[index].homeAwayRecords,
+          awayRecord: awayRecord,
+        };
+      });
+
+      console.log(
+        teamNameToRender(team.team_long, team.team_short),
+        awayWinsLossRecords
+      );
     });
 
     console.log(finalDataToRender);
-    // setCombinedData(finalDataToRender);
+    sortData(finalDataToRender);
+    setCombinedData(finalDataToRender);
   };
 
   //?----------------------------------------------------------------- JSX ------------------------------------------------------------------------
@@ -433,20 +433,18 @@ function Standings() {
             <tbody>
               {combinedData.map(
                 ({
-                  displayedTeamName,
-                  id,
-                  logo_image,
-                  winsLossPoints,
                   GF_GA_DIFF,
-                  homeWinsLossRecords,
-                  awayWinsLossRecords,
+                  displayedTeamName,
+                  homeAwayRecords,
+                  teamInfo,
+                  winsLossesTiesPoints,
                 }) => {
                   return (
-                    <tr key={`${displayedTeamName}-${id}`}>
+                    <tr key={`${displayedTeamName}-${teamInfo.id}`}>
                       <td id="standings-team-logo">
                         <Link to={''}>
                           <img
-                            src={logo_image}
+                            src={teamInfo.logo_image}
                             alt=""
                             className="team-logo standings-team-logo"
                           />
@@ -454,16 +452,16 @@ function Standings() {
                         </Link>
                       </td>
 
-                      <td>{winsLossPoints.games_played}</td>
-                      <td>{winsLossPoints.total_wins}</td>
-                      <td>{winsLossPoints.total_losses}</td>
+                      <td>{winsLossesTiesPoints.GP}</td>
+                      <td>{winsLossesTiesPoints.wins}</td>
+                      <td>{winsLossesTiesPoints.losses}</td>
                       <td></td>
-                      <td>{winsLossPoints.total_ties}</td>
-                      <td id="stat-points">{winsLossPoints.total_points}</td>
+                      <td>{winsLossesTiesPoints.ties}</td>
+                      <td id="stat-points">{winsLossesTiesPoints.points}</td>
                       <td>
                         {pointsPercentageCalc(
-                          winsLossPoints.games_played,
-                          winsLossPoints.total_points
+                          winsLossesTiesPoints.GP,
+                          winsLossesTiesPoints.points
                         )}
                       </td>
                       <td></td>
@@ -471,8 +469,8 @@ function Standings() {
                       <td>{GF_GA_DIFF.GF}</td>
                       <td>{GF_GA_DIFF.GA}</td>
                       <td>{GF_GA_DIFF.DIFF}</td>
-                      <td>{calcWinsLossesTies(homeWinsLossRecords)}</td>
-                      <td>{calcWinsLossesTies(awayWinsLossRecords)}</td>
+                      <td>{homeAwayRecords.homeRecord}</td>
+                      <td>{homeAwayRecords.awayRecord}</td>
                       <td></td>
                       <td>{calcLast10Streak(displayedTeamName)}</td>
                       <td>

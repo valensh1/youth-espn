@@ -1199,7 +1199,11 @@ SELECT teams.team_name_long, teams.team_name_short, games_played, teams.total_wi
    ) games_played ON games_played.team = teams.team_name_long
    WHERE teams.team_name_long IS NOT NULL
    ORDER BY total_points DESC;
-   
+  
+  
+  
+  
+  
   SELECT *,
   CASE
   	WHEN home_team_long = 'Jr. Ducks(3)'
@@ -1209,6 +1213,8 @@ SELECT teams.team_name_long, teams.team_name_short, games_played, teams.total_wi
   	WHEN visitor_team_long = 'Jr. Ducks(3)'
   	THEN sum(home_team_score)
   END AS GF2
+  
+  
   
   
   FROM games.games 
@@ -1329,6 +1335,679 @@ ALTER COLUMN game_type_league SET NOT NULL;
 
 
 
+-- Games_played, wins, losses, ties
+SELECT gp.team_long, gp.team_short, SUM(games_played) AS games_played, sum(COALESCE(team_wins.wins, 0)) AS wins, sum(COALESCE(team_losses.losses, 0)) AS losses, sum(COALESCE(ties.ties, 0)) AS TIES, COALESCE (sum((wins * 2) + COALESCE(TIES, 0)), 0) AS points
+FROM (
+    SELECT 
+    	CASE 
+	        WHEN winning_team_long IS NOT NULL THEN winning_team_long
+	        ELSE home_team_long
+    END AS team_long,
+    	CASE 
+	        WHEN winning_team_short IS NOT NULL THEN winning_team_short
+	        ELSE home_team_short
+    END AS team_short,
+    COUNT(*) AS games_played
+    FROM games.games
+    WHERE season = '2021-2022'
+        AND team_level = 'A'
+        AND division = 'Peewee'
+        AND (winning_team_long IS NOT NULL OR losing_team_long IS NOT NULL)
+    GROUP BY team_long, team_short
 
+    UNION ALL
+
+    SELECT 
+        CASE 
+            WHEN losing_team_long IS NOT NULL THEN losing_team_long
+            ELSE home_team_long
+        END AS team_long, 
+      	CASE 
+	        WHEN losing_team_short IS NOT NULL THEN losing_team_short
+	        ELSE home_team_short
+    END AS team_short,
+        COUNT(*) AS games_played
+    FROM games.games
+    WHERE season = '2021-2022'
+        AND team_level = 'A'
+        AND division = 'Peewee'
+        AND (winning_team_long IS NOT NULL OR losing_team_long IS NOT NULL)
+    GROUP BY team_long, team_short
+) AS gp
+
+LEFT JOIN (
+    SELECT winning_team_long AS team_long, winning_team_short AS team_short, COUNT(*) AS wins
+    FROM games.games
+    WHERE season = '2021-2022'
+        AND team_level = 'A'
+        AND division = 'Peewee'
+        AND winning_team_long IS NOT NULL 
+    GROUP BY team_long, team_short
+) AS team_wins 
+ON gp.team_long = team_wins.team_long
+
+LEFT JOIN (
+    SELECT losing_team_long AS team_long, losing_team_short AS team_short, COUNT(*) AS losses
+    FROM games.games
+    WHERE season = '2021-2022'
+        AND team_level = 'A'
+        AND division = 'Peewee'
+        AND losing_team_long IS NOT NULL 
+    GROUP BY team_long, team_short
+) AS team_losses 
+ON gp.team_long = team_losses.team_long
+
+LEFT JOIN (
+   SELECT team_long, team_short, ties
+   FROM (
+   SELECT home_team_long AS team_long, home_team_short AS team_short, count(*) AS TIES
+   FROM games.games
+   WHERE tie = TRUE 
+   AND season = '2021-2022'
+        AND team_level = 'A'
+        AND division = 'Peewee'
+    GROUP BY team_long, team_short
+    
+    UNION ALL 
+    
+       SELECT visitor_team_long AS team_long, visitor_team_short AS team_short, count(*) AS TIES
+   FROM games.games
+   WHERE tie = TRUE 
+   AND season = '2021-2022'
+        AND team_level = 'A'
+        AND division = 'Peewee'
+    GROUP BY team_long, team_short
+    
+   ) AS team_ties
+) AS ties 
+ON gp.team_long = ties.team_long
+
+GROUP BY gp.team_long, gp.team_short
+ORDER BY points DESC;
+
+
+
+
+SELECT *
+FROM games.games
+WHERE home_team_long = 'California Heat' OR visitor_team_long = 'California Heat'
+
+
+-- Wins
+SELECT winning_team_long, winning_team_short, count(*) AS wins
+FROM games.games 
+WHERE season = '2021-2022'
+AND team_level = 'A'
+AND division = 'Peewee'
+AND game_type = 'Regular Season'
+AND winning_team_long IS NOT NULL 
+GROUP BY winning_team_long , winning_team_short
+ORDER BY wins DESC;
+
+
+-- Losses
+SELECT losing_team_long, losing_team_short, count(*) AS losses
+FROM games.games 
+WHERE season = '2021-2022'
+AND team_level = 'A'
+AND division = 'Peewee'
+AND game_type = 'Regular Season'
+AND losing_team_long IS NOT NULL 
+GROUP BY losing_team_long , losing_team_short
+ORDER BY losses;
+
+-- Ties
+SELECT team_long, team_short, ties 
+FROM (
+SELECT home_team_long AS team_long, home_team_short AS team_short, count(*) AS ties
+FROM games.games 
+WHERE tie = true 
+AND season = '2021-2022'
+AND team_level = 'A'
+AND division = 'Peewee'
+AND game_type = 'Regular Season'
+GROUP BY team_long, team_short
+
+UNION ALL
+
+SELECT visitor_team_long AS team_long, visitor_team_short AS team_short, count(*) AS ties
+FROM games.games 
+WHERE tie = TRUE 
+AND season = '2021-2022'
+AND team_level = 'A'
+AND division = 'Peewee'
+AND game_type = 'Regular Season'
+GROUP BY team_long, team_short
+) subquery
+GROUP BY team_long, team_short, ties
+ORDER BY ties;
+
+SELECT
+  games.winning_team_long,
+  games.winning_team_short,
+  wins.count AS wins,
+  wins.count * 2 AS points
+FROM
+  games.games
+JOIN (
+  SELECT
+    winning_team_long,
+    winning_team_short,
+    COUNT(*) AS count
+  FROM
+    games.games
+  WHERE
+    season = '2021-2022'
+    AND team_level = 'A'
+    AND division = 'Peewee'
+    AND game_type = 'Regular Season'
+  GROUP BY
+    winning_team_long,
+    winning_team_short
+) AS wins ON games.winning_team_long = wins.winning_team_long
+  AND games.winning_team_short = wins.winning_team_short
+WHERE
+  season = '2021-2022'
+  AND team_level = 'A'
+  AND division = 'Peewee'
+  AND game_type = 'Regular Season'
+  GROUP BY games.winning_team_long , games.winning_team_short, wins.count
+  ORDER BY points DESC;
+
+
+SELECT team_long, team_short, logo_image, primary_team_color, secondary_team_color, third_team_color
+FROM 
+(
+SELECT home_team_long AS team_long, home_team_short AS team_short
+FROM games.games
+WHERE sport ILIKE 'Hockey'
+AND season = '2021-2022'
+AND team_level = 'A'
+AND division = 'Peewee'
+GROUP BY team_long, team_short
+
+
+UNION ALL 
+
+SELECT visitor_team_long AS team_long, visitor_team_short AS team_short
+FROM games.games
+WHERE sport ILIKE 'Hockey'
+AND season = '2021-2022'
+AND team_level = 'A'
+AND division = 'Peewee'
+GROUP BY team_long, team_short
+) AS games
+
+LEFT JOIN (
+SELECT team_name_full, team_name_short, logo_image, primary_team_color, secondary_team_color, third_team_color
+FROM teams.teams
+GROUP BY team_name_short, team_name_full, logo_image, primary_team_color, secondary_team_color, third_team_color
+ORDER BY team_name_short, team_name_full
+) AS teams
+ON teams.team_name_short = games.team_short
+
+GROUP BY team_long, team_short ,logo_image, primary_team_color, secondary_team_color, third_team_color
+ORDER BY team_short, team_long;
+
+
+SELECT team_long, team_short, sum(ties) AS ties
+FROM 
+(
+SELECT home_team_long AS team_long, home_team_short AS team_short, count(*) AS ties
+FROM games.games
+WHERE sport ILIKE 'Hockey'
+AND tie = TRUE 
+AND season = '2021-2022'
+AND team_level = 'A'
+AND division = 'Peewee'
+AND game_type = 'Regular Season'
+GROUP BY team_long , team_short 
+
+UNION ALL 
+
+SELECT visitor_team_long AS team_long, visitor_team_short AS team_short, count(*) AS ties
+FROM games.games
+WHERE sport ILIKE 'Hockey'
+AND tie = TRUE 
+AND season = '2021-2022'
+AND team_level = 'A'
+AND division = 'Peewee'
+AND game_type = 'Regular Season'
+GROUP BY team_long , team_short 
+) AS ties
+GROUP BY team_long, team_short
+ORDER BY ties ;
+
+
+SELECT *
+FROM games.games
+WHERE home_team_short = 'Sharks'
+OR 
+visitor_team_short = 'Sharks'
+AND season = '2022-2023'
+AND team_level ='AA'
+AND division = 'Peewee';
+
+
+SELECT losing_team_long as team_long, losing_team_short as team_short, count(*) as losses
+            FROM games.games 
+            WHERE season = '2022-2023'
+            AND team_level = 'AA'
+            AND division = 'Peewee'
+            AND game_type = 'Regular Season'
+            GROUP BY team_long, team_short
+            ORDER BY team_long;
+
+
+           
+           
+   SELECT
+	games.winning_team_long AS team_long,
+	games.winning_team_short AS team_short,
+	wins.count AS wins,
+	tie_games.ties,
+	sum(wins.count + tie_games.ties) AS points
+FROM
+	games.games
+JOIN (
+	SELECT
+		winning_team_long,
+		winning_team_short,
+		COUNT(*) AS count
+	FROM
+		games.games
+	WHERE
+		sport ILIKE 'Hockey'
+		AND season = '2021-2022'
+		AND team_level = 'A'
+		AND division = 'Peewee'
+		AND game_type = 'Regular Season'
+	GROUP BY
+		winning_team_long,
+		winning_team_short
+    ) AS wins ON
+	games.winning_team_long = wins.winning_team_long
+	AND games.winning_team_short = wins.winning_team_short
+JOIN 
+    (
+	SELECT
+		team_long,
+		team_short,
+		sum(TIES) AS TIES
+	FROM
+		(
+		SELECT
+			home_team_long AS team_long,
+			home_team_short AS team_short,
+			count(*) AS TIES
+		FROM
+			games.games
+		WHERE
+			tie = TRUE
+			AND sport ILIKE 'Hockey'
+			AND season = '2021-2022'
+			AND team_level = 'A'
+			AND division = 'Peewee'
+			AND game_type = 'Regular Season'
+		GROUP BY
+			team_long ,
+			team_short
+	UNION ALL
+		SELECT
+			visitor_team_long AS team_long,
+			visitor_team_short AS team_short,
+			count(*) AS TIES
+		FROM
+			games.games
+		WHERE
+			tie = TRUE
+			AND sport ILIKE 'Hockey'
+			AND season = '2021-2022'
+			AND team_level = 'A'
+			AND division = 'Peewee'
+			AND game_type = 'Regular Season'
+		GROUP BY
+			team_long ,
+			team_short 
+            ) AS TIES
+	GROUP BY
+		team_long,
+		team_short
+	ORDER BY
+		TIES 
+    
+    ) AS tie_games
+    ON
+	tie_games.team_long = games.winning_team_long
+WHERE
+	sport ILIKE 'Hockey'
+	AND season = '2021-2022'
+	AND team_level = 'A'
+	AND division = 'Peewee'
+	AND game_type = 'Regular Season'
+GROUP BY
+	games.winning_team_long ,
+	games.winning_team_short
+ORDER BY
+	points DESC;
 	
- 
+
+
+
+
+SELECT
+    games.winning_team_long AS team_long,
+    games.winning_team_short AS team_short,
+    wins.count AS wins,
+    tie_games.TIES AS ties,
+    sum(wins.count + tie_games.TIES) AS points
+FROM
+    games.games
+JOIN (
+    SELECT
+        winning_team_long,
+        winning_team_short,
+        COUNT(*) AS count
+    FROM
+        games.games
+    WHERE
+        sport ILIKE 'Hockey'
+        AND season = '2021-2022'
+        AND team_level = 'A'
+        AND division = 'Peewee'
+        AND game_type = 'Regular Season'
+    GROUP BY
+        winning_team_long,
+        winning_team_short
+) AS wins ON
+    games.winning_team_long = wins.winning_team_long
+    AND games.winning_team_short = wins.winning_team_short
+JOIN (
+    SELECT
+        team_long,
+        team_short,
+        SUM(ties) AS ties
+    FROM (
+        SELECT
+            home_team_long AS team_long,
+            home_team_short AS team_short,
+            COUNT(*) AS ties
+        FROM
+            games.games
+        WHERE
+            tie = TRUE
+            AND sport ILIKE 'Hockey'
+            AND season = '2021-2022'
+            AND team_level = 'A'
+            AND division = 'Peewee'
+            AND game_type = 'Regular Season'
+        GROUP BY
+            team_long,
+            team_short
+        UNION ALL
+        SELECT
+            visitor_team_long AS team_long,
+            visitor_team_short AS team_short,
+            COUNT(*) AS ties
+        FROM
+            games.games
+        WHERE
+            tie = TRUE
+            AND sport ILIKE 'Hockey'
+            AND season = '2021-2022'
+            AND team_level = 'A'
+            AND division = 'Peewee'
+            AND game_type = 'Regular Season'
+        GROUP BY
+            team_long,
+            team_short
+    ) AS TIES
+    GROUP BY
+        team_long,
+        team_short
+    ORDER BY
+        ties
+) AS tie_games ON
+    tie_games.team_long = games.winning_team_long
+WHERE
+    sport ILIKE 'Hockey'
+    AND season = '2021-2022'
+    AND team_level = 'A'
+    AND division = 'Peewee'
+    AND game_type = 'Regular Season'
+    GROUP BY games.winning_team_long, games.winning_team_short
+ORDER BY
+    points DESC;
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   SELECT
+    games.winning_team_long AS team_long,
+    games.winning_team_short AS team_short,
+    wins.count AS wins,
+    tie_games.TIES AS ties,
+    SUM(wins.count + tie_games.TIES) AS points
+FROM
+    games.games
+JOIN (
+    SELECT
+        winning_team_long,
+        winning_team_short,
+        COUNT(*) AS count
+    FROM
+        games.games
+    WHERE
+        sport ILIKE 'Hockey'
+        AND season = '2021-2022'
+        AND team_level = 'A'
+        AND division = 'Peewee'
+        AND game_type = 'Regular Season'
+    GROUP BY
+        winning_team_long,
+        winning_team_short
+) AS wins ON
+    games.winning_team_long = wins.winning_team_long
+    AND games.winning_team_short = wins.winning_team_short
+JOIN (
+    SELECT
+        team_long,
+        team_short,
+        SUM(ties) AS TIES
+    FROM (
+        SELECT
+            home_team_long AS team_long,
+            home_team_short AS team_short,
+            COUNT(*) AS ties
+        FROM
+            games.games
+        WHERE
+            tie = TRUE
+            AND sport ILIKE 'Hockey'
+            AND season = '2021-2022'
+            AND team_level = 'A'
+            AND division = 'Peewee'
+            AND game_type = 'Regular Season'
+        GROUP BY
+            home_team_long,
+            home_team_short
+        UNION ALL
+        SELECT
+            visitor_team_long AS team_long,
+            visitor_team_short AS team_short,
+            COUNT(*) AS ties
+        FROM
+            games.games
+        WHERE
+            tie = TRUE
+            AND sport ILIKE 'Hockey'
+            AND season = '2021-2022'
+            AND team_level = 'A'
+            AND division = 'Peewee'
+            AND game_type = 'Regular Season'
+        GROUP BY
+            visitor_team_long,
+            visitor_team_short
+    ) AS TIES
+    GROUP BY
+        team_long,
+        team_short
+    ORDER BY
+        ties
+) AS tie_games ON
+    tie_games.team_long = games.winning_team_long
+WHERE
+    sport ILIKE 'Hockey'
+    AND season = '2021-2022'
+    AND team_level = 'A'
+    AND division = 'Peewee'
+    AND game_type = 'Regular Season'
+GROUP BY
+    games.winning_team_long,
+    games.winning_team_short,
+    wins.count,
+    tie_games.TIES
+ORDER BY
+    points DESC;
+
+
+   
+   SELECT
+	games.winning_team_long AS team_long,
+	games.winning_team_short AS team_short,
+	COALESCE(wins.count,
+	0) AS wins,
+	COALESCE(tie_games.ties,
+	0) AS TIES,
+	COALESCE(wins.count,
+	0) * 2 + COALESCE(tie_games.TIES,
+	0) AS points
+FROM
+	games.games
+JOIN (
+	SELECT
+		winning_team_long,
+		winning_team_short,
+		COUNT(*) AS count
+	FROM
+		games.games
+	WHERE
+		sport ILIKE 'Hockey'
+		AND season = '2021-2022'
+		AND team_level = 'A'
+		AND division = 'Peewee'
+		AND game_type = 'Regular Season'
+	GROUP BY
+		winning_team_long,
+		winning_team_short
+) AS wins ON
+	games.winning_team_long = wins.winning_team_long
+	AND games.winning_team_short = wins.winning_team_short
+LEFT JOIN (
+	SELECT
+		team_long,
+		team_short,
+		SUM(TIES) AS TIES
+	FROM
+		(
+		SELECT
+			home_team_long AS team_long,
+			home_team_short AS team_short,
+			COUNT(*) AS TIES
+		FROM
+			games.games
+		WHERE
+			tie = TRUE
+			AND sport ILIKE 'Hockey'
+			AND season = '2021-2022'
+			AND team_level = 'A'
+			AND division = 'Peewee'
+			AND game_type = 'Regular Season'
+		GROUP BY
+			home_team_long,
+			home_team_short
+	UNION ALL
+		SELECT
+			visitor_team_long AS team_long,
+			visitor_team_short AS team_short,
+			COUNT(*) AS TIES
+		FROM
+			games.games
+		WHERE
+			tie = TRUE
+			AND sport ILIKE 'Hockey'
+			AND season = '2021-2022'
+			AND team_level = 'A'
+			AND division = 'Peewee'
+			AND game_type = 'Regular Season'
+		GROUP BY
+			visitor_team_long,
+			visitor_team_short
+    ) AS TIES
+	GROUP BY
+		team_long,
+		team_short
+	ORDER BY
+		TIES
+) AS tie_games ON
+	tie_games.team_long = games.winning_team_long
+	AND tie_games.team_short = games.winning_team_short
+WHERE
+	sport ILIKE 'Hockey'
+	AND season = '2021-2022'
+	AND team_level = 'A'
+	AND division = 'Peewee'
+	AND game_type = 'Regular Season'
+GROUP BY
+	games.winning_team_long,
+	games.winning_team_short,
+	wins.count,
+	tie_games.TIES
+ORDER BY
+	points DESC;
+
+
+
+
+SELECT teams.id, team_long, team_short, logo_image, primary_team_color, secondary_team_color, third_team_color
+      FROM 
+      (
+      SELECT home_team_id_fk AS id, home_team_long AS team_long, home_team_short AS team_short
+      FROM games.games
+      WHERE sport ILIKE 'Hockey'
+      AND season = '2021-2022'
+      AND team_level = 'A'
+      AND division = 'Peewee'
+      AND game_type = 'Regular Season'
+      GROUP BY id, team_long, team_short
+
+      UNION ALL 
+
+      SELECT visitor_team_id_fk AS id, visitor_team_long AS team_long, visitor_team_short AS team_short
+      FROM games.games
+      WHERE sport ILIKE 'Hockey'
+      AND season = '2021-2022'
+      AND team_level = 'A'
+       AND division = 'Peewee'
+      AND game_type = 'Regular Season'
+      GROUP BY id, team_long, team_short
+      ) AS games
+
+      LEFT JOIN 
+      (
+      SELECT id, team_name_full, team_name_short, logo_image, primary_team_color, secondary_team_color, third_team_color
+      FROM teams.teams
+      WHERE sport ILIKE 'Hockey'
+      AND team_level = 'A'
+      GROUP BY id, team_name_short, team_name_full, logo_image, primary_team_color, secondary_team_color, third_team_color
+      ORDER BY team_name_short, team_name_full
+      ) AS teams
+      ON teams.team_name_short = games.team_short
+
+      GROUP BY teams.id, team_long, team_short ,logo_image, primary_team_color, secondary_team_color, third_team_color
+      ORDER BY team_short, team_long;

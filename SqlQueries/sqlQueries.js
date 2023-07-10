@@ -492,7 +492,13 @@ module.exports = {
     }
   },
 
-  getHomeWinsLossRecords: async (sport, season, level, division) => {
+  getHomeWinsLossRecords: async (
+    sport,
+    season,
+    level,
+    division,
+    gameType = 'Regular Season'
+  ) => {
     try {
       const response = await pool.query(`
       SELECT id AS game_id, home_team_short, home_team_long , winning_team_short, winning_team_long, tie
@@ -501,6 +507,7 @@ module.exports = {
       AND team_level = '${level}' 
       AND division = '${division}' 
       AND season = '${season}'
+      AND game_type = '${gameType}'
       ORDER BY home_team_short, home_team_long ;`);
       return response.rows;
     } catch (error) {
@@ -508,7 +515,13 @@ module.exports = {
     }
   },
 
-  getAwayWinsLossRecords: async (sport, season, level, division) => {
+  getAwayWinsLossRecords: async (
+    sport,
+    season,
+    level,
+    division,
+    gameType = 'Regular Season'
+  ) => {
     try {
       const response = await pool.query(`
       SELECT id, visitor_team_short, visitor_team_long ,  winning_team_short, winning_team_long, tie
@@ -517,6 +530,7 @@ module.exports = {
       AND team_level = '${level}' 
       AND division = '${division}' 
       AND season = '${season}'
+      AND game_type = '${gameType}'
       ORDER BY visitor_team_short, visitor_team_long ;`);
       return response.rows;
     } catch (error) {
@@ -561,7 +575,14 @@ module.exports = {
     }
   },
 
-  getTeamStreak: async (sport, season, level, division, team) => {
+  getTeamStreak: async (
+    sport,
+    season,
+    level,
+    division,
+    team,
+    gameType = 'Regular Season'
+  ) => {
     try {
       const response = await pool.query(`
       SELECT id, game_date, team_long, team_short, game_result 
@@ -575,6 +596,7 @@ module.exports = {
         WHERE season = '${season}'
           AND team_level = '${level}'
           AND division = '${division}'
+          AND game_type = '${gameType}'
           AND (winning_team_long = '${team}' OR winning_team_short = '${team}')
       
         UNION ALL
@@ -588,6 +610,7 @@ module.exports = {
         WHERE season = '${season}'
           AND team_level = '${level}'
           AND division = '${division}'
+          AND game_type = '${gameType}'
           AND (losing_team_long = '${team}' OR losing_team_short = '${team}') 
           
           UNION ALL
@@ -599,19 +622,20 @@ module.exports = {
             WHEN (home_team_long = '${team}' OR home_team_short = '${team}')
               OR 
               (visitor_team_long = '${team}' OR visitor_team_short = '${team}')
-              THEN 'Jr. Gulls'
+              THEN '${team}'
           END AS team_long,
           CASE 
             WHEN (home_team_long = '${team}' OR home_team_short = '${team}')
               OR 
               (visitor_team_long = '${team}' OR visitor_team_short = '${team}')
-              THEN 'Gulls'
+              THEN '${team}'
           END AS team_short,
           'T' AS game_result
         FROM games.games
         WHERE season = '${season}'
         AND team_level = '${level}'
         AND division = '${division}'
+        AND game_type = '${gameType}'
           AND tie = TRUE
           ORDER BY game_date DESC
       ) AS TIES

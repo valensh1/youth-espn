@@ -164,28 +164,30 @@ app.get('/api/:sport/teams/GF_GA_DIFF', async (req, res) => {
 
 app.get('/api/:sport/teams/home-records', async (req, res) => {
   const sport = req.params.sport;
-  const { season, level, division } = req.query;
+  const { season, level, division, gameType } = req.query;
   logger.log(sport);
   logger.log(season, level, division);
   const data = await sqlQueries.getHomeWinsLossRecords(
     sport,
     season,
     level,
-    division
+    division,
+    gameType
   );
   return res.json(data);
 });
 
 app.get('/api/:sport/teams/away-records', async (req, res) => {
   const sport = req.params.sport;
-  const { season, level, division } = req.query;
+  const { season, level, division, gameType } = req.query;
   logger.log(sport);
   logger.log(season, level, division);
   const data = await sqlQueries.getAwayWinsLossRecords(
     sport,
     season,
     level,
-    division
+    division,
+    gameType
   );
   return res.json(data);
 });
@@ -209,14 +211,15 @@ app.get('/api/:sport/teams/last-10-streak', async (req, res) => {
 
 app.get('/api/:sport/teams/game-streak', async (req, res) => {
   const sport = req.params.sport;
-  const { season, level, division, team } = req.query;
+  const { season, level, division, team, gameType } = req.query;
 
   const data = await sqlQueries.getTeamStreak(
     sport,
     season,
     level,
     division,
-    team
+    team,
+    gameType
   );
   return res.json(data);
 });
