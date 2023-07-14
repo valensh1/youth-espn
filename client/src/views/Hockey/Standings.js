@@ -225,7 +225,6 @@ function Standings() {
   };
 
   const calcTeamGameStreak = (teamGames) => {
-    console.log(teamGames);
     let allTeamStreaks = [];
     for (let i = 0; i < teamGames.length; i++) {
       let streakNumber = 1;
@@ -247,6 +246,18 @@ function Standings() {
     setGameStreak(allTeamStreaks);
   };
 
+  const calcWinsLossesTiesPerTeam = (dataArray, stat, team) => {
+    let dataToCombineIntoFinalArray = {};
+    dataArray[stat].forEach((el) => {
+      if (el.team_long === team.team_long) {
+        dataToCombineIntoFinalArray = {
+          [stat]: el[stat],
+        };
+      }
+    });
+    return dataToCombineIntoFinalArray;
+  };
+
   // Function to sort the standings by points in DESC order and then by displayed team name in ASC order
   const sortData = (data) => {
     data.sort((a, b) => {
@@ -260,6 +271,7 @@ function Standings() {
 
   const getCombinedDataToRender = (combinedData, teamsData) => {
     let finalDataToRender = [];
+    const teamRecords = combinedData.teamRecordsAndPoints.records; // Destructure team records object
 
     teamsData.forEach((team, index) => {
       finalDataToRender.push({
@@ -269,50 +281,25 @@ function Standings() {
         GF_GA_DIFF: { GF: 0, GA: 0, DIFF: 0 },
       });
 
-      combinedData.teamRecordsAndPoints.records?.wins.forEach((el) => {
-        if (el.team_long === team.team_long) {
-          finalDataToRender[index].winsLossesTiesPoints = {
-            ...finalDataToRender[index].winsLossesTiesPoints,
-            wins: el.wins,
-            GP: (finalDataToRender[index].winsLossesTiesPoints.GP += Number(
-              el.wins
-            )),
-          };
-        }
-      });
-
-      combinedData.teamRecordsAndPoints.records?.losses.forEach((el) => {
-        if (el.team_long === team.team_long) {
-          finalDataToRender[index].winsLossesTiesPoints = {
-            ...finalDataToRender[index].winsLossesTiesPoints,
-            losses: el.losses,
-            GP: (finalDataToRender[index].winsLossesTiesPoints.GP += Number(
-              el.losses
-            )),
-          };
-        }
-      });
-
-      combinedData.teamRecordsAndPoints.records?.ties.forEach((el) => {
-        if (el.team_long === team.team_long) {
-          finalDataToRender[index].winsLossesTiesPoints = {
-            ...finalDataToRender[index].winsLossesTiesPoints,
-            ties: el.ties,
-            GP: (finalDataToRender[index].winsLossesTiesPoints.GP += Number(
-              el.ties
-            )),
-          };
-        }
-      });
-
-      combinedData.teamRecordsAndPoints?.points?.forEach((el) => {
-        if (el.team_long === team.team_long) {
-          finalDataToRender[index].winsLossesTiesPoints = {
-            ...finalDataToRender[index].winsLossesTiesPoints,
-            points: el.points,
-          };
-        }
-      });
+      const wins = calcWinsLossesTiesPerTeam(teamRecords, 'wins', team);
+      const losses = calcWinsLossesTiesPerTeam(teamRecords, 'losses', team);
+      const ties = calcWinsLossesTiesPerTeam(teamRecords, 'ties', team);
+      const points = calcWinsLossesTiesPerTeam(
+        combinedData.teamRecordsAndPoints,
+        'points',
+        team
+      );
+      finalDataToRender[index].winsLossesTiesPoints = {
+        ...finalDataToRender[index].winsLossesTiesPoints,
+        ...wins,
+        ...losses,
+        ...ties,
+        ...points,
+        GP:
+          Number(wins.wins || 0) +
+          Number(losses.losses || 0) +
+          Number(ties.ties || 0),
+      };
 
       combinedData.GF_GA.forEach((goalStat) => {
         if (
@@ -358,11 +345,6 @@ function Standings() {
         };
       });
 
-      console.log(
-        teamNameToRender(team.team_long, team.team_short),
-        homeWinsLossRecords
-      );
-
       const awayWinsLossRecords = {
         wins: [],
         losses: [],
@@ -393,14 +375,8 @@ function Standings() {
           awayRecord: awayRecord,
         };
       });
-
-      console.log(
-        teamNameToRender(team.team_long, team.team_short),
-        awayWinsLossRecords
-      );
     });
 
-    console.log(finalDataToRender);
     sortData(finalDataToRender);
     setCombinedData(finalDataToRender);
   };
@@ -469,8 +445,8 @@ function Standings() {
                       <td>{GF_GA_DIFF.GF}</td>
                       <td>{GF_GA_DIFF.GA}</td>
                       <td>{GF_GA_DIFF.DIFF}</td>
-                      <td>{homeAwayRecords.homeRecord}</td>
-                      <td>{homeAwayRecords.awayRecord}</td>
+                      <td>{homeAwayRecords?.homeRecord}</td>
+                      <td>{homeAwayRecords?.awayRecord}</td>
                       <td></td>
                       <td>{calcLast10Streak(displayedTeamName)}</td>
                       <td>
