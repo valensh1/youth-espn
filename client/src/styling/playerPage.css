@@ -1,0 +1,67 @@
+#action-img {
+  height: 70vh;
+  width: 90vw;
+  margin-left: 5vw;
+}
+
+#profile-img {
+  height: 25vh;
+  width: 16vw;
+  border-radius: 50%;
+  position: absolute;
+  top: 45vh;
+  left: 41vw;
+  object-fit: cover;
+  object-position: 100% 0%;
+  box-shadow: 5px 2px 60px 10px orangered;
+}
+
+#player-profile-container
+  #player-attribute-container
+  span:not(:first-child)::before {
+  content: ' | ';
+}
+
+#player-profile-container
+  #player-attribute-container
+  #player-attributes
+  span:not(:first-child)::before {
+  padding-left: 2vw;
+  padding-right: 2vw;
+}
+
+#player-name-number {
+  font-weight: 800;
+  font-size: 2vw;
+  width: 100vw;
+  text-align: center;
+  margin-top: 1vh;
+}
+
+#player-attributes {
+  font-size: 1.2vw;
+  font-weight: 500;
+  width: 100vw;
+  text-align: center;
+  margin-top: 1vh;
+}
+
+#player-bio {
+  font-size: 1vw;
+  width: 90vw;
+  margin-left: 5vw;
+}
+
+#player-bio button {
+  color: blue;
+  border: none;
+}
+
+#player-bio button:hover {
+  cursor: pointer;
+  border: 1px solid blue;
+}
+
+#player-bio .bio-hide {
+  visibility: hidden;
+}

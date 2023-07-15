@@ -6,6 +6,7 @@
 @import './styling/scores.css';
 @import './styling/boxscores.css';
 @import './styling/standings.css';
+@import './styling/playerPage.css';
 
 *::before,
 *::after {

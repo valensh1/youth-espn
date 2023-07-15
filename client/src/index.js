@@ -11,6 +11,7 @@ import HockeyScores from './views/Hockey/Scores';
 import HockeyBoxScore from './views/Hockey/BoxScore';
 import HockeyStandings from './views/Hockey/Standings';
 import { globalVariables } from './model/globalVariables';
+import PlayerPage from './views/PlayerPage';
 
 const router = createBrowserRouter([
   {
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
   {
     path: 'hockey/teams/:teamName/roster',
     element: <Rosters currentSeason={globalVariables.currentSeason} />,
+  },
+  {
+    path: 'hockey/teams/:teamName/roster/player/:playerId',
+    element: <PlayerPage />,
   },
 ]);
 
