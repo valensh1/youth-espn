@@ -1,7 +1,18 @@
+#player-profile-container {
+  background-color: black;
+  width: 100vw;
+}
+
+#player-profile-content {
+  background-color: white;
+  width: 50vw;
+}
+
 #action-img {
   height: 70vh;
   width: 90vw;
   margin-left: 5vw;
+  margin-top: 1vh;
 }
 
 #profile-img {
@@ -55,6 +66,7 @@
 #player-bio button {
   color: blue;
   border: none;
+  margin-left: 0.2vw;
 }
 
 #player-bio button:hover {
@@ -64,4 +76,89 @@
 
 #player-bio .bio-hide {
   visibility: hidden;
+}
+
+#player-stats-container {
+  font-size: 0.75vw;
+  width: 50vw;
+  margin-left: 25vw;
+}
+
+#player-stats-container h1 {
+  text-align: center;
+  text-decoration: underline;
+  margin-top: 3vh;
+  margin-bottom: 0.5vh;
+}
+
+#player-stats-table {
+  width: 50vw;
+}
+
+#player-stats-table .shade {
+  background-color: lightgray;
+}
+
+#player-stats-table td {
+  text-align: center;
+  border: 1px solid gray;
+}
+
+/*? ------------------------------------------------------- Media Queries ---------------------------------------------------------- */
+@media only screen and (min-device-width: 768px) and (max-device-width: 5000px) and (-webkit-min-device-pixel-ratio: 1) {
+  #player-profile-container {
+    background-color: lightgray;
+    width: 100vw;
+  }
+
+  #player-profile-content {
+    position: relative;
+    background-color: white;
+    border-radius: 15px;
+    width: 60vw;
+    margin-left: 25vw;
+    border: 4px solid purple;
+  }
+
+  #action-img {
+    width: 50vw;
+    height: 45vh;
+    position: relative;
+    left: 0%;
+  }
+
+  #profile-img {
+    height: 12vh;
+    width: 7vw;
+    position: absolute;
+    top: 30vh;
+    left: 25vw;
+  }
+
+  #player-attribute-container {
+    position: relative;
+  }
+
+  #player-name-number {
+    position: relative;
+    left: -25%;
+  }
+
+  #player-name-number > span {
+    display: flex;
+  }
+
+  #player-attributes {
+    font-size: 0.9vw;
+    font-weight: 500;
+    width: 100vw;
+    text-align: center;
+    margin-top: 1vh;
+  }
+
+  #player-bio {
+    font-size: 0.75vw;
+    width: 50vw;
+    margin-left: 27vw;
+  }
 }
