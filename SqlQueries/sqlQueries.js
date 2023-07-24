@@ -649,4 +649,72 @@ module.exports = {
       logger.log(error);
     }
   },
+
+  getPlayerPosition: async (sport, playerID) => {
+    try {
+      const response = await pool.query(`
+      SELECT DISTINCT player_position 
+      FROM teams.rosters
+      WHERE sport ILIKE '${sport}'
+      AND
+      player_profile_id_fk = '${playerID}'
+      `);
+      return response.rows;
+    } catch (error) {
+      logger.log(error);
+    }
+  },
+
+  getPlayerCareerStats: async (sport, playerPosition, playerID) => {
+    try {
+      if (playerPosition === 'goalie') {
+        const response = await pool.query(
+          `
+          SELECT g.season, concat (tr.first_name, ' ', tr.last_name) AS player_name, tr.actual_team_name , t.team_name_full, t.team_name_short  , tr.team_id_fk, t.team_level, tr.division_level_fk , tr.player_position, t.logo_image, t.primary_team_color, t.secondary_team_color, t.third_team_color, sum(bs.shots_against) AS stats_shots_against, sum(bs.goals_against) AS stats_goals_against, sum(bs.saves) AS stats_saves, (100.0 * sum(bs.saves) / sum(bs.shots_against))::numeric(5,3) AS stats_save_percentage 
+          FROM (
+          SELECT *
+          FROM games.boxscore_saves bs
+          WHERE goalie_id_fk = '${playerID}'
+          ) bs
+          LEFT JOIN games.games g
+          ON g.id = bs.game_id_fk 
+          LEFT JOIN teams.rosters tr
+          ON bs.goalie_id_fk = tr.player_profile_id_fk AND tr.season = g.season 
+          LEFT JOIN teams.teams t
+          ON t.id = tr.team_id_fk 
+          GROUP BY g.season, concat (tr.first_name, ' ', tr.last_name), tr.actual_team_name, t.team_name_short , t.team_name_full , tr.team_id_fk, t.team_level ,tr.division_level_fk , tr.player_position, t.logo_image, t.primary_team_color, t.secondary_team_color, t.third_team_color;
+          `
+        );
+        return response.rows;
+      } else {
+        const response = await pool.query(
+          `
+          SELECT *
+          FROM games.boxscore_goals 
+          WHERE goal_scored_player_id_fk = '${playerID}';
+          `
+        );
+        return response.rows;
+      }
+    } catch (error) {
+      logger.log(error);
+    }
+  },
+  getPlayerImages: async (sport, playerID) => {
+    try {
+      logger.log(sport, playerID);
+      const response = await pool.query(
+        `
+        SELECT *
+        FROM players.player_images
+        WHERE player_profile_id_fk = '${playerID}'
+        AND sport ILIKE '${sport}'
+        ORDER BY season DESC;
+        `
+      );
+      return response.rows;
+    } catch (error) {
+      logger.log(error);
+    }
+  },
 };

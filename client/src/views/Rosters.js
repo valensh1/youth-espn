@@ -672,11 +672,14 @@ function Rosters({ currentSeason }) {
           <tbody>
             {rosterData.playersByPosition?.forwards?.map((player) => {
               return (
-                <tr className="roster-table-data" key={player.id}>
+                <tr
+                  className="roster-table-data"
+                  key={player.player_profile_id_fk}
+                >
                   <td className="shaded">
                     <Link
                       className="player-img-name"
-                      to={`player/${player.id}`}
+                      to={`/${sportToQuery}/player/${player.player_profile_id_fk}`}
                     >
                       <img
                         className="player-profile-pic"
@@ -731,11 +734,14 @@ function Rosters({ currentSeason }) {
           <tbody>
             {rosterData.playersByPosition?.defense?.map((player) => {
               return (
-                <tr className="roster-table-data" key={player.id}>
+                <tr
+                  className="roster-table-data"
+                  key={player.player_profile_id_fk}
+                >
                   <td className="shaded">
                     <Link
                       className="player-img-name"
-                      to={`player/${player.id}`}
+                      to={`/${sportToQuery}/player/${player.player_profile_id_fk}`}
                     >
                       <img
                         className="player-profile-pic"
@@ -789,11 +795,14 @@ function Rosters({ currentSeason }) {
           <tbody>
             {rosterData.playersByPosition?.goalies?.map((player) => {
               return (
-                <tr className="roster-table-data" key={player.id}>
+                <tr
+                  className="roster-table-data"
+                  key={player.player_profile_id_fk}
+                >
                   <td className="shaded">
                     <Link
                       className="player-img-name"
-                      to={`player/${player.id}`}
+                      to={`/${sportToQuery}/player/${player.player_profile_id_fk}`}
                     >
                       <img
                         className="player-profile-pic"

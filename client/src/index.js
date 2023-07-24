@@ -39,17 +39,18 @@ const router = createBrowserRouter([
     path: 'hockey/standings',
     element: <HockeyStandings />,
   },
+
   {
     path: 'hockey/scores/boxscore',
     element: <HockeyBoxScore />,
   },
   {
-    path: 'hockey/teams/:teamName/roster',
-    element: <Rosters currentSeason={globalVariables.currentSeason} />,
+    path: 'hockey/player/:playerId',
+    element: <PlayerPage />,
   },
   {
-    path: 'hockey/teams/:teamName/roster/player/:playerId',
-    element: <PlayerPage />,
+    path: 'hockey/teams/:teamName/roster',
+    element: <Rosters currentSeason={globalVariables.currentSeason} />,
   },
 ]);
 

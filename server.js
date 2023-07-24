@@ -223,3 +223,21 @@ app.get('/api/:sport/teams/game-streak', async (req, res) => {
   );
   return res.json(data);
 });
+
+app.get('/api/:sport/player/:playerID', async (req, res) => {
+  const { sport, playerID } = req.params;
+  logger.log(sport, playerID);
+  const playerPositionResponse = await sqlQueries.getPlayerPosition(
+    sport,
+    playerID
+  );
+  const playerPosition = playerPositionResponse[0].player_position; // playerPositionResponse is returned as an array of objects such as [ {player_position: 'goalie'} ]
+  const playerCareerStats = await sqlQueries.getPlayerCareerStats(
+    sport,
+    playerPosition,
+    playerID
+  );
+  const playerImages = await sqlQueries.getPlayerImages(sport, playerID);
+  logger.log(playerImages);
+  return res.json({ stats: playerCareerStats, images: playerImages });
+});

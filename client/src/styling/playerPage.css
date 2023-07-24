@@ -8,7 +8,7 @@
     height: fit-content;
     border-radius: 15px;
     margin-left: 5vw;
-    background-color: lightgray;
+    background-color: var(--color-whiteBackground);
 
     & #player-images {
       position: relative;
@@ -34,19 +34,83 @@
 
     & #player-attribute-container {
       margin-top: 5vh;
-      border: 4px solid yellowgreen;
       text-align: center;
+
+      & #player-name-number {
+        font-size: 2vw;
+
+        & span:not(:first-child)::before {
+          padding-left: 1vw;
+          padding-right: 1vw;
+        }
+      }
+
+      & #player-attributes {
+        font-size: 1.5vw;
+        font-weight: 400;
+      }
 
       & span:not(:first-child)::before {
         content: ' | ';
+        padding-left: 2vw;
+        padding-right: 2vw;
       }
     }
 
     & #player-bio {
       & p {
+        font-size: 1vw;
+        margin-left: 2.5vw;
+
+        & button {
+          color: blue;
+          border: none;
+          margin-left: 0.2vw;
+          background-color: var(--color-whiteBackground);
+
+          &:hover {
+            border: 1px solid var(--button-color);
+            font-weight: 800;
+            background-color: var(--color-whiteBackground);
+            cursor: pointer;
+          }
+        }
+
+        & .bio-hide {
+          visibility: hidden;
+        }
+
+        & #see-less-btn {
+          visibility: hidden;
+        }
+      }
+    }
+
+    & #player-stats-container {
+      & h1 {
+        text-align: center;
+        margin-bottom: 0vh;
       }
 
-      & button {
+      & #player-stats-table {
+        width: 50vw;
+        margin-left: 20vw;
+        text-align: center;
+        font-size: 1vw;
+        border-collapse: collapse; /*Collapses spaces between td and th elements */
+
+        & th {
+          background-color: black;
+          color: white;
+        }
+
+        & td {
+          border: 1px solid var(--color-lightGray);
+        }
+
+        & td:first-child {
+          background-color: var(--color-lightGray);
+        }
       }
     }
   }

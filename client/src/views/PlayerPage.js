@@ -1,7 +1,24 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 
 function PlayerPage() {
+  const sportToQuery = window.location.pathname.split('/')[1];
+  const playerID = window.location.pathname.split('/')[3];
+  console.log(playerID);
+
+  //?----------------------------------------------------------------- USE EFFECT HOOKS ------------------------------------------------------------------------
+  useEffect(() => {
+    window.scrollTo(0, 0); // Ensure page loads with user at top of page
+
+    const fetchPlayerStats = async () => {
+      const data = await fetch(`/api/${sportToQuery}/player/${playerID}`);
+      const response = await data.json();
+      console.log(response);
+    };
+    fetchPlayerStats();
+  }, []);
+
+  //?----------------------------------------------------------------- FUNCTIONS ------------------------------------------------------------------------
   const bioClick = (condition) => {
     const bio = document.querySelector('.bio-hide');
     const seeMoreBtn = document.querySelector('#player-bio #see-more-btn');
@@ -17,6 +34,7 @@ function PlayerPage() {
       seeLessBtn.style.visibility = 'hidden';
     }
   };
+
   //?----------------------------------------------------------------- JSX ------------------------------------------------------------------------
 
   return (
