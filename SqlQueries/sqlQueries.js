@@ -195,7 +195,7 @@ module.exports = {
     FROM teams.rosters r
     LEFT JOIN players.player_profiles p ON player_profile_id_fk = p.id
     LEFT JOIN teams.teams t ON team_id_fk = t.id
-    LEFT JOIN players.player_images a ON r.player_profile_id_fk = a.player_profile_id_fk
+    LEFT JOIN players.player_images a ON r.player_profile_id_fk = a.player_profile_id_fk AND r.season = a.season
     WHERE r.actual_team_name ILIKE '${teamToQuery}'
       AND (r.season = '${season}'
                 AND t.team_level = '${level}'
@@ -231,7 +231,7 @@ module.exports = {
       FROM teams.rosters r
       LEFT JOIN players.player_profiles p ON player_profile_id_fk = p.id
       LEFT JOIN teams.teams t ON team_id_fk = t.id
-      LEFT JOIN players.player_images a ON r.player_profile_id_fk = a.player_profile_id_fk
+      LEFT JOIN players.player_images a ON r.player_profile_id_fk = a.player_profile_id_fk AND r.season = a.season 
       WHERE (r.actual_team_name ILIKE '${teamToQuery}'
       OR r.actual_team_name ILIKE '%${teamToQuery}(1)')
         AND (r.season = '${season}'
