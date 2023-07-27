@@ -6,6 +6,25 @@ function PlayerPage() {
   const playerID = window.location.pathname.split('/')[3];
   console.log(playerID);
 
+  const goalieStatCategories = [
+    'Season',
+    'Team',
+    'Division',
+    'Level',
+    'GP',
+    'W',
+    'L',
+    'SA',
+    'GA',
+    'GAA',
+    'Saves',
+    'Save%',
+    'SO',
+  ];
+
+  //?----------------------------------------------------------------- USE STATE HOOKS ------------------------------------------------------------------------
+  const [stats, setStats] = useState([]);
+
   //?----------------------------------------------------------------- USE EFFECT HOOKS ------------------------------------------------------------------------
   useEffect(() => {
     window.scrollTo(0, 0); // Ensure page loads with user at top of page
@@ -14,6 +33,7 @@ function PlayerPage() {
       const data = await fetch(`/api/${sportToQuery}/player/${playerID}`);
       const response = await data.json();
       console.log(response);
+      setStats(response);
     };
     fetchPlayerStats();
   }, []);
@@ -92,49 +112,31 @@ function PlayerPage() {
           <table id="player-stats-table">
             <thead>
               <tr>
-                <th>Season</th>
-                <th>Team</th>
-                <th>GP</th>
-                <th>W</th>
-                <th>L</th>
-                <th>OT</th>
-                <th>SA</th>
-                <th>GA</th>
-                <th>GAA</th>
-                <th>Saves</th>
-                <th>Save %</th>
-                <th>SO</th>
+                {goalieStatCategories.map((stat) => {
+                  return <th>{stat}</th>;
+                })}
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="shade">2021-2022</td>
-                <td>Ducks(2)</td>
-                <td>30</td>
-                <td>29</td>
-                <td>1</td>
-                <td>1</td>
-                <td>500</td>
-                <td>50</td>
-                <td>2.5</td>
-                <td>450</td>
-                <td>.900</td>
-                <td>8</td>
-              </tr>
-              <tr>
-                <td className="shade">2022-2023</td>
-                <td>OCHC</td>
-                <td>50</td>
-                <td>47</td>
-                <td>5</td>
-                <td>3</td>
-                <td>1000</td>
-                <td>95</td>
-                <td>2.0</td>
-                <td>905</td>
-                <td>.920</td>
-                <td>12</td>
-              </tr>
+              {stats?.stats?.map((el) => {
+                return (
+                  <tr>
+                    <td className="shade">{el.season}</td>
+                    <td>{el.team_name}</td>
+                    <td>{el.division}</td>
+                    <td>{el.team_level}</td>
+                    <td>{el.stat_games_played}</td>
+                    <td>{el.stat_wins}</td>
+                    <td>{el.stat_losses}</td>
+                    <td>{el.stat_shots_against}</td>
+                    <td>{el.stat_goals_against}</td>
+                    <td>{el.stat_goals_against_avg}</td>
+                    <td>{el.stat_saves}</td>
+                    <td>{el.stat_save_percentage}</td>
+                    <td>{el.stat_shutouts}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

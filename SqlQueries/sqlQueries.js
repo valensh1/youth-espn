@@ -670,19 +670,34 @@ module.exports = {
       if (playerPosition === 'goalie') {
         const response = await pool.query(
           `
-          SELECT g.season, concat (tr.first_name, ' ', tr.last_name) AS player_name, tr.actual_team_name , t.team_name_full, t.team_name_short  , tr.team_id_fk, t.team_level, tr.division_level_fk , tr.player_position, t.logo_image, t.primary_team_color, t.secondary_team_color, t.third_team_color, sum(bs.shots_against) AS stats_shots_against, sum(bs.goals_against) AS stats_goals_against, sum(bs.saves) AS stats_saves, (100.0 * sum(bs.saves) / sum(bs.shots_against))::numeric(5,3) AS stats_save_percentage 
+          SELECT goalie_name, season, team_name, team_name_full, team_name_short, logo_image, division, team_level, count(game_id_fk) AS stat_games_played, sum(wins_losses) AS stat_wins, count(game_id_fk) - sum(wins_losses) - count(CASE WHEN wins_credited_goalie = false THEN 1 END) AS stat_losses, sum(shots_against) AS stat_shots_against, sum(goals_against) AS stat_goals_against, (1.0 * sum(goals_against) / count(game_id_fk))::numeric(5, 2) AS stat_goals_against_avg, sum(saves) AS stat_saves ,SUBSTRING(CAST(((100.0 * sum(saves)) / sum(shots_against) / 100)::numeric(5,3) AS TEXT) FROM 2) AS stat_save_percentage, sum(shutouts) AS stat_shutouts, primary_team_color AS color_primary, secondary_team_color AS color_secondary, third_team_color AS color_third
           FROM (
-          SELECT *
+          SELECT bs.*, g.season, g.division , g.team_level , r.actual_team_name AS team_name, t.team_name_full, t.team_name_short, r.team_id_fk AS player_team_id, g.winning_team_id_fk AS winning_team_id , g.winning_team_long, g.winning_team_short,  
+          CASE 
+            WHEN g.winning_team_id_fk = r.team_id_fk AND wins_credited_goalie = TRUE
+            THEN 1
+            ELSE 0
+          END AS wins_losses,
+          CASE
+            WHEN g.winning_team_id_fk = r.team_id_fk
+            AND LEAST (g.home_team_score, g.visitor_team_score) = 0
+            THEN 1
+            ELSE 0
+          END AS shutouts,
+          t.logo_image,
+          t.primary_team_color AS primary_team_color ,
+          t.secondary_team_color AS secondary_team_color ,
+          t.third_team_color AS third_team_color
           FROM games.boxscore_saves bs
-          WHERE goalie_id_fk = '${playerID}'
-          ) bs
           LEFT JOIN games.games g
-          ON g.id = bs.game_id_fk 
-          LEFT JOIN teams.rosters tr
-          ON bs.goalie_id_fk = tr.player_profile_id_fk AND tr.season = g.season 
-          LEFT JOIN teams.teams t
-          ON t.id = tr.team_id_fk 
-          GROUP BY g.season, concat (tr.first_name, ' ', tr.last_name), tr.actual_team_name, t.team_name_short , t.team_name_full , tr.team_id_fk, t.team_level ,tr.division_level_fk , tr.player_position, t.logo_image, t.primary_team_color, t.secondary_team_color, t.third_team_color;
+          ON g.id = bs.game_id_fk
+          LEFT JOIN teams.rosters r
+          ON r.player_profile_id_fk = bs.goalie_id_fk AND r.season = g.season  
+          LEFT JOIN teams.teams t 
+          ON t.id = r.team_id_fk 
+          WHERE bs.goalie_id_fk = '${playerID}'
+          ) AS subquery
+          GROUP BY goalie_name,season, team_name, team_name_full, team_name_short, logo_image, division, team_level, primary_team_color, secondary_team_color, third_team_color
           `
         );
         return response.rows;

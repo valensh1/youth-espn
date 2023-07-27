@@ -2462,7 +2462,51 @@ ON t.id = tr.team_id_fk
 GROUP BY g.season, concat (tr.first_name, ' ', tr.last_name), tr.actual_team_name, t.team_name_short , t.team_name_full , tr.team_id_fk, t.team_level ,tr.division_level_fk , tr.player_position, t.logo_image, t.primary_team_color, t.secondary_team_color, t.third_team_color;
 
 
-INSERT INTO players.player_images (id, season, sport, actual_team_name, first_name, last_name, team_id_fk, player_profile_id_fk, profile_img_1, profile_img_2, profile_img_3, profile_img_4, profile_img_5, action_img_1, action_img_2, action_img_3, action_img_4, action_img_5, action_img_6, action_img_7, action_img_8, action_img_9, action_img_10) VALUES(uuid_generate_v4(), '', '', '', '', '', ?, ?, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+-- Action images by season
+SELECT *
+FROM players.player_images
+WHERE player_profile_id_fk = '867b9818-c35f-4e6a-a80f-7880d2d98db8'
+AND sport ILIKE 'hockey'
+ORDER BY season DESC; 
+
+
+
+
+
+-- Goalie games played, wins and losses and shut outs
+SELECT goalie_name, season, count(game_id_fk) AS games_played, sum(wins_losses) AS wins, count(game_id_fk) - sum(wins_losses) AS losses, sum(shots_against) AS shots_against, sum(goals_against) AS goals_against, (1.0 * sum(goals_against) / count(game_id_fk))::numeric(5, 2) AS goals_against_avg, sum(saves) AS saves, ((100.0 * sum(saves)) / sum(shots_against))::numeric(5,3) AS save_percentage, sum(shutouts) AS shutouts
+FROM (
+SELECT bs.*, g.season, r.team_id_fk AS player_team_id, g.winning_team_id_fk AS winning_team_id , g.winning_team_long AS winning_team_long , g.winning_team_short AS winning_team_short,
+CASE 
+	WHEN g.winning_team_id_fk = r.team_id_fk 
+	THEN 1
+	ELSE 0
+END AS wins_losses,
+CASE
+	WHEN g.winning_team_id_fk = r.team_id_fk
+	AND LEAST (g.home_team_score, g.visitor_team_score) = 0
+	THEN 1
+	ELSE 0
+END AS shutouts
+FROM games.boxscore_saves bs
+LEFT JOIN games.games g
+ON g.id = bs.game_id_fk
+LEFT JOIN teams.rosters r
+ON r.player_profile_id_fk = bs.goalie_id_fk AND r.season = g.season  
+WHERE bs.goalie_id_fk = '867b9818-c35f-4e6a-a80f-7880d2d98db8'
+) AS subquery
+GROUP BY goalie_name,season
+
+
+SELECT *
+FROM games.boxscore_saves 
+
+ALTER TABLE games.boxscore_saves 
+ADD COLUMN "start" boolean
+
+UPDATE games.boxscore_saves 
+SET "start" = TRUE
+WHERE goalie_id_fk = '867b9818-c35f-4e6a-a80f-7880d2d98db8'
 
 
 
