@@ -732,4 +732,24 @@ module.exports = {
       logger.log(error);
     }
   },
+
+  getPlayerAttributes: async (sport, playerID) => {
+    try {
+      logger.log(sport, playerID);
+      const response = await pool.query(
+        `
+        SELECT pp.id, concat(pp.first_name, ' ', pp.last_name) AS player_name, pp.date_of_birth , EXTRACT(YEAR FROM AGE(current_date, pp.date_of_birth)) AS age, pp.height_inches , pp.weight_lbs , pp.hand, initcap (tr.player_position) AS player_position , tr.actual_team_name , tr.jersey_number 
+        FROM players.player_profiles pp
+        LEFT JOIN teams.rosters tr
+        ON pp.id = tr.player_profile_id_fk 
+        WHERE pp.id = '${playerID}' AND tr.sport ILIKE '${sport}'
+        ORDER BY tr.season DESC 
+        LIMIT 1;
+        `
+      );
+      return response.rows;
+    } catch (error) {
+      logger.log(error);
+    }
+  },
 };

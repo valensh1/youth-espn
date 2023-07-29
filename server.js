@@ -238,6 +238,13 @@ app.get('/api/:sport/player/:playerID', async (req, res) => {
     playerID
   );
   const playerImages = await sqlQueries.getPlayerImages(sport, playerID);
-  logger.log(playerImages);
-  return res.json({ stats: playerCareerStats, images: playerImages });
+  const playerAttributes = await sqlQueries.getPlayerAttributes(
+    sport,
+    playerID
+  );
+  return res.json({
+    stats: playerCareerStats,
+    images: playerImages,
+    playerAttributes: playerAttributes,
+  });
 });

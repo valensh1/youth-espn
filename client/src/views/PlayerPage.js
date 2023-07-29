@@ -66,7 +66,28 @@ function PlayerPage() {
           <img src="https://i.imgur.com/9JeHwnS.jpg" id="profile-img" />
         </div>
 
-        <div id="player-attribute-container">
+        {stats?.playerAttributes?.map((el) => {
+          return (
+            <div id="player-attribute-container">
+              <div id="player-name-number">
+                <span>{el.player_name}</span>
+                <span>{el.jersey_number}</span>
+              </div>
+
+              <div id="player-attributes">
+                <span>{el.player_position}</span>
+                {/* <span>{el.height_inches}</span> */}
+                <span>5'4"</span>
+                {/* <span>{`${el.weight_lbs} lbs`}</span> */}
+                <span>87 lbs.</span>
+                <span>{`Age: ${el.age}`}</span>
+                <span>{el.actual_team_name}</span>
+              </div>
+            </div>
+          );
+        })}
+
+        {/* <div id="player-attribute-container">
           <div id="player-name-number">
             <span>Hunter Valentine</span>
             <span>36</span>
@@ -79,7 +100,7 @@ function PlayerPage() {
             <span>Age: 12</span>
             <span>OCHC</span>
           </div>
-        </div>
+        </div> */}
 
         <div id="player-bio">
           <p>
