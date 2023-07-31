@@ -55,6 +55,13 @@ function PlayerPage() {
     }
   };
 
+  const inchesToFeetConversion = (heightInInches) => {
+    const feetConversion = heightInInches / 12;
+    const feet = Math.trunc(feetConversion);
+    const inches = heightInInches - feet * 12;
+    return `${feet}'${inches}"`;
+  };
+
   //?----------------------------------------------------------------- JSX ------------------------------------------------------------------------
 
   return (
@@ -62,8 +69,8 @@ function PlayerPage() {
       <Navbar />
       <div id="player-profile-content">
         <div id="player-images">
-          <img src="https://i.imgur.com/WDXWE0I.png" id="action-img" />
-          <img src="https://i.imgur.com/9JeHwnS.jpg" id="profile-img" />
+          <img src={stats?.images?.[0].action_img_1} id="action-img" />
+          <img src={stats?.images?.[0].profile_img_1} id="profile-img" />
         </div>
 
         {stats?.playerAttributes?.map((el) => {
@@ -76,31 +83,14 @@ function PlayerPage() {
 
               <div id="player-attributes">
                 <span>{el.player_position}</span>
-                {/* <span>{el.height_inches}</span> */}
-                <span>5'4"</span>
-                {/* <span>{`${el.weight_lbs} lbs`}</span> */}
-                <span>87 lbs.</span>
+                <span>{inchesToFeetConversion(el.height_inches)}</span>
+                <span>{`${el.weight_lbs} lbs`}</span>
                 <span>{`Age: ${el.age}`}</span>
                 <span>{el.actual_team_name}</span>
               </div>
             </div>
           );
         })}
-
-        {/* <div id="player-attribute-container">
-          <div id="player-name-number">
-            <span>Hunter Valentine</span>
-            <span>36</span>
-          </div>
-
-          <div id="player-attributes">
-            <span>Goalie</span>
-            <span>5'4"</span>
-            <span>87 lb</span>
-            <span>Age: 12</span>
-            <span>OCHC</span>
-          </div>
-        </div> */}
 
         <div id="player-bio">
           <p>
@@ -160,6 +150,22 @@ function PlayerPage() {
               })}
             </tbody>
           </table>
+          <div id="player-highlight-videos-container">
+            <h1 id="highlights-heading">Highlights</h1>
+            <div id="player-highlight-videos">
+              <iframe
+                src="https://www.youtube.com/embed/vwyGb5XLb_0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              ></iframe>
+
+              <iframe
+                src="https://www.youtube.com/embed/XRqillceNJ4"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </div>
         </div>
       </div>
     </div>

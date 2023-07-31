@@ -113,5 +113,24 @@
         }
       }
     }
+    & #player-highlight-videos-container {
+      margin-top: 8vh;
+
+      & #highlights-heading {
+        display: block;
+        margin-bottom: 3vh;
+      }
+
+      & iframe {
+        /* border-radius: 15px; */
+        width: 25vw;
+        height: 25vh;
+      }
+
+      & #player-highlight-videos {
+        display: flex;
+        justify-content: space-around;
+      }
+    }
   }
 }
