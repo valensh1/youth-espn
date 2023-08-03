@@ -248,3 +248,13 @@ app.get('/api/:sport/player/:playerID', async (req, res) => {
     playerAttributes: playerAttributes,
   });
 });
+
+// Gets player highlight videos
+app.get('/api/:sport/player/:playerID/highlights', async (req, res) => {
+  const playerHighlights = await sqlQueries.getPlayerHighlightVideos(
+    'Hockey',
+    '867b9818-c35f-4e6a-a80f-7880d2d98db8'
+  );
+
+  return res.json(playerHighlights);
+});

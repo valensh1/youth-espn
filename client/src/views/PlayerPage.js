@@ -24,6 +24,7 @@ function PlayerPage() {
 
   //?----------------------------------------------------------------- USE STATE HOOKS ------------------------------------------------------------------------
   const [stats, setStats] = useState([]);
+  const [highlightVideos, setHighlightVideos] = useState([]);
 
   //?----------------------------------------------------------------- USE EFFECT HOOKS ------------------------------------------------------------------------
   useEffect(() => {
@@ -36,6 +37,16 @@ function PlayerPage() {
       setStats(response);
     };
     fetchPlayerStats();
+
+    const fetchPlayerHighlights = async () => {
+      const data = await fetch(
+        `/api/${sportToQuery}/player/${playerID}/highlights`
+      );
+      const response = await data.json();
+      console.log(response);
+      setHighlightVideos(response);
+    };
+    fetchPlayerHighlights();
   }, []);
 
   //?----------------------------------------------------------------- FUNCTIONS ------------------------------------------------------------------------
