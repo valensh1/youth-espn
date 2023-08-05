@@ -251,9 +251,10 @@ app.get('/api/:sport/player/:playerID', async (req, res) => {
 
 // Gets player highlight videos
 app.get('/api/:sport/player/:playerID/highlights', async (req, res) => {
+  const { sport, playerID } = req.params;
   const playerHighlights = await sqlQueries.getPlayerHighlightVideos(
-    'Hockey',
-    '867b9818-c35f-4e6a-a80f-7880d2d98db8'
+    sport,
+    playerID
   );
 
   return res.json(playerHighlights);

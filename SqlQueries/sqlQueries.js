@@ -761,6 +761,7 @@ module.exports = {
         SELECT *
         FROM players.player_videos pv 
         WHERE player_profile_id_fk = '${playerID}'
+        AND sport ILIKE '${sport}'
         `
       );
       return response.rows;

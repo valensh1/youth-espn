@@ -164,17 +164,15 @@ function PlayerPage() {
           <div id="player-highlight-videos-container">
             <h1 id="highlights-heading">Highlights</h1>
             <div id="player-highlight-videos">
-              <iframe
-                src="https://www.youtube.com/embed/vwyGb5XLb_0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              ></iframe>
-
-              <iframe
-                src="https://www.youtube.com/embed/XRqillceNJ4"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              ></iframe>
+              {highlightVideos?.[0]?.highlight_videos?.map((video) => {
+                return (
+                  <iframe
+                    src={video?.url}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  ></iframe>
+                );
+              })}
             </div>
           </div>
         </div>
