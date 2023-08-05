@@ -2473,12 +2473,13 @@ ORDER BY season DESC;
 
 
 
+
 -- Goalie games played, wins and losses and shut outs
-SELECT goalie_name, season, count(game_id_fk) AS games_played, sum(wins_losses) AS wins, count(game_id_fk) - sum(wins_losses) AS losses, sum(shots_against) AS shots_against, sum(goals_against) AS goals_against, (1.0 * sum(goals_against) / count(game_id_fk))::numeric(5, 2) AS goals_against_avg, sum(saves) AS saves, ((100.0 * sum(saves)) / sum(shots_against))::numeric(5,3) AS save_percentage, sum(shutouts) AS shutouts
+SELECT goalie_name, season, team_name, team_name_full, team_name_short, logo_image, division, team_level, count(game_id_fk) AS stat_games_played, sum(wins_losses) AS stat_wins, count(game_id_fk) - sum(wins_losses) - count(CASE WHEN wins_credited_goalie = false THEN 1 END) AS stat_losses, sum(shots_against) AS stat_shots_against, sum(goals_against) AS stat_goals_against, (1.0 * sum(goals_against) / count(game_id_fk))::numeric(5, 2) AS stat_goals_against_avg, sum(saves) AS stat_saves ,SUBSTRING(CAST(((100.0 * sum(saves)) / sum(shots_against) / 100)::numeric(5,3) AS TEXT) FROM 2) AS stat_save_percentage, sum(shutouts) AS stat_shutouts, primary_team_color AS color_primary, secondary_team_color AS color_secondary, third_team_color AS color_third
 FROM (
-SELECT bs.*, g.season, r.team_id_fk AS player_team_id, g.winning_team_id_fk AS winning_team_id , g.winning_team_long AS winning_team_long , g.winning_team_short AS winning_team_short,
+SELECT bs.*, g.season, g.division , g.team_level , r.actual_team_name AS team_name, t.team_name_full, t.team_name_short, r.team_id_fk AS player_team_id, g.winning_team_id_fk AS winning_team_id , g.winning_team_long, g.winning_team_short,  
 CASE 
-	WHEN g.winning_team_id_fk = r.team_id_fk 
+	WHEN g.winning_team_id_fk = r.team_id_fk AND wins_credited_goalie = TRUE
 	THEN 1
 	ELSE 0
 END AS wins_losses,
@@ -2487,26 +2488,168 @@ CASE
 	AND LEAST (g.home_team_score, g.visitor_team_score) = 0
 	THEN 1
 	ELSE 0
-END AS shutouts
+END AS shutouts,
+t.logo_image,
+t.primary_team_color AS primary_team_color ,
+t.secondary_team_color AS secondary_team_color ,
+t.third_team_color AS third_team_color
 FROM games.boxscore_saves bs
 LEFT JOIN games.games g
 ON g.id = bs.game_id_fk
 LEFT JOIN teams.rosters r
 ON r.player_profile_id_fk = bs.goalie_id_fk AND r.season = g.season  
+LEFT JOIN teams.teams t 
+ON t.id = r.team_id_fk 
 WHERE bs.goalie_id_fk = '867b9818-c35f-4e6a-a80f-7880d2d98db8'
 ) AS subquery
-GROUP BY goalie_name,season
+GROUP BY goalie_name,season, team_name, team_name_full, team_name_short, logo_image, division, team_level, primary_team_color, secondary_team_color, third_team_color
+
 
 
 SELECT *
 FROM games.boxscore_saves 
 
-ALTER TABLE games.boxscore_saves 
-ADD COLUMN "start" boolean
+SELECT pp.id, concat(pp.first_name, ' ', pp.last_name) AS player_name, pp.date_of_birth , EXTRACT(YEAR FROM AGE(current_date, pp.date_of_birth)) AS age, pp.height_inches , pp.weight_lbs , pp.hand, initcap (tr.player_position) AS player_position , tr.actual_team_name , tr.jersey_number  
+FROM players.player_profiles pp
+LEFT JOIN teams.rosters tr
+ON pp.id = tr.player_profile_id_fk 
+WHERE pp.id = '867b9818-c35f-4e6a-a80f-7880d2d98db8' AND tr.sport ILIKE 'hockey'
+ORDER BY tr.season DESC 
+LIMIT 1;
 
-UPDATE games.boxscore_saves 
-SET "start" = TRUE
-WHERE goalie_id_fk = '867b9818-c35f-4e6a-a80f-7880d2d98db8'
+UPDATE players.player_profiles
+SET height_inches = 64
+WHERE id = '867b9818-c35f-4e6a-a80f-7880d2d98db8';
+
+SELECT EXTRACT(YEAR FROM AGE(current_date, '1990-03-15')) AS age;
+
+SELECT highlight_videos 
+FROM players.player_videos 
+
+INSERT INTO players.player_videos (player_profile_id_fk, sport, highlight_videos)
+VALUES (
+'867b9818-c35f-4e6a-a80f-7880d2d98db8',
+'Hockey',
+'[{"url": "https://www.youtube.com/embed/XRqillceNJ4", 
+"title": "Hunter Back and Forth Sliding Save", 
+"date": "03-10-2023", 
+"season": "2022-2023", 
+"division": "Peewee", 
+"team_level": "AA",
+"player_team": "OCHC",
+"player_team_id": "11b32925-f52e-46c2-93eb-825703d05c33", 
+"opponent_long": "California Golden Bears", 
+"opponent_short": "Bears", 
+"opponent_team_id": "34875494-e19d-440b-92d2-75aaede4a3e9", 
+"game_type": "playoff", 
+"venue": "The Cube Santa Clarita", 
+"venue_id": "87b569e6-4351-4dd8-9ace-133845bbdb5e", 
+"tags": ["save", "breakaway", "2 on 1", "playoff", "CAHA", "pad save"]},
+{"url": "https://www.youtube.com/embed/vwyGb5XLb_0", 
+"title": "Hunter Valentine proves he can play against top AAA team in nation", 
+"date": "01-13-2023", 
+"season": "2022-2023", 
+"division": "Peewee", 
+"team_level": "AA",
+"player_team": "OCHC",
+"player_team_id": "11b32925-f52e-46c2-93eb-825703d05c33", 
+"opponent_long": "Jr. Flyers", 
+"opponent_short": "Flyers", 
+"opponent_team_id": "", 
+"game_type": "tournament", 
+"venue": "Buffalo RiverWorks", 
+"venue_id": "2e8f0a4d-680d-4457-84c4-d5db1d60fc77", 
+"tags": ["save", "breakaway", "1 on 1", "glove save", "tournament", "AAA", "top team in nation"]}]'
+)
+
+
+
+DROP TABLE players.player_videos ;
+
+CREATE TABLE players.player_videos (
+id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+sport TEXT NOT NULL,
+player_profile_id_fk uuid REFERENCES players.player_profiles(id),
+player_name TEXT,
+highlight_videos jsonb
+) ;
+
+
+CREATE OR REPLACE FUNCTION fn_update_name()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        UPDATE players.player_videos AS pv
+        SET player_name  = (
+            SELECT concat(pp.first_name,' ', pp.last_name)
+            FROM players.player_profiles AS pp
+            WHERE pv.player_profile_id_fk = pp.id
+        );
+    END IF;
+   
+    RETURN NEW;
+END;
+$$;
+
+
+-- CREATION OF TRIGGER WHICH CALLS THE FUNCTION
+CREATE TRIGGER trigger_update_name
+AFTER INSERT ON players.player_videos 
+FOR EACH ROW
+EXECUTE FUNCTION fn_update_name();
+
+
+ALTER TABLE players.player_videos 
+
+
+    SELECT *
+        FROM players.player_videos pv 
+        WHERE player_profile_id_fk = '867b9818-c35f-4e6a-a80f-7880d2d98db8'
+        AND sport ILIKE 'Hockey'
+
+
+
+
+-- Adding a new element to the JSONB array
+UPDATE players.player_videos 
+SET highlight_videos  = jsonb_insert(highlight_videos , '{3}', '{"name": "Bob"}');
+
+
+-- How to add an object to jsonb array of objects
+UPDATE players.player_videos 
+SET highlight_videos = jsonb_set(
+  highlight_videos,
+  '{3}',
+  '{"url": "https://youtu.be/ukYniadNNGk", 
+    "title": "Hunter Valentine with nice save in close", 
+    "date": "03-12-2023", 
+    "season": "2022-2023", 
+    "division": "Peewee", 
+    "team_level": "AA",
+    "player_team": "OCHC",
+    "player_team_id": "11b32925-f52e-46c2-93eb-825703d05c33", 
+    "opponent_long": "SDIA Oilers", 
+    "opponent_short": "Oilers", 
+    "opponent_team_id": "3d921715-a4be-43de-a130-504b38a960ec", 
+    "game_type": "playoff", 
+    "venue": "The Cube Santa Clarita", 
+    "venue_id": "87b569e6-4351-4dd8-9ace-133845bbdb5e",  
+    "tags": ["save", "playoffs", "CAHA", "championship game"]
+  }'
+);
+
+
+-- Update specific tag with jsonb array; 1 is index position in array and then tags is the key and then the index position within the array value
+UPDATE players.player_videos 
+SET highlight_videos = jsonb_set(
+  highlight_videos,
+  '{1, tags, 4}',
+  '"tournament"'
+);
+
+
 
 
 

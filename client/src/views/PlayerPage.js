@@ -164,13 +164,20 @@ function PlayerPage() {
           <div id="player-highlight-videos-container">
             <h1 id="highlights-heading">Highlights</h1>
             <div id="player-highlight-videos">
-              {highlightVideos?.[0]?.highlight_videos?.map((video) => {
+              {highlightVideos?.[0]?.highlight_videos?.map((video, index) => {
                 return (
-                  <iframe
-                    src={video?.url}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                  ></iframe>
+                  <div key={index} id="video-container">
+                    <iframe
+                      id={`iframe-video`}
+                      src={video?.url}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    ></iframe>
+                    <div>
+                      <span>{`53K views`}</span>
+                      <span>{video?.date}</span>
+                    </div>
+                  </div>
                 );
               })}
             </div>

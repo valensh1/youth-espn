@@ -121,15 +121,37 @@
         margin-bottom: 3vh;
       }
 
-      & iframe {
-        /* border-radius: 15px; */
-        width: 25vw;
-        height: 25vh;
-      }
-
       & #player-highlight-videos {
         display: flex;
         justify-content: space-around;
+      }
+
+      & #video-container {
+        display: flex;
+        flex-direction: column;
+
+        & iframe {
+          border-radius: 15px;
+          width: 23vw;
+          height: 20vh;
+        }
+
+        & span {
+          color: gray;
+          font-weight: 500;
+          font-size: 0.75vw;
+          width: 23vw;
+          margin-top: 0vh;
+        }
+
+        & span:first-child::after {
+          margin-left: 0.25vw;
+        }
+
+        & span:not(:last-child)::after {
+          content: ' • '; /* Bullet point character */
+          margin-right: 0.25vw;
+        }
       }
     }
   }
