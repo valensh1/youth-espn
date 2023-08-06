@@ -21,6 +21,7 @@ function PlayerPage() {
     'Save%',
     'SO',
   ];
+  const key = process.env.REACT_APP_YOUTUBE_API_KEY;
 
   //?----------------------------------------------------------------- USE STATE HOOKS ------------------------------------------------------------------------
   const [stats, setStats] = useState([]);
@@ -31,20 +32,34 @@ function PlayerPage() {
     window.scrollTo(0, 0); // Ensure page loads with user at top of page
 
     const fetchPlayerStats = async () => {
-      const data = await fetch(`/api/${sportToQuery}/player/${playerID}`);
-      const response = await data.json();
-      console.log(response);
-      setStats(response);
+      const response = await fetch(`/api/${sportToQuery}/player/${playerID}`);
+      const data = await response.json();
+      console.log(data);
+      setStats(data);
     };
     fetchPlayerStats();
 
     const fetchPlayerHighlights = async () => {
-      const data = await fetch(
+      const response = await fetch(
         `/api/${sportToQuery}/player/${playerID}/highlights`
       );
-      const response = await data.json();
-      console.log(response);
-      setHighlightVideos(response);
+      const data = await response.json();
+      console.log(data);
+
+      // Loops through the data retrieved directly above and for each video it gets the video stats such as view count, likes, etc using the YouTube API and combines that with the data received directly above and sets the playerHighlights state
+      const videoArray = await Promise.all(
+        data[0]?.highlight_videos.map(async (video) => {
+          const url = video.url;
+          const convertUrlToArray = url.split('/');
+          const lengthOfUrlArray = convertUrlToArray.length;
+          const videoID = convertUrlToArray[lengthOfUrlArray - 1];
+          const stats = await fetchVideoStats(videoID);
+          return { ...video, stats };
+        })
+      );
+      console.log(videoArray);
+      data[0].highlight_videos = videoArray;
+      setHighlightVideos(data);
     };
     fetchPlayerHighlights();
   }, []);
@@ -71,6 +86,17 @@ function PlayerPage() {
     const feet = Math.trunc(feetConversion);
     const inches = heightInInches - feet * 12;
     return `${feet}'${inches}"`;
+  };
+
+  const fetchVideoStats = async (videoID) => {
+    const response = await fetch(
+      `https://www.googleapis.com/youtube/v3/videos?key=${key}&id=${videoID}&part=statistics, contentDetails, player, snippet, topicDetails`
+    );
+
+    const data = await response.json();
+    console.log(data);
+    console.log(data.items[0].statistics.viewCount);
+    return data.items[0].statistics;
   };
 
   //?----------------------------------------------------------------- JSX ------------------------------------------------------------------------
@@ -174,7 +200,7 @@ function PlayerPage() {
                       allowFullScreen
                     ></iframe>
                     <div>
-                      <span>{`53K views`}</span>
+                      <span>{`${video?.stats?.viewCount} views`}</span>
                       <span>{video?.date}</span>
                     </div>
                   </div>
