@@ -199,7 +199,7 @@ function PlayerPage() {
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                       allowFullScreen
                     ></iframe>
-                    <div>
+                    <div id="video-attributes">
                       <span>{`${video?.stats?.viewCount} views`}</span>
                       <span>{video?.date}</span>
                     </div>

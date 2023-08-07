@@ -2650,6 +2650,67 @@ SET highlight_videos = jsonb_set(
 );
 
 
+-- Insert into players.player_videos table
+INSERT INTO players.player_videos (
+sport, player_profile_id_fk , highlight_videos  
+)
+VALUES (
+'Hockey',
+'d1b079e0-4776-4324-9de0-aef6abc93c2a',
+'[{
+"url": "https://youtu.be/84p2laLjmMw",
+    "date": "01-21-2023",
+    "tags": [
+      "clear puck",
+      "defensemen",
+      "defense"
+    ],
+    "title": "Cameron Karpontinis clears puck sitting on goal line",
+    "venue": "East West Ice Palace",
+  	"venue_id": "87b569e6-4351-4dd8-9ace-133845bbdb5e",
+    "season": "2022-2023",
+    "division": "Peewee",
+    "game_type": "exhibition",
+    "team_level": "AA",
+    "player_team": "OCHC",
+    "opponent_long": "California Wave",
+    "opponent_short": "Wave",
+    "player_team_id": "11b32925-f52e-46c2-93eb-825703d05c33",
+    "opponent_team_id": "d2f86685-2304-4fa3-8c0c-09d42ed6bf6a"
+}]'
+)
 
 
+UPDATE players.player_videos
+SET highlight_videos = highlight_videos || '{
+  "url": "https://youtu.be/odWZAprCzgo",
+  "date": "2023-01-16",
+  "tags": ["save", "breakaway", "2 on 1 breakaway", "goalie", "hockey", "tournament"],
+  "title": "Hunter Valentine stops 2 on 1 breakaway on top 2010 AAA team in nation",
+  "venue": "Buffalo RiverWorks",
+  "venue_id": "2e8f0a4d-680d-4457-84c4-d5db1d60fc77",
+  "season": "2022-2023",
+  "division": "Peewee",
+  "game_type": "tournament",
+  "team_level": "AAA",
+  "player_team": "OCHC",
+  "opponent_long": "Jr. Flyers",
+  "opponent_short": "Flyers",
+  "player_team_id": "11b32925-f52e-46c2-93eb-825703d05c33",
+  "opponent_team_id": ""
+}'
+WHERE player_profile_id_fk = '867b9818-c35f-4e6a-a80f-7880d2d98db8';
+
+
+UPDATE players.player_videos
+SET highlight_videos = jsonb_set(
+  highlight_videos,
+  '{0, url}',
+  '"https://youtu.be/embed/84p2laLjmMw"'
+)
+WHERE player_profile_id_fk = 'd1b079e0-4776-4324-9de0-aef6abc93c2a';
+
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/odWZAprCzgo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/odWZAprCzgo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 

@@ -115,6 +115,7 @@
     }
     & #player-highlight-videos-container {
       margin-top: 8vh;
+      width: 90vw;
 
       & #highlights-heading {
         display: block;
@@ -122,13 +123,16 @@
       }
 
       & #player-highlight-videos {
+        width: 90vw;
         display: flex;
         justify-content: space-around;
+        flex-wrap: wrap;
       }
 
       & #video-container {
         display: flex;
         flex-direction: column;
+        margin-bottom: 5vh;
 
         & iframe {
           border-radius: 15px;

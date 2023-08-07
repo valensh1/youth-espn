@@ -1,3 +1,5 @@
 {
-  "emmet.syntaxProfiles": {}
+  "emmet.syntaxProfiles": {},
+  "appService.defaultWebAppToDeploy": "/subscriptions/1f54ca43-c7e3-40e2-9764-ad37bf2a9ab2/resourceGroups/Youth-Sports-Gamerz_group/providers/Microsoft.Web/sites/Youth-Sports-Gamerz",
+  "appService.deploySubpath": "."
 }
