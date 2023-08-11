@@ -5,6 +5,16 @@ import Navbar from '../components/Navbar';
 function Teams() {
   const [teams, setTeams] = useState([]);
 
+  // console.log(process.env.REACT_APP_NODE_ENV);
+  // const baseURL =
+  //   process.env.REACT_APP_NODE_ENV === 'BUILD'
+  //     ? 'http://localhost:5001'
+  //     : process.env.REACT_APP_NODE_ENV === 'PROD'
+  //     ? 'https://youth-sports-gamerz.azurewebsites.net'
+  //     : 'http://localhost:3000';
+
+  // console.log(`Base URL is ---> ${baseURL}`);
+
   let urlPathToParse = window.location.pathname.split('/'); // Get sport from url path
   const sport = urlPathToParse[1]; // Sport is located in first index position in url path
 
@@ -13,6 +23,7 @@ function Teams() {
   useEffect(() => {
     (async () => {
       try {
+        // const response = await fetch(`${baseURL}/api/${sport}/teams`); // Fetching of sports teams from database to display
         const response = await fetch(`/api/${sport}/teams`); // Fetching of sports teams from database to display
         const teamsDataPull = await response.json();
         console.log(teamsDataPull);
