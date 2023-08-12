@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import baseURL from '../baseURL';
 
 function Teams() {
   const [teams, setTeams] = useState([]);
@@ -24,7 +25,7 @@ function Teams() {
     (async () => {
       try {
         // const response = await fetch(`${baseURL}/api/${sport}/teams`); // Fetching of sports teams from database to display
-        const response = await fetch(`/api/${sport}/teams`); // Fetching of sports teams from database to display
+        const response = await fetch(`${baseURL}/api/${sport}/teams`); // Fetching of sports teams from database to display
         const teamsDataPull = await response.json();
         console.log(teamsDataPull);
         setTeams(teamsDataPull);
