@@ -2,16 +2,16 @@ let { response } = require('express');
 const { Pool } = require('pg');
 let logger = require('tracer').console(); // Logger so you can see code line numbers in Node.js. Need to use logger.log instead of console.log though. Must download Tracer from npm using npm i tracer
 
-// const config = {
-//   host: 'postgres-server-smv.postgres.database.azure.com',
-//   user: process.env.AZURE_USERNAME,
-//   password: process.env.AZURE_PASSWORD,
-//   database: process.env.AZURE_DATABASE,
-//   port: 5432,
-//   ssl: true,
-// };
+const config = {
+  host: 'postgres-server-smv.postgres.database.azure.com',
+  user: process.env.AZURE_USERNAME,
+  password: process.env.AZURE_PASSWORD,
+  database: process.env.AZURE_DATABASE,
+  port: 5432,
+  ssl: true,
+};
 
-const config = process.env.conn;
+// const config = process.env.conn;
 // logger.log(process.env.DB_CONFIG);
 
 // var conn= new Client({host:"postgres-server-smv.postgres.database.azure.com", user:"valensh1", password:"{your_password}", database:"", port:5432, ssl:{ca:fs.readFileSync("{ca-cert filename}")}});

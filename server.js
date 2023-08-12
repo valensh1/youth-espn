@@ -12,12 +12,12 @@ const sqlQueries = require('./SqlQueries/sqlQueries');
 // const port = process.env.PORT || 3000;
 let port = process.env.PORT;
 
-port =
-  process.env.NODE_ENV === 'production'
-    ? 5471
-    : process.env.NODE_ENV === 'build'
-    ? 3000
-    : 5001;
+// port =
+//   process.env.NODE_ENV === 'production'
+//     ? 5471
+//     : process.env.NODE_ENV === 'build'
+//     ? 3000
+//     : 5001;
 
 // const baseURL =
 //   process.env.NODE_ENV === 'production'
