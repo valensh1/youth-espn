@@ -14,7 +14,6 @@ function Teams() {
   useEffect(() => {
     (async () => {
       try {
-        // const response = await fetch(`${baseURL}/api/${sport}/teams`); // Fetching of sports teams from database to display
         const response = await fetch(`${baseURL}/api/${sport}/teams`); // Fetching of sports teams from database to display
         const teamsDataPull = await response.json();
         console.log(teamsDataPull);

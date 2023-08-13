@@ -4,9 +4,9 @@ let logger = require('tracer').console(); // Logger so you can see code line num
 
 const config = {
   host: 'postgres-server-smv.postgres.database.azure.com',
-  user: process.env.AZURE_USERNAME,
-  password: process.env.AZURE_PASSWORD,
-  database: process.env.AZURE_DATABASE,
+  user: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
   port: 5432,
   ssl: true,
 };

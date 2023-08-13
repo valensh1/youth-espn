@@ -9,7 +9,8 @@ app.use(cors());
 const url = require('url');
 const sqlQueries = require('./SqlQueries/sqlQueries');
 
-let port = process.env.PORT;
+let port = process.env.PORT || 3000;
+logger.log(port);
 
 app.get(`/api/hockey/team-records`, async (req, res) => {
   const { date, level, division, season, gameType } = req.query; // Destructure req.query items
@@ -63,7 +64,6 @@ app.get(`/api/hockey/teams`, async (req, res) => {
   const level = req.query.level;
   const teams = await sqlQueries.getAllTeams(level);
   return res.json(teams);
-  // return res.send('hello DUDE')
 });
 
 // Endpoint returns all teams that played based on a certain season, level and division. Not all teams have a team each season so this retrieves the teams that played in that season
@@ -257,6 +257,9 @@ app.get('/api/:sport/player/:playerID/highlights', async (req, res) => {
     sport,
     playerID
   );
-
   return res.json(playerHighlights);
+});
+
+app.listen(port, () => {
+  logger.log(`Server is listening on port ${port}`);
 });
