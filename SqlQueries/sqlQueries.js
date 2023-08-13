@@ -11,11 +11,6 @@ const config = {
   ssl: true,
 };
 
-// const config = process.env.conn;
-// logger.log(process.env.DB_CONFIG);
-
-// var conn= new Client({host:"postgres-server-smv.postgres.database.azure.com", user:"valensh1", password:"{your_password}", database:"", port:5432, ssl:{ca:fs.readFileSync("{ca-cert filename}")}});
-
 const pool = new Pool(config);
 
 module.exports = {

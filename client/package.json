@@ -16,9 +16,9 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "REACT_APP_NODE_ENV=DEV concurrently \"react-scripts start\" \"cd ../&& npm start\"",
-    "build": "REACT_APP_NODE_ENV=BUILD concurrently \"react-scripts build\" \"cd ../&& npm start\"",
-    "PROD": "REACT_APP_NODE_ENV=PROD concurrently \"react-scripts build\" \"cd ../&& npm start\"",
+    "start": "concurrently \"react-scripts start\" \"cd ../&& npm start\"",
+    "build": "concurrently \"react-scripts build\" \"cd ../&& npm start\"",
+    "PROD": "concurrently \"react-scripts build\" \"cd ../&& npm start\"",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
