@@ -1,67 +1,162 @@
-#action-img {
-  height: 70vh;
-  width: 90vw;
-  margin-left: 5vw;
-}
-
-#profile-img {
-  height: 25vh;
-  width: 16vw;
-  border-radius: 50%;
-  position: absolute;
-  top: 45vh;
-  left: 41vw;
-  object-fit: cover;
-  object-position: 100% 0%;
-  box-shadow: 5px 2px 60px 10px orangered;
-}
-
-#player-profile-container
-  #player-attribute-container
-  span:not(:first-child)::before {
-  content: ' | ';
-}
-
-#player-profile-container
-  #player-attribute-container
-  #player-attributes
-  span:not(:first-child)::before {
-  padding-left: 2vw;
-  padding-right: 2vw;
-}
-
-#player-name-number {
-  font-weight: 800;
-  font-size: 2vw;
+#player-profile-container {
+  height: 200vh;
   width: 100vw;
-  text-align: center;
-  margin-top: 1vh;
-}
+  background-color: black;
 
-#player-attributes {
-  font-size: 1.2vw;
-  font-weight: 500;
-  width: 100vw;
-  text-align: center;
-  margin-top: 1vh;
-}
+  & #player-profile-content {
+    width: 90vw;
+    height: fit-content;
+    border-radius: 15px;
+    margin-left: 5vw;
+    background-color: var(--color-whiteBackground);
 
-#player-bio {
-  font-size: 1vw;
-  width: 90vw;
-  margin-left: 5vw;
-}
+    & #player-images {
+      position: relative;
+      height: fit-content;
+      width: 90vw;
 
-#player-bio button {
-  color: blue;
-  border: none;
-}
+      & #action-img {
+        width: 85vw;
+        height: 53vh;
+        margin-left: 2.5vw;
+        margin-top: 2.5vh;
+      }
 
-#player-bio button:hover {
-  cursor: pointer;
-  border: 1px solid blue;
-}
+      & #profile-img {
+        position: absolute;
+        top: 73%;
+        right: 39.5vw;
+        height: 19vh;
+        width: 11vw;
+        border-radius: 50%;
+      }
+    }
 
-#player-bio .bio-hide {
-  visibility: hidden;
+    & #player-attribute-container {
+      margin-top: 5vh;
+      text-align: center;
+
+      & #player-name-number {
+        font-size: 2vw;
+
+        & span:not(:first-child)::before {
+          padding-left: 1vw;
+          padding-right: 1vw;
+        }
+      }
+
+      & #player-attributes {
+        font-size: 1.5vw;
+        font-weight: 400;
+      }
+
+      & span:not(:first-child)::before {
+        content: ' | ';
+        padding-left: 2vw;
+        padding-right: 2vw;
+      }
+    }
+
+    & #player-bio {
+      & p {
+        font-size: 1vw;
+        margin-left: 2.5vw;
+
+        & button {
+          color: blue;
+          border: none;
+          margin-left: 0.2vw;
+          background-color: var(--color-whiteBackground);
+
+          &:hover {
+            border: 1px solid var(--button-color);
+            font-weight: 800;
+            background-color: var(--color-whiteBackground);
+            cursor: pointer;
+          }
+        }
+
+        & .bio-hide {
+          visibility: hidden;
+        }
+
+        & #see-less-btn {
+          visibility: hidden;
+        }
+      }
+    }
+
+    & #player-stats-container {
+      & h1 {
+        text-align: center;
+        margin-bottom: 0vh;
+      }
+
+      & #player-stats-table {
+        width: 50vw;
+        margin-left: 20vw;
+        text-align: center;
+        font-size: 1vw;
+        border-collapse: collapse; /*Collapses spaces between td and th elements */
+
+        & th {
+          background-color: black;
+          color: white;
+        }
+
+        & td {
+          border: 1px solid var(--color-lightGray);
+        }
+
+        & td:first-child {
+          background-color: var(--color-lightGray);
+        }
+      }
+    }
+    & #player-highlight-videos-container {
+      margin-top: 8vh;
+      width: 90vw;
+
+      & #highlights-heading {
+        display: block;
+        margin-bottom: 3vh;
+      }
+
+      & #player-highlight-videos {
+        width: 90vw;
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+      }
+
+      & #video-container {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 5vh;
+
+        & iframe {
+          border-radius: 15px;
+          width: 23vw;
+          height: 20vh;
+        }
+
+        & span {
+          color: gray;
+          font-weight: 500;
+          font-size: 0.75vw;
+          width: 23vw;
+          margin-top: 0vh;
+        }
+
+        & span:first-child::after {
+          margin-left: 0.25vw;
+        }
+
+        & span:not(:last-child)::after {
+          content: ' • '; /* Bullet point character */
+          margin-right: 0.25vw;
+        }
+      }
+    }
+  }
 }

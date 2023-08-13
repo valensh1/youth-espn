@@ -2011,3 +2011,706 @@ SELECT teams.id, team_long, team_short, logo_image, primary_team_color, secondar
 
       GROUP BY teams.id, team_long, team_short ,logo_image, primary_team_color, secondary_team_color, third_team_color
       ORDER BY team_short, team_long;
+     
+    
+     
+     
+     
+     
+     
+     
+     
+     SELECT
+      games.winning_team_long AS team_long,
+      games.winning_team_short AS team_short,
+          COALESCE(wins.count,
+      0) + COALESCE (tie_games.ties, 0) AS "GP",
+      COALESCE(wins.count,
+      0) AS wins,
+      COALESCE(tie_games.ties,
+      0) AS TIES,
+      COALESCE(wins.count,
+      0) * 2 + COALESCE(tie_games.ties,
+      0) AS points
+    FROM
+      games.games
+    JOIN (
+      SELECT
+        winning_team_long,
+        winning_team_short,
+        COUNT(*) AS count
+      FROM
+        games.games
+      WHERE
+        sport ILIKE 'Hockey'
+        AND season = '2021-2022'
+        AND team_level = 'A'
+        AND division = 'Peewee'
+        AND game_type = 'Regular Season'
+      GROUP BY
+        winning_team_long,
+        winning_team_short
+    ) AS wins ON
+      games.winning_team_long = wins.winning_team_long
+      AND games.winning_team_short = wins.winning_team_short
+    LEFT JOIN (
+      SELECT
+        team_long,
+        team_short,
+        SUM(TIES) AS TIES
+      FROM
+        (
+        SELECT
+          home_team_long AS team_long,
+          home_team_short AS team_short,
+          COUNT(*) AS TIES
+        FROM
+          games.games
+        WHERE
+          tie = TRUE
+        AND sport ILIKE 'Hockey'
+        AND season = '2021-2022'
+        AND team_level = 'A'
+        AND division = 'Peewee'
+        AND game_type = 'Regular Season'
+        GROUP BY
+          home_team_long,
+          home_team_short
+      UNION ALL
+        SELECT
+          visitor_team_long AS team_long,
+          visitor_team_short AS team_short,
+          COUNT(*) AS TIES
+        FROM
+          games.games
+        WHERE
+          tie = TRUE
+        AND sport ILIKE 'Hockey'
+        AND season = '2021-2022'
+        AND team_level = 'A'
+        AND division = 'Peewee'
+        AND game_type = 'Regular Season'
+        GROUP BY
+          visitor_team_long,
+          visitor_team_short
+        ) AS TIES
+      GROUP BY
+        team_long,
+        team_short
+      ORDER BY
+        TIES
+    ) AS tie_games ON
+      tie_games.team_long = games.winning_team_long
+      AND tie_games.team_short = games.winning_team_short
+    WHERE
+    sport ILIKE 'Hockey'
+        AND season = '2021-2022'
+        AND team_level = 'A'
+        AND division = 'Peewee'
+        AND game_type = 'Regular Season'
+    GROUP BY
+      games.winning_team_long,
+      games.winning_team_short,
+      wins.count,
+      tie_games.TIES
+    ORDER BY
+      points DESC; 
+     
+     
+     SELECT *
+     FROM games.games
+     WHERE (home_team_long = 'Jr. Ducks(2)' OR visitor_team_long = 'Jr. Ducks(2)')
+     AND season = '2022-2023'
+     ORDER BY game_date DESC;  
+    
+    SELECT *
+    FROM games.games
+WHERE season = '2022-2023'
+AND game_type_league = 'CAHA'
+
+
+DROP TABLE games.boxscore ;
+
+CREATE TABLE games.boxscore (
+  game_id UUID REFERENCES games.games (id),
+  goals hstore
+);
+
+
+
+
+INSERT INTO games.boxscore (game_id, goals)
+VALUES (
+'b675d0df-c775-460a-8013-55c91baaf671',
+ARRAY [1, 5, 3]
+)
+
+CREATE TABLE games.boxscore (
+id uuid DEFAULT uuid_generate_v4 (),
+gameId_fk uuid REFERENCES games.games(id),
+playerId_fk uuid REFERENCES players.player_profiles(id),
+goals integer[],
+timeOfGoal TEXT[],
+assists integer DEFAULT 0,
+points integer DEFAULT 0,
+SOG integer DEFAULT 0,
+shootingPercengage NUMERIC (3,2),
+powerPlayPoints integer DEFAULT 0,
+plusMinus integer DEFAULT 0,
+PIM integer DEFAULT 0,
+saves NUMERIC DEFAULT 0,
+goalieShotsAgainst NUMERIC DEFAULT 0,
+savePercentage NUMERIC(3,2) GENERATED ALWAYS AS (saves / NULLIF (goalieShotsAgainst, 0)) STORED
+)
+
+INSERT INTO games.boxscore (
+  gameId_fk,
+  playerId_fk,
+  goals,
+  timeOfGoal,
+  assists,
+  SOG,
+  powerPlayPoints,
+  plusMinus,
+  PIM
+)
+VALUES (
+  '03bf5e24-42c5-4057-8af2-2b7f161bdb45'::uuid,
+  '43ffb414-68df-46c5-a5c9-99c568466be6'::uuid,
+  ARRAY[1],
+  ARRAY['3:50 1st Period'],
+  2,
+  4,
+  1,
+  1,
+  0
+);
+
+INSERT INTO games.boxscore (gameid_fk, goals)
+VALUES ('03bf5e24-42c5-4057-8af2-2b7f161bdb45', ARRAY[2]);
+
+
+
+SELECT * FROM games.boxscore;
+DROP TABLE games.boxscore;
+
+UPDATE games.boxscore
+DELETE FROM games.boxscore;
+
+SELECT concat(player.first_name, ' ', player.last_name), box.goals, game.game_date, game.winning_team_long
+FROM games.boxscore box
+LEFT JOIN players.player_profiles player
+ON playerid_fk = player.id
+LEFT JOIN games.games game
+ON game.id = box.gameId_fk
+
+ALTER games.boxscore 
+ALTER COLUMN goals TYPE integer[] ;
+
+ALTER TABLE games.boxscore
+ALTER COLUMN goals SET DATA TYPE INTEGER[] USING ARRAY[goals];
+
+
+ALTER TABLE games.boxscore
+ALTER COLUMN goals::integer[];
+
+ goals::integer[]
+
+
+
+ALTER TABLE employees
+ALTER COLUMN age TYPE smallint;
+
+ALTER TABLE games.boxscore
+ALTER COLUMN goals DROP DEFAULT;
+
+ALTER TABLE games.boxscore
+ALTER COLUMN goals SET DATA TYPE INTEGER[] USING ARRAY[goals];
+
+CREATE TABLE games.boxscore (
+id serial,
+goals INTEGER[]
+);
+
+INSERT INTO games.boxscore (goals)
+VALUES (ARRAY[3]);
+
+SELECT * FROM games.boxscore ;
+
+DROP TABLE games.boxscore ;
+
+
+
+SELECT * FROM games.boxscore ;
+
+-- Create the table
+CREATE TABLE my_table (
+  id SERIAL PRIMARY KEY,
+  numbers INTEGER[]
+);
+
+-- Insert a value into the array
+INSERT INTO my_table (numbers) VALUES (ARRAY[42]);
+
+-- Query the table
+SELECT * FROM my_table;
+
+DROP TABLE games.boxscore  ;
+
+
+CREATE TABLE games.boxscore (
+  id SERIAL PRIMARY KEY,
+  goal_data INTEGER[]
+);
+INSERT INTO games.boxscore (goal_data) VALUES (ARRAY[3]);
+SELECT * FROM games.boxscore ;
+
+INSERT INTO games.boxscore (goal_data)
+VALUES (ARRAY  [5, 10])
+
+UPDATE games.boxscore 
+SET goal_data = goal_data || array[23];
+
+
+
+-- DROP THE games.boxscore_goals TABLE
+DROP TABLE games.boxscore_goals ;
+
+
+-- CREATE THE games.boxscore_goals TABLE for players
+CREATE TABLE games.boxscore_goals (
+id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+game_id_fk uuid REFERENCES games.games(id),
+goal_scored_player_id_fk uuid REFERENCES players.player_profiles(id),
+goal_scored_player_name TEXT ,
+goal_period INTEGER NOT NULL,
+goal_time TIME,
+assist_player1_id_fk uuid REFERENCES players.player_profiles(id) ,
+assist_player1_name TEXT ,
+assist_player2_id_fk uuid REFERENCES players.player_profiles(id) ,
+assist_player2_name TEXT 
+);
+
+
+-- INSERT VALUES INTO THE games.boxscore_goals TABLE
+INSERT INTO games.boxscore_goals (
+    game_id_fk, 
+    goal_scored_player_id_fk, 
+    goal_period, 
+    goal_time, 
+    assist_player1_id_fk,
+    assist_player2_id_fk
+)
+VALUES 
+(
+    '23b2910b-e582-4ba8-8ccb-911ed4e2e109',
+    'ad65cc6d-87f2-416e-9c8c-4d7a65df6094',
+    2,
+    '12:30',
+    'abf8f724-d853-401b-b636-accaba39e5e1',
+    '66e802a2-661a-4e00-ad13-2ef6a9edcd1f'
+);
+
+
+-- CREATION OF FUNCTION FOR TRIGGER
+CREATE OR REPLACE FUNCTION fn_update_goal_scored_player_name()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    -- Update the goal_scored_player_name in games.boxscore_goals
+    UPDATE games.boxscore_goals AS bg
+    SET goal_scored_player_name = (
+        SELECT concat(pp.first_name,' ', pp.last_name)
+        FROM players.player_profiles AS pp
+        WHERE bg.goal_scored_player_id_fk = pp.id
+    );
+   
+      UPDATE games.boxscore_goals AS bg
+    SET assist_player1_name = (
+        SELECT concat(pp.first_name,' ', pp.last_name)
+        FROM players.player_profiles AS pp
+        WHERE bg.assist_player1_id_fk = pp.id
+    );
+   
+      UPDATE games.boxscore_goals AS bg
+    SET assist_player2_name = (
+        SELECT concat(pp.first_name,' ', pp.last_name)
+        FROM players.player_profiles AS pp
+        WHERE bg.assist_player2_id_fk = pp.id
+    );
+    
+
+    RETURN NEW;
+END;
+$$;
+
+-- CREATION OF TRIGGER WHICH CALLS THE FUNCTION
+CREATE TRIGGER trigger_update_goal_scored_player_name
+AFTER INSERT ON games.boxscore_goals
+FOR EACH ROW
+EXECUTE FUNCTION fn_update_goal_scored_player_name();
+
+
+-- DROP THE TRIGGER IF IT ALREADY EXISTS
+DROP TRIGGER IF EXISTS trigger_update_goal_scored_player_name ON games.boxscore_goals;
+
+-- SELECT DATA FROM games.boxscore_goals ;
+SELECT * FROM games.boxscore_goals ;
+
+
+SELECT bg.*, g.winning_team_long , g.losing_team_long 
+FROM games.boxscore_goals bg
+LEFT JOIN games.games g
+ON g.id = bg.game_id_fk;
+
+
+-- DROP games.boxscore_saves TABLE
+DROP TABLE games.boxscore_saves;
+
+
+-- CREATE THE games.boxscore_goals TABLE for goalies
+CREATE TABLE games.boxscore_saves (
+id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+game_id_fk uuid REFERENCES games.games(id),
+goalie_id_fk uuid REFERENCES players.player_profiles(id),
+goalie_name TEXT,
+shots_against SMALLINT NOT NULL,
+goals_against SMALLINT NOT NULL,
+saves SMALLINT NOT NULL GENERATED ALWAYS AS (shots_against - goals_against) STORED,
+save_percentage NUMERIC (6,3) NOT NULL GENERATED ALWAYS AS ((shots_against - goals_against) / shots_against) STORED
+);
+
+-- CREATION OF FUNCTION FOR TRIGGER INTO goals.boxscore_saves TABLE
+CREATE OR REPLACE FUNCTION fn_update_goalie_name()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    -- Update the goal_scored_player_name in games.boxscore_goals
+    UPDATE games.boxscore_saves AS bs
+    SET goalie_name = (
+        SELECT concat(pp.first_name,' ', pp.last_name)
+        FROM players.player_profiles AS pp
+        WHERE bs.goalie_id_fk = pp.id
+    );
+   
+    RETURN NEW;
+END;
+$$;
+
+-- CREATION OF TRIGGER WHICH CALLS THE FUNCTION
+CREATE TRIGGER trigger_update_goalie_name
+AFTER INSERT ON games.boxscore_saves
+FOR EACH ROW
+EXECUTE FUNCTION fn_update_goalie_name();
+
+
+-- DROP THE TRIGGER IF IT ALREADY EXISTS
+DROP TRIGGER IF EXISTS trigger_update_goal_scored_player_name ON games.boxscore_goals;
+
+
+INSERT INTO games.boxscore_saves (game_id_fk, goalie_id_fk, shots_against, goals_against)
+VALUES (
+'53328d9b-134a-4683-9d09-b22bb0a7436a',
+'867b9818-c35f-4e6a-a80f-7880d2d98db8',
+10,
+1
+);
+
+INSERT INTO games.boxscore_saves (game_id_fk, goalie_id_fk, shots_against, goals_against)
+VALUES (
+'b675d0df-c775-460a-8013-55c91baaf671',
+'867b9818-c35f-4e6a-a80f-7880d2d98db8',
+23,
+0
+);
+
+-- Retrieve Goalie Saves Data
+SELECT *
+FROM games.boxscore_saves;
+
+SELECT *
+FROM games.boxscore_goals ;
+
+-- Update the calculation of the save_percentage column
+ALTER TABLE games.boxscore_saves
+DROP COLUMN save_percentage;
+
+
+-- Distinct player position
+SELECT DISTINCT player_position 
+FROM teams.rosters
+WHERE sport ILIKE 'hockey'
+AND
+player_profile_id_fk = '867b9818-c35f-4e6a-a80f-7880d2d98db8'
+
+
+-- Goalie Stats SQL Query
+SELECT g.season, concat (tr.first_name, ' ', tr.last_name) AS player_name, tr.actual_team_name , t.team_name_full, t.team_name_short  , tr.team_id_fk, t.team_level, tr.division_level_fk , tr.player_position, t.logo_image, t.primary_team_color, t.secondary_team_color, t.third_team_color, sum(bs.shots_against) AS stats_shots_against, sum(bs.goals_against) AS stats_goals_against, sum(bs.saves) AS stats_saves, (100.0 * sum(bs.saves) / sum(bs.shots_against))::numeric(5,3) AS stats_save_percentage 
+FROM (
+SELECT *
+FROM games.boxscore_saves bs
+WHERE goalie_id_fk = '867b9818-c35f-4e6a-a80f-7880d2d98db8'
+) bs
+LEFT JOIN games.games g
+ON g.id = bs.game_id_fk 
+LEFT JOIN teams.rosters tr
+ON bs.goalie_id_fk = tr.player_profile_id_fk AND tr.season = g.season 
+LEFT JOIN teams.teams t
+ON t.id = tr.team_id_fk 
+GROUP BY g.season, concat (tr.first_name, ' ', tr.last_name), tr.actual_team_name, t.team_name_short , t.team_name_full , tr.team_id_fk, t.team_level ,tr.division_level_fk , tr.player_position, t.logo_image, t.primary_team_color, t.secondary_team_color, t.third_team_color;
+
+
+-- Action images by season
+SELECT *
+FROM players.player_images
+WHERE player_profile_id_fk = '867b9818-c35f-4e6a-a80f-7880d2d98db8'
+AND sport ILIKE 'hockey'
+ORDER BY season DESC; 
+
+
+
+
+
+
+-- Goalie games played, wins and losses and shut outs
+SELECT goalie_name, season, team_name, team_name_full, team_name_short, logo_image, division, team_level, count(game_id_fk) AS stat_games_played, sum(wins_losses) AS stat_wins, count(game_id_fk) - sum(wins_losses) - count(CASE WHEN wins_credited_goalie = false THEN 1 END) AS stat_losses, sum(shots_against) AS stat_shots_against, sum(goals_against) AS stat_goals_against, (1.0 * sum(goals_against) / count(game_id_fk))::numeric(5, 2) AS stat_goals_against_avg, sum(saves) AS stat_saves ,SUBSTRING(CAST(((100.0 * sum(saves)) / sum(shots_against) / 100)::numeric(5,3) AS TEXT) FROM 2) AS stat_save_percentage, sum(shutouts) AS stat_shutouts, primary_team_color AS color_primary, secondary_team_color AS color_secondary, third_team_color AS color_third
+FROM (
+SELECT bs.*, g.season, g.division , g.team_level , r.actual_team_name AS team_name, t.team_name_full, t.team_name_short, r.team_id_fk AS player_team_id, g.winning_team_id_fk AS winning_team_id , g.winning_team_long, g.winning_team_short,  
+CASE 
+	WHEN g.winning_team_id_fk = r.team_id_fk AND wins_credited_goalie = TRUE
+	THEN 1
+	ELSE 0
+END AS wins_losses,
+CASE
+	WHEN g.winning_team_id_fk = r.team_id_fk
+	AND LEAST (g.home_team_score, g.visitor_team_score) = 0
+	THEN 1
+	ELSE 0
+END AS shutouts,
+t.logo_image,
+t.primary_team_color AS primary_team_color ,
+t.secondary_team_color AS secondary_team_color ,
+t.third_team_color AS third_team_color
+FROM games.boxscore_saves bs
+LEFT JOIN games.games g
+ON g.id = bs.game_id_fk
+LEFT JOIN teams.rosters r
+ON r.player_profile_id_fk = bs.goalie_id_fk AND r.season = g.season  
+LEFT JOIN teams.teams t 
+ON t.id = r.team_id_fk 
+WHERE bs.goalie_id_fk = '867b9818-c35f-4e6a-a80f-7880d2d98db8'
+) AS subquery
+GROUP BY goalie_name,season, team_name, team_name_full, team_name_short, logo_image, division, team_level, primary_team_color, secondary_team_color, third_team_color
+
+
+
+SELECT *
+FROM games.boxscore_saves 
+
+SELECT pp.id, concat(pp.first_name, ' ', pp.last_name) AS player_name, pp.date_of_birth , EXTRACT(YEAR FROM AGE(current_date, pp.date_of_birth)) AS age, pp.height_inches , pp.weight_lbs , pp.hand, initcap (tr.player_position) AS player_position , tr.actual_team_name , tr.jersey_number  
+FROM players.player_profiles pp
+LEFT JOIN teams.rosters tr
+ON pp.id = tr.player_profile_id_fk 
+WHERE pp.id = '867b9818-c35f-4e6a-a80f-7880d2d98db8' AND tr.sport ILIKE 'hockey'
+ORDER BY tr.season DESC 
+LIMIT 1;
+
+UPDATE players.player_profiles
+SET height_inches = 64
+WHERE id = '867b9818-c35f-4e6a-a80f-7880d2d98db8';
+
+SELECT EXTRACT(YEAR FROM AGE(current_date, '1990-03-15')) AS age;
+
+SELECT highlight_videos 
+FROM players.player_videos 
+
+INSERT INTO players.player_videos (player_profile_id_fk, sport, highlight_videos)
+VALUES (
+'867b9818-c35f-4e6a-a80f-7880d2d98db8',
+'Hockey',
+'[{"url": "https://www.youtube.com/embed/XRqillceNJ4", 
+"title": "Hunter Back and Forth Sliding Save", 
+"date": "03-10-2023", 
+"season": "2022-2023", 
+"division": "Peewee", 
+"team_level": "AA",
+"player_team": "OCHC",
+"player_team_id": "11b32925-f52e-46c2-93eb-825703d05c33", 
+"opponent_long": "California Golden Bears", 
+"opponent_short": "Bears", 
+"opponent_team_id": "34875494-e19d-440b-92d2-75aaede4a3e9", 
+"game_type": "playoff", 
+"venue": "The Cube Santa Clarita", 
+"venue_id": "87b569e6-4351-4dd8-9ace-133845bbdb5e", 
+"tags": ["save", "breakaway", "2 on 1", "playoff", "CAHA", "pad save"]},
+{"url": "https://www.youtube.com/embed/vwyGb5XLb_0", 
+"title": "Hunter Valentine proves he can play against top AAA team in nation", 
+"date": "01-13-2023", 
+"season": "2022-2023", 
+"division": "Peewee", 
+"team_level": "AA",
+"player_team": "OCHC",
+"player_team_id": "11b32925-f52e-46c2-93eb-825703d05c33", 
+"opponent_long": "Jr. Flyers", 
+"opponent_short": "Flyers", 
+"opponent_team_id": "", 
+"game_type": "tournament", 
+"venue": "Buffalo RiverWorks", 
+"venue_id": "2e8f0a4d-680d-4457-84c4-d5db1d60fc77", 
+"tags": ["save", "breakaway", "1 on 1", "glove save", "tournament", "AAA", "top team in nation"]}]'
+)
+
+
+
+DROP TABLE players.player_videos ;
+
+CREATE TABLE players.player_videos (
+id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+sport TEXT NOT NULL,
+player_profile_id_fk uuid REFERENCES players.player_profiles(id),
+player_name TEXT,
+highlight_videos jsonb
+) ;
+
+
+CREATE OR REPLACE FUNCTION fn_update_name()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        UPDATE players.player_videos AS pv
+        SET player_name  = (
+            SELECT concat(pp.first_name,' ', pp.last_name)
+            FROM players.player_profiles AS pp
+            WHERE pv.player_profile_id_fk = pp.id
+        );
+    END IF;
+   
+    RETURN NEW;
+END;
+$$;
+
+
+-- CREATION OF TRIGGER WHICH CALLS THE FUNCTION
+CREATE TRIGGER trigger_update_name
+AFTER INSERT ON players.player_videos 
+FOR EACH ROW
+EXECUTE FUNCTION fn_update_name();
+
+
+ALTER TABLE players.player_videos 
+
+
+    SELECT *
+        FROM players.player_videos pv 
+        WHERE player_profile_id_fk = '867b9818-c35f-4e6a-a80f-7880d2d98db8'
+        AND sport ILIKE 'Hockey'
+
+
+
+
+-- Adding a new element to the JSONB array
+UPDATE players.player_videos 
+SET highlight_videos  = jsonb_insert(highlight_videos , '{3}', '{"name": "Bob"}');
+
+
+-- How to add an object to jsonb array of objects
+UPDATE players.player_videos 
+SET highlight_videos = jsonb_set(
+  highlight_videos,
+  '{3}',
+  '{"url": "https://youtu.be/ukYniadNNGk", 
+    "title": "Hunter Valentine with nice save in close", 
+    "date": "03-12-2023", 
+    "season": "2022-2023", 
+    "division": "Peewee", 
+    "team_level": "AA",
+    "player_team": "OCHC",
+    "player_team_id": "11b32925-f52e-46c2-93eb-825703d05c33", 
+    "opponent_long": "SDIA Oilers", 
+    "opponent_short": "Oilers", 
+    "opponent_team_id": "3d921715-a4be-43de-a130-504b38a960ec", 
+    "game_type": "playoff", 
+    "venue": "The Cube Santa Clarita", 
+    "venue_id": "87b569e6-4351-4dd8-9ace-133845bbdb5e",  
+    "tags": ["save", "playoffs", "CAHA", "championship game"]
+  }'
+);
+
+
+-- Update specific tag with jsonb array; 1 is index position in array and then tags is the key and then the index position within the array value
+UPDATE players.player_videos 
+SET highlight_videos = jsonb_set(
+  highlight_videos,
+  '{1, tags, 4}',
+  '"tournament"'
+);
+
+
+-- Insert into players.player_videos table
+INSERT INTO players.player_videos (
+sport, player_profile_id_fk , highlight_videos  
+)
+VALUES (
+'Hockey',
+'d1b079e0-4776-4324-9de0-aef6abc93c2a',
+'[{
+"url": "https://youtu.be/84p2laLjmMw",
+    "date": "01-21-2023",
+    "tags": [
+      "clear puck",
+      "defensemen",
+      "defense"
+    ],
+    "title": "Cameron Karpontinis clears puck sitting on goal line",
+    "venue": "East West Ice Palace",
+  	"venue_id": "87b569e6-4351-4dd8-9ace-133845bbdb5e",
+    "season": "2022-2023",
+    "division": "Peewee",
+    "game_type": "exhibition",
+    "team_level": "AA",
+    "player_team": "OCHC",
+    "opponent_long": "California Wave",
+    "opponent_short": "Wave",
+    "player_team_id": "11b32925-f52e-46c2-93eb-825703d05c33",
+    "opponent_team_id": "d2f86685-2304-4fa3-8c0c-09d42ed6bf6a"
+}]'
+)
+
+
+UPDATE players.player_videos
+SET highlight_videos = highlight_videos || '{
+  "url": "https://youtu.be/odWZAprCzgo",
+  "date": "2023-01-16",
+  "tags": ["save", "breakaway", "2 on 1 breakaway", "goalie", "hockey", "tournament"],
+  "title": "Hunter Valentine stops 2 on 1 breakaway on top 2010 AAA team in nation",
+  "venue": "Buffalo RiverWorks",
+  "venue_id": "2e8f0a4d-680d-4457-84c4-d5db1d60fc77",
+  "season": "2022-2023",
+  "division": "Peewee",
+  "game_type": "tournament",
+  "team_level": "AAA",
+  "player_team": "OCHC",
+  "opponent_long": "Jr. Flyers",
+  "opponent_short": "Flyers",
+  "player_team_id": "11b32925-f52e-46c2-93eb-825703d05c33",
+  "opponent_team_id": ""
+}'
+WHERE player_profile_id_fk = '867b9818-c35f-4e6a-a80f-7880d2d98db8';
+
+
+UPDATE players.player_videos
+SET highlight_videos = jsonb_set(
+  highlight_videos,
+  '{0, url}',
+  '"https://youtu.be/embed/84p2laLjmMw"'
+)
+WHERE player_profile_id_fk = 'd1b079e0-4776-4324-9de0-aef6abc93c2a';
+
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/odWZAprCzgo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/odWZAprCzgo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+

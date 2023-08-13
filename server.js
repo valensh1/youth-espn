@@ -225,17 +225,38 @@ app.get(`/api/:sport/teams/game-streak`, async (req, res) => {
   return res.json(data);
 });
 
-//? DEPLOYMENT CODE FOR Azure - No Need to Modify This Code
-if (process.env.NODE_ENV === 'PROD') {
-  // When .env file has NODE_ENV=production in it run this code below (we must put this in our .env file for when deploying)
-  app.use(express.static(path.join(__dirname, '/client/build'))); // When .env file has NODE_ENV=production then look for the static file in the /client/build folder. This folder won't be there until you go into the client folder and run npm run build command in Terminal.
-
-  // Code below activates our React front-end. Any routes not shown above in API routes this code will send a file from the /client/build/index.html file which is basically our React front-end files
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+app.get('/api/:sport/player/:playerID', async (req, res) => {
+  const { sport, playerID } = req.params;
+  logger.log(sport, playerID);
+  const playerPositionResponse = await sqlQueries.getPlayerPosition(
+    sport,
+    playerID
+  );
+  const playerPosition = playerPositionResponse[0].player_position; // playerPositionResponse is returned as an array of objects such as [ {player_position: 'goalie'} ]
+  const playerCareerStats = await sqlQueries.getPlayerCareerStats(
+    sport,
+    playerPosition,
+    playerID
+  );
+  const playerImages = await sqlQueries.getPlayerImages(sport, playerID);
+  const playerAttributes = await sqlQueries.getPlayerAttributes(
+    sport,
+    playerID
+  );
+  return res.json({
+    stats: playerCareerStats,
+    images: playerImages,
+    playerAttributes: playerAttributes,
   });
-}
+});
 
-app.listen(port, () => {
-  console.log(`App is listening at PORT ${port}`);
+// Gets player highlight videos
+app.get('/api/:sport/player/:playerID/highlights', async (req, res) => {
+  const { sport, playerID } = req.params;
+  const playerHighlights = await sqlQueries.getPlayerHighlightVideos(
+    sport,
+    playerID
+  );
+
+  return res.json(playerHighlights);
 });

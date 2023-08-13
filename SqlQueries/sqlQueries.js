@@ -195,7 +195,7 @@ module.exports = {
     FROM teams.rosters r
     LEFT JOIN players.player_profiles p ON player_profile_id_fk = p.id
     LEFT JOIN teams.teams t ON team_id_fk = t.id
-    LEFT JOIN players.player_images a ON r.player_profile_id_fk = a.player_profile_id_fk
+    LEFT JOIN players.player_images a ON r.player_profile_id_fk = a.player_profile_id_fk AND r.season = a.season
     WHERE r.actual_team_name ILIKE '${teamToQuery}'
       AND (r.season = '${season}'
                 AND t.team_level = '${level}'
@@ -231,7 +231,7 @@ module.exports = {
       FROM teams.rosters r
       LEFT JOIN players.player_profiles p ON player_profile_id_fk = p.id
       LEFT JOIN teams.teams t ON team_id_fk = t.id
-      LEFT JOIN players.player_images a ON r.player_profile_id_fk = a.player_profile_id_fk
+      LEFT JOIN players.player_images a ON r.player_profile_id_fk = a.player_profile_id_fk AND r.season = a.season 
       WHERE (r.actual_team_name ILIKE '${teamToQuery}'
       OR r.actual_team_name ILIKE '%${teamToQuery}(1)')
         AND (r.season = '${season}'
@@ -644,6 +644,126 @@ module.exports = {
       ) AS combined_results
       ORDER BY game_date DESC
       ;`);
+      return response.rows;
+    } catch (error) {
+      logger.log(error);
+    }
+  },
+
+  getPlayerPosition: async (sport, playerID) => {
+    try {
+      const response = await pool.query(`
+      SELECT DISTINCT player_position 
+      FROM teams.rosters
+      WHERE sport ILIKE '${sport}'
+      AND
+      player_profile_id_fk = '${playerID}'
+      `);
+      return response.rows;
+    } catch (error) {
+      logger.log(error);
+    }
+  },
+
+  getPlayerCareerStats: async (sport, playerPosition, playerID) => {
+    try {
+      if (playerPosition === 'goalie') {
+        const response = await pool.query(
+          `
+          SELECT goalie_name, season, team_name, team_name_full, team_name_short, logo_image, division, team_level, count(game_id_fk) AS stat_games_played, sum(wins_losses) AS stat_wins, count(game_id_fk) - sum(wins_losses) - count(CASE WHEN wins_credited_goalie = false THEN 1 END) AS stat_losses, sum(shots_against) AS stat_shots_against, sum(goals_against) AS stat_goals_against, (1.0 * sum(goals_against) / count(game_id_fk))::numeric(5, 2) AS stat_goals_against_avg, sum(saves) AS stat_saves ,SUBSTRING(CAST(((100.0 * sum(saves)) / sum(shots_against) / 100)::numeric(5,3) AS TEXT) FROM 2) AS stat_save_percentage, sum(shutouts) AS stat_shutouts, primary_team_color AS color_primary, secondary_team_color AS color_secondary, third_team_color AS color_third
+          FROM (
+          SELECT bs.*, g.season, g.division , g.team_level , r.actual_team_name AS team_name, t.team_name_full, t.team_name_short, r.team_id_fk AS player_team_id, g.winning_team_id_fk AS winning_team_id , g.winning_team_long, g.winning_team_short,  
+          CASE 
+            WHEN g.winning_team_id_fk = r.team_id_fk AND wins_credited_goalie = TRUE
+            THEN 1
+            ELSE 0
+          END AS wins_losses,
+          CASE
+            WHEN g.winning_team_id_fk = r.team_id_fk
+            AND LEAST (g.home_team_score, g.visitor_team_score) = 0
+            THEN 1
+            ELSE 0
+          END AS shutouts,
+          t.logo_image,
+          t.primary_team_color AS primary_team_color ,
+          t.secondary_team_color AS secondary_team_color ,
+          t.third_team_color AS third_team_color
+          FROM games.boxscore_saves bs
+          LEFT JOIN games.games g
+          ON g.id = bs.game_id_fk
+          LEFT JOIN teams.rosters r
+          ON r.player_profile_id_fk = bs.goalie_id_fk AND r.season = g.season  
+          LEFT JOIN teams.teams t 
+          ON t.id = r.team_id_fk 
+          WHERE bs.goalie_id_fk = '${playerID}'
+          ) AS subquery
+          GROUP BY goalie_name,season, team_name, team_name_full, team_name_short, logo_image, division, team_level, primary_team_color, secondary_team_color, third_team_color
+          `
+        );
+        return response.rows;
+      } else {
+        const response = await pool.query(
+          `
+          SELECT *
+          FROM games.boxscore_goals 
+          WHERE goal_scored_player_id_fk = '${playerID}';
+          `
+        );
+        return response.rows;
+      }
+    } catch (error) {
+      logger.log(error);
+    }
+  },
+  getPlayerImages: async (sport, playerID) => {
+    try {
+      logger.log(sport, playerID);
+      const response = await pool.query(
+        `
+        SELECT *
+        FROM players.player_images
+        WHERE player_profile_id_fk = '${playerID}'
+        AND sport ILIKE '${sport}'
+        ORDER BY season DESC;
+        `
+      );
+      return response.rows;
+    } catch (error) {
+      logger.log(error);
+    }
+  },
+
+  getPlayerAttributes: async (sport, playerID) => {
+    try {
+      logger.log(sport, playerID);
+      const response = await pool.query(
+        `
+        SELECT pp.id, concat(pp.first_name, ' ', pp.last_name) AS player_name, pp.date_of_birth , EXTRACT(YEAR FROM AGE(current_date, pp.date_of_birth)) AS age, pp.height_inches , pp.weight_lbs , pp.hand, initcap (tr.player_position) AS player_position , tr.actual_team_name , tr.jersey_number 
+        FROM players.player_profiles pp
+        LEFT JOIN teams.rosters tr
+        ON pp.id = tr.player_profile_id_fk 
+        WHERE pp.id = '${playerID}' AND tr.sport ILIKE '${sport}'
+        ORDER BY tr.season DESC 
+        LIMIT 1;
+        `
+      );
+      return response.rows;
+    } catch (error) {
+      logger.log(error);
+    }
+  },
+
+  getPlayerHighlightVideos: async (sport, playerID) => {
+    try {
+      logger.log(sport, playerID);
+      const response = await pool.query(
+        `
+        SELECT *
+        FROM players.player_videos pv 
+        WHERE player_profile_id_fk = '${playerID}'
+        AND sport ILIKE '${sport}'
+        `
+      );
       return response.rows;
     } catch (error) {
       logger.log(error);
