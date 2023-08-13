@@ -260,6 +260,17 @@ app.get('/api/:sport/player/:playerID/highlights', async (req, res) => {
   return res.json(playerHighlights);
 });
 
+//? DEPLOYMENT CODE FOR HEROKU - No Need to Modify This Code
+if (process.env.NODE_ENV === 'production') {
+  // When .env file has NODE_ENV=production in it run this code below (we must put this in our .env file for when deploying)
+  app.use(express.static(path.join(__dirname, '/client/build'))); // When .env file has NODE_ENV=production then look for the static file in the /client/build folder. This folder won't be there until you go into the client folder and run npm run build command in Terminal.
+
+  // Code below activates our React front-end. Any routes not shown above in API routes this code will send a file from the /client/build/index.html file which is basically our React front-end files
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+  });
+}
+
 app.listen(port, () => {
   logger.log(`Server is listening on port ${port}`);
 });

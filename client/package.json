@@ -17,8 +17,9 @@
   },
   "scripts": {
     "start": "concurrently \"react-scripts start\" \"cd ../&& npm start\"",
-    "build": "concurrently \"react-scripts build\" \"cd ../&& npm start\"",
-    "PROD": "concurrently \"react-scripts build\" \"cd ../&& npm start\"",
+    "heroku-postbuild": "npm run client-install && npm run client-build",
+    "client-install": "cd client && npm install",
+    "client-build": "cd client && npm run build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
