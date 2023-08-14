@@ -5,7 +5,6 @@ import Seasons from '../../components/Dropdowns/Seasons';
 import Levels from '../../components/Dropdowns/Levels';
 import Divisions from '../../components/Dropdowns/Divisions';
 import { globalVariables } from '../../model/globalVariables';
-import baseURL from '../../baseURL';
 
 function Standings() {
   const location = useLocation();
@@ -137,19 +136,19 @@ function Standings() {
       teams,
     ] = await Promise.all([
       fetch(
-        `${baseURL}/api/${sportToQuery}/standings?season=${season}&level=${level}&division=${team_division}&gameType=Regular Season`
+        `/api/${sportToQuery}/standings?season=${season}&level=${level}&division=${team_division}&gameType=Regular Season`
       ),
       fetch(
-        `${baseURL}/api/${sportToQuery}/teams/GF_GA_DIFF?season=${season}&level=${level}&division=${team_division}`
+        `/api/${sportToQuery}/teams/GF_GA_DIFF?season=${season}&level=${level}&division=${team_division}`
       ),
       fetch(
-        `${baseURL}/api/${sportToQuery}/teams/home-records?season=${season}&level=${level}&division=${team_division}&gameType=Regular Season`
+        `/api/${sportToQuery}/teams/home-records?season=${season}&level=${level}&division=${team_division}&gameType=Regular Season`
       ),
       fetch(
-        `${baseURL}/api/${sportToQuery}/teams/away-records?season=${season}&level=${level}&division=${team_division}&gameType=Regular Season`
+        `/api/${sportToQuery}/teams/away-records?season=${season}&level=${level}&division=${team_division}&gameType=Regular Season`
       ),
       fetch(
-        `${baseURL}/api/${sportToQuery}/teams-season?season=${season}&level=${level}&division=${team_division}`
+        `/api/${sportToQuery}/teams-season?season=${season}&level=${level}&division=${team_division}`
       ),
     ]);
     const teamRecordsAndPoints = await winsLossRecord.json();
@@ -180,7 +179,7 @@ function Standings() {
       const data = await Promise.all(
         teamsArray.map(async (team) => {
           const response = await fetch(
-            `${baseURL}/api/${sport}/teams/last-10-streak?team=${team}&season=${season}&level=${level}&division=${division}`
+            `/api/${sport}/teams/last-10-streak?team=${team}&season=${season}&level=${level}&division=${division}`
           );
           const jsonData = await response.json();
           return { data: jsonData, team: team };
@@ -219,7 +218,7 @@ function Standings() {
 
   const getTeamGames = async (team) => {
     const response = await fetch(
-      `${baseURL}/api/${sportToQuery}/teams/game-streak?season=${selections.season}&level=${selections.level}&division=${selections.division}&team=${team}&gameType=Regular Season`
+      `/api/${sportToQuery}/teams/game-streak?season=${selections.season}&level=${selections.level}&division=${selections.division}&team=${team}&gameType=Regular Season`
     );
     const data = await response.json();
     return data;

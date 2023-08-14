@@ -1,17 +1,27 @@
 let { response } = require('express');
 const { Pool } = require('pg');
 let logger = require('tracer').console(); // Logger so you can see code line numbers in Node.js. Need to use logger.log instead of console.log though. Must download Tracer from npm using npm i tracer
+require('dotenv').config();
 
-const config = {
-  host: 'postgres-server-smv.postgres.database.azure.com',
+const devConfig = {
+  host: process.env.DB_HOST,
   user: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  port: 5432,
+  port: process.env.DB_PORT,
   ssl: true,
 };
 
-const pool = new Pool(config);
+// const prodConfig = process.env.DATABASE_URL; // Heroku addon
+
+// const pool = new Pool({
+//   connectionString:
+//     process.env.NODE_ENV === 'production' ? prodConfig : devConfig,
+// });
+
+const pool = new Pool(
+  process.env.NODE_ENV === 'production' ? devConfig : devConfig
+);
 
 module.exports = {
   getAllSeasons: async () => {

@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Link, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import baseURL from '../baseURL';
 
 // Current Season prop passed in from index.js is the current season for the sport being rendered (e.g. 2022-2023 season)
 function Rosters({ currentSeason }) {
@@ -83,7 +82,7 @@ function Rosters({ currentSeason }) {
 
     async function fetchData() {
       const fetchRosterData = fetch(
-        `${baseURL}/api/${sportToQuery}/teams/${teamToSearch}/roster?season=${seasonToQuery}&level=${levelToQuery}&division=${divisionToQuery}`
+        `/api/${sportToQuery}/teams/${teamToSearch}/roster?season=${seasonToQuery}&level=${levelToQuery}&division=${divisionToQuery}`
       );
 
       const [rosterResponse, pageDataResponse] = await Promise.all([
@@ -155,10 +154,10 @@ function Rosters({ currentSeason }) {
   const fetchPageData = async function () {
     try {
       const APICalls = [
-        fetch(`${baseURL}/api/${sportToQuery}/seasons`),
-        fetch(`${baseURL}/api/${sportToQuery}/teams`),
-        fetch(`${baseURL}/api/${sportToQuery}/levels`),
-        fetch(`${baseURL}/api/${sportToQuery}/divisions`),
+        fetch(`/api/${sportToQuery}/seasons`),
+        fetch(`/api/${sportToQuery}/teams`),
+        fetch(`/api/${sportToQuery}/levels`),
+        fetch(`/api/${sportToQuery}/divisions`),
       ];
       const [
         seasonsDropdown,
@@ -190,7 +189,7 @@ function Rosters({ currentSeason }) {
   ) => {
     pageData.current.multipleTeamsWithSameName = [];
     const response = await fetch(
-      `${baseURL}/api/${sportToQuery}/teams/${team}/multiple-team-names?level=${level}&season=${season}&division=${division}`
+      `/api/${sportToQuery}/teams/${team}/multiple-team-names?level=${level}&season=${season}&division=${division}`
     );
 
     const multipleTeamData = await response.json();
@@ -252,7 +251,7 @@ function Rosters({ currentSeason }) {
     teamNumber
   ) => {
     const response = await fetch(
-      `${baseURL}/api/${sportToQuery}/teams/${team}/roster?season=${season}&level=${level}&teamNumber=${teamNumber}&division=${division}`
+      `/api/${sportToQuery}/teams/${team}/roster?season=${season}&level=${level}&teamNumber=${teamNumber}&division=${division}`
     );
     const roster = await response.json();
     return roster;

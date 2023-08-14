@@ -9,7 +9,7 @@ app.use(cors());
 const url = require('url');
 const sqlQueries = require('./SqlQueries/sqlQueries');
 
-let port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 logger.log(port);
 
 app.get(`/api/hockey/team-records`, async (req, res) => {
@@ -260,7 +260,7 @@ app.get('/api/:sport/player/:playerID/highlights', async (req, res) => {
   return res.json(playerHighlights);
 });
 
-//? DEPLOYMENT CODE FOR HEROKU - No Need to Modify This Code
+//? DEPLOYMENT CODE FOR PRODUCTION - No Need to Modify This Code
 if (process.env.NODE_ENV === 'production') {
   // When .env file has NODE_ENV=production in it run this code below (we must put this in our .env file for when deploying)
   app.use(express.static(path.join(__dirname, '/client/build'))); // When .env file has NODE_ENV=production then look for the static file in the /client/build folder. This folder won't be there until you go into the client folder and run npm run build command in Terminal.

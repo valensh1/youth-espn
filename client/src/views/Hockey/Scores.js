@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import GlobalFunctions from '../../model/globalFunctions';
 import Navbar from '../../components/Navbar';
-import baseURL from '../../baseURL';
 
 function Scores() {
   const navigate = useNavigate();
@@ -43,8 +42,8 @@ function Scores() {
   useEffect(() => {
     const fetchDropdownData = async () => {
       const [levelsResponse, divisionsResponse] = await Promise.all([
-        fetch(`${baseURL}/api/${sportToQuery}/levels`),
-        fetch(`${baseURL}/api/${sportToQuery}/divisions`),
+        fetch(`/api/${sportToQuery}/levels`),
+        fetch(`/api/${sportToQuery}/divisions`),
       ]);
 
       const levels = await levelsResponse.json();
@@ -195,10 +194,10 @@ function Scores() {
     try {
       const divisionToQuery = divisionNameOnly(division);
       const response = await fetch(
-        `${baseURL}/api/hockey/scores?date=${date}&level=${team_level}&division=${divisionToQuery}`
+        `/api/hockey/scores?date=${date}&level=${team_level}&division=${divisionToQuery}`
       );
       console.log(
-        `${baseURL}/api/hockey/scores?date=${date}&level=${team_level}&division=${divisionToQuery}`
+        `/api/hockey/scores?date=${date}&level=${team_level}&division=${divisionToQuery}`
       );
       const data = await response.json();
       if (data.length) console.log(data);
@@ -214,7 +213,7 @@ function Scores() {
       console.log(season);
       if (scores.length) {
         const response = await fetch(
-          `${baseURL}/api/hockey/team-records?date=${date}&level=${team_level}&division=${division}&season=${season}&gameType=Regular Season`
+          `/api/hockey/team-records?date=${date}&level=${team_level}&division=${division}&season=${season}&gameType=Regular Season`
         );
         const records = await response.json();
         console.log(records);
