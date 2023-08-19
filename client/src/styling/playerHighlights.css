@@ -3,6 +3,11 @@
   width: 100vw;
   position: relative;
 
+  & #video-highlight-thumbnails {
+    width: 25vw;
+    height: fit-content;
+  }
+
   & .hidden {
     display: none;
   }
@@ -26,26 +31,28 @@
   }
 
   & .video-modal {
-    width: 80vw;
-    height: 75vh;
-    position: absolute;
-    left: 10vw;
-    top: 10vh;
+    width: 70vw;
+    height: 70vh;
+    position: relative;
+    left: 15vw;
+    bottom: 100vh;
 
-    & .iframe-video {
-      width: 80vw;
-      height: 75vh;
+    & div:first-child {
+      width: 70%;
+      height: 80%;
     }
 
     & #close-icon {
       position: absolute;
-      right: 0.75vw;
-      top: -3.5vh;
+      right: 10.75vw;
+      top: -4.3vh;
       font-size: 1.5vw;
     }
 
     & #close-icon:hover {
       cursor: pointer;
+      color: red;
+      transform: scale(1.25);
     }
   }
 }

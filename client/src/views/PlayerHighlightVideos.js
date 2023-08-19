@@ -8,6 +8,17 @@ function PlayerHighlightVideos() {
   const key = process.env.REACT_APP_YOUTUBE_API_KEY;
   const videoModal = document.querySelector('.video-modal');
   const videoThumbnails = document.querySelector('.thumbnails');
+  console.log(window.innerWidth);
+  console.log(window.innerHeight);
+
+  const opts = {
+    height: window.innerHeight * 0.7,
+    width: window.innerWidth * 0.7,
+    playerVars: {
+      // https://developers.google.com/youtube/player_parameters
+      autoplay: 1,
+    },
+  };
 
   //?-----------------------------------------------------------------USE STATE HOOKS ------------------------------------------------------------------------
 
@@ -100,12 +111,8 @@ function PlayerHighlightVideos() {
 
   //?----------------------------------------------------------------- JSX ------------------------------------------------------------------------
   return (
-    <div id="player-highlights-page-container">
-      <div
-        id="video-highlight-thumbnails"
-        className="thumbnails"
-        onClick={videoControls}
-      >
+    <div id="player-highlights-page-container" onClick={videoControls}>
+      <div id="video-highlight-thumbnails" className="thumbnails">
         {highlightVideos?.[0]?.highlight_videos?.map((video, index) => {
           return (
             <div key={index} id="video-container">
@@ -126,8 +133,7 @@ function PlayerHighlightVideos() {
         <YouTube
           id="iframe-video"
           videoId={'XRqillceNJ4'}
-          width={3640}
-          height={3480}
+          opts={opts}
           autoplay
           controls={true}
           volume={0}
@@ -138,7 +144,6 @@ function PlayerHighlightVideos() {
           X
         </span>
       </div>
-      <div id="player"></div>
     </div>
   );
 }
