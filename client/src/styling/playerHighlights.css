@@ -1,0 +1,51 @@
+#player-highlights-page-container {
+  height: fit-content;
+  width: 100vw;
+  position: relative;
+
+  & .hidden {
+    display: none;
+  }
+
+  & #video-container {
+    margin-top: 5vh;
+    border: 1px solid lightgray;
+
+    & img {
+      padding-top: 3vh;
+      padding-bottom: 3vh;
+      width: 25vw;
+      height: 25vh;
+      border-radius: 15px;
+      object-fit: none;
+    }
+  }
+
+  & .fade {
+    opacity: 0.2;
+  }
+
+  & .video-modal {
+    width: 80vw;
+    height: 75vh;
+    position: absolute;
+    left: 10vw;
+    top: 10vh;
+
+    & .iframe-video {
+      width: 80vw;
+      height: 75vh;
+    }
+
+    & #close-icon {
+      position: absolute;
+      right: 0.75vw;
+      top: -3.5vh;
+      font-size: 1.5vw;
+    }
+
+    & #close-icon:hover {
+      cursor: pointer;
+    }
+  }
+}

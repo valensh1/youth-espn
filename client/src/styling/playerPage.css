@@ -157,6 +157,14 @@
           margin-right: 0.25vw;
         }
       }
+
+      & #more-highlights-link {
+        text-decoration: none;
+        font-size: 0.75vw;
+        position: relative;
+        bottom: 3vh;
+        left: 1.5vw;
+      }
     }
   }
 }

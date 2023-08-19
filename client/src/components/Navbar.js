@@ -31,6 +31,9 @@ function Navbar() {
   return (
     <div id="navbar-container">
       <div id="navbar-content">
+        <Link to={`/`}>
+          <li id="site-logo">YSG</li>
+        </Link>
         {navbarList.map((sport) => {
           return (
             <div

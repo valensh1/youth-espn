@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
+import { Link } from 'react-router-dom';
 
 function PlayerPage() {
   const sportToQuery = window.location.pathname.split('/')[1];
@@ -207,6 +208,9 @@ function PlayerPage() {
                 );
               })}
             </div>
+            <Link to={`highlights`} id="more-highlights-link" className="link">
+              {`-> See more ${stats?.playerAttributes?.[0]?.player_name} highlight videos`}
+            </Link>
           </div>
         </div>
       </div>

@@ -11,6 +11,12 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
+
+  & #site-logo {
+    color: red;
+    font-weight: 800;
+    font-style: italic;
+  }
 }
 
 #navbar-content a {
