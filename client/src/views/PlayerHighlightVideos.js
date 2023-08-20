@@ -34,7 +34,7 @@ function PlayerHighlightVideos() {
         `/api/${sportToQuery}/player/${playerID}/highlights`
       );
       const data = await response.json();
-      //   console.log(data);
+      console.log(data);
 
       // Loops through the data retrieved directly above and for each video it gets the video stats such as view count, likes, etc using the YouTube API and combines that with the data received directly above and sets the playerHighlights state
       const videoArray = await Promise.all(
@@ -46,14 +46,11 @@ function PlayerHighlightVideos() {
           const videoData = await fetchVideoStats(videoID);
           const stats = videoData.stats;
           const videoThumbnail = videoData.thumbnails;
-          return { ...video, stats, videoThumbnail };
+          return { ...video, stats, videoThumbnail, videoID };
         })
       );
-      //   console.log(videoArray);
       data[0].highlight_videos = videoArray;
-      //   console.log(data);
       setHighlightVideos(data);
-      //   console.log(data);
     };
     fetchPlayerHighlights();
   }, []);
@@ -61,19 +58,23 @@ function PlayerHighlightVideos() {
   //?----------------------------------------------------------------- FUNCTIONS ------------------------------------------------------------------------
 
   const fetchVideoStats = async (videoID) => {
+    console.log(videoID);
     const response = await fetch(
       `https://www.googleapis.com/youtube/v3/videos?key=${key}&id=${videoID}&part=statistics, contentDetails, player, snippet, topicDetails`
     );
 
     const data = await response.json();
-    // console.log(data);
     const newThumbnail = await data.items[0].snippet.thumbnails.standard.url;
-    // console.log(newThumbnail);
     setThumbnails((prev) => [...prev, newThumbnail]);
-    // console.log(thumbnails);
-    // console.log(data.items[0].snippet.thumbnails.maxres.url);
-    // console.log(data.items[0].statistics.viewCount);
     return { stats: data.items[0].statistics, thumbnails: newThumbnail };
+  };
+
+  // Function to extract VideoID from video URL passed into function so that video ID can be used elsewhere on page such as to play videos
+  const extractVideoID = (videoURL) => {
+    const videoURLConvertedToArray = videoURL.split(`/`);
+    const lengthOfArray = videoURLConvertedToArray.length;
+    const videoID = videoURLConvertedToArray[lengthOfArray - 1];
+    return videoID;
   };
 
   const videoPlacement = (coordinatesArray) => {
@@ -96,7 +97,6 @@ function PlayerHighlightVideos() {
     console.log(event.target.nodeName);
     const coordinates = [event.clientX, event.clientY];
     console.log(coordinates);
-    if (event.target.nodeName === 'IMG') console.log('tagname is equal to img');
     if (event.target.nodeName !== 'IMG' && videoModalOpen === false) {
       return;
     } else {
@@ -104,9 +104,8 @@ function PlayerHighlightVideos() {
       toggleVideoPlayer();
       setVideoModalOpen(!videoModalOpen);
 
-      const videoURL = event.target.getAttribute('video-url');
+      const videoURL = event.target.getAttribute('video-id');
       const videoURLConvertedToArray = videoURL.split('/');
-      console.log(videoURLConvertedToArray);
       const videoID =
         videoURLConvertedToArray[videoURLConvertedToArray.length - 1];
       setVideoToPlay(videoID);
@@ -131,24 +130,6 @@ function PlayerHighlightVideos() {
   //?----------------------------------------------------------------- JSX ------------------------------------------------------------------------
   return (
     <div id="player-highlights-page-container" onClick={videoControls}>
-      <div id="video-highlight-thumbnails" className="thumbnails">
-        {highlightVideos?.[0]?.highlight_videos?.map((video, index) => {
-          return (
-            <div key={index} id="video-container">
-              <img
-                src={thumbnails[index]}
-                alt="pic"
-                video-url={video?.url}
-                // onClick={() => playVideo(video)}
-              />
-              <div id="video-attributes">
-                <span>{`${video?.stats?.viewCount} views`}</span>
-                <span>{video?.date}</span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
       <div id="video-modal" className="video-modal hidden">
         <YouTube
           id="iframe-video"
@@ -161,6 +142,23 @@ function PlayerHighlightVideos() {
           onStateChange={onPlayerStateChange}
         />
         <span id="close-icon">X</span>
+      </div>
+      <div id="video-highlight-thumbnails" className="thumbnails">
+        {highlightVideos?.[0]?.highlight_videos?.map((video, index) => {
+          return (
+            <div key={index} id="video-container">
+              <img
+                src={video.videoThumbnail}
+                alt="pic"
+                video-id={video?.videoID}
+              />
+              <div id="video-attributes">
+                <span>{`${video?.stats?.viewCount} views`}</span>
+                <span>{video?.date}</span>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
