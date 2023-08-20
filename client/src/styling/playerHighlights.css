@@ -32,20 +32,21 @@
 
   & .video-modal {
     width: 70vw;
-    height: 70vh;
-    position: relative;
-    left: 15vw;
-    bottom: 100vh;
+    height: 73vh;
+    position: absolute;
+    /* left: 15vw;
+    bottom: 100vh; */
 
     & div:first-child {
+      margin-top: 3vh;
       width: 70%;
       height: 80%;
     }
 
     & #close-icon {
       position: absolute;
-      right: 10.75vw;
-      top: -4.3vh;
+      right: 0.75vw;
+      top: -4vh;
       font-size: 1.5vw;
     }
 
