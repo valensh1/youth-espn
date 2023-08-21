@@ -34,13 +34,13 @@
     width: 70vw;
     height: 73vh;
     position: absolute;
-    /* left: 15vw;
-    bottom: 100vh; */
+    left: 15vw;
+    z-index: 100;
 
     & div:first-child {
       margin-top: 3vh;
-      width: 70%;
-      height: 80%;
+      width: 70vw;
+      height: 70vh;
     }
 
     & #close-icon {

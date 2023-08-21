@@ -23,7 +23,6 @@ function PlayerHighlightVideos() {
   //?-----------------------------------------------------------------USE STATE HOOKS ------------------------------------------------------------------------
 
   const [highlightVideos, setHighlightVideos] = useState([]);
-  const [thumbnails, setThumbnails] = useState([]);
   const [videoModalOpen, setVideoModalOpen] = useState(false);
   const [videoToPlay, setVideoToPlay] = useState('');
 
@@ -39,10 +38,7 @@ function PlayerHighlightVideos() {
       // Loops through the data retrieved directly above and for each video it gets the video stats such as view count, likes, etc using the YouTube API and combines that with the data received directly above and sets the playerHighlights state
       const videoArray = await Promise.all(
         data[0]?.highlight_videos.map(async (video) => {
-          const url = video.url;
-          const convertUrlToArray = url.split('/');
-          const lengthOfUrlArray = convertUrlToArray.length;
-          const videoID = convertUrlToArray[lengthOfUrlArray - 1];
+          const videoID = extractVideoID(video.url);
           const videoData = await fetchVideoStats(videoID);
           const stats = videoData.stats;
           const videoThumbnail = videoData.thumbnails;
@@ -58,14 +54,11 @@ function PlayerHighlightVideos() {
   //?----------------------------------------------------------------- FUNCTIONS ------------------------------------------------------------------------
 
   const fetchVideoStats = async (videoID) => {
-    console.log(videoID);
     const response = await fetch(
       `https://www.googleapis.com/youtube/v3/videos?key=${key}&id=${videoID}&part=statistics, contentDetails, player, snippet, topicDetails`
     );
-
     const data = await response.json();
     const newThumbnail = await data.items[0].snippet.thumbnails.standard.url;
-    setThumbnails((prev) => [...prev, newThumbnail]);
     return { stats: data.items[0].statistics, thumbnails: newThumbnail };
   };
 
@@ -77,6 +70,7 @@ function PlayerHighlightVideos() {
     return videoID;
   };
 
+  // Function to convert pixels to vw and vw relative to viewport. This function is designed to return the coordinates of the thumbnail clicked in pixels into vw and vh coordinates
   const videoPlacement = (coordinatesArray) => {
     const xCoordinateInVW = (coordinatesArray[0] / viewportWidth) * 100;
     const yCoordinateInVH = (coordinatesArray[1] / viewportHeight) * 100;
@@ -91,41 +85,54 @@ function PlayerHighlightVideos() {
 
   // Function that determines where click came from and determines state of video player whether to open or close video modal
   const videoControls = async (event) => {
+    onPlayerStateChange(event);
     console.log(event);
     console.log(event.target);
+    console.log(event.target.id);
+    console.log(event.target.alt);
     console.log(event.target.tagName);
     console.log(event.target.nodeName);
     const coordinates = [event.clientX, event.clientY];
     console.log(coordinates);
     if (event.target.nodeName !== 'IMG' && videoModalOpen === false) {
       return;
-    } else {
-      console.log('Else clause hit');
+    } else if (event.target.nodeName === 'IFRAME' && videoModalOpen === true) {
+      return;
+    } else if (
+      (event.target.id === 'close-icon' && videoModalOpen === true) ||
+      (event.target.nodeName !== 'IFRAME' && videoModalOpen === true)
+    ) {
+      setVideoToPlay('');
       toggleVideoPlayer();
       setVideoModalOpen(!videoModalOpen);
-
+    } else {
+      toggleVideoPlayer();
+      setVideoModalOpen(!videoModalOpen);
       const videoURL = event.target.getAttribute('video-id');
-      const videoURLConvertedToArray = videoURL.split('/');
-      const videoID =
-        videoURLConvertedToArray[videoURLConvertedToArray.length - 1];
+      const videoID = extractVideoID(videoURL);
       setVideoToPlay(videoID);
 
+      // Coordinates of img thumbnail clicked. User will need to be scrolled back to here after watching video
       const positioning = videoPlacement(coordinates);
       console.log(positioning);
-      videoModal.style.left = `${positioning[0] + 5}vw`;
-      videoModal.style.top = `${positioning[0] + 5}vh`;
 
-      //   window.scrollTo({
-      //     top: 50,
-      //     left: 25,
-      //     behavior: 'smooth',
-      //   });
+      // Displays video at top of screen
+      window.scrollTo({
+        top: 0,
+        behavior: 'instant',
+      });
     }
   };
 
+  //? Some methods that can be used -- DELETE IF NOT USED
   const onPlayerReady = (event) => {};
 
-  const onPlayerStateChange = (event) => {};
+  const onPlayerStateChange = (event) => {
+    console.log(event);
+  };
+  const onVideoEnd = (event) => {
+    console.log(event);
+  };
 
   //?----------------------------------------------------------------- JSX ------------------------------------------------------------------------
   return (
@@ -135,11 +142,9 @@ function PlayerHighlightVideos() {
           id="iframe-video"
           videoId={videoToPlay}
           opts={opts}
-          autoplay
-          controls={true}
-          volume={0}
           onReady={onPlayerReady}
           onStateChange={onPlayerStateChange}
+          onEnd={onVideoEnd}
         />
         <span id="close-icon">X</span>
       </div>
