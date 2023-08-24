@@ -1,41 +1,72 @@
 #player-highlights-page-container {
-  height: fit-content;
+  height: 200vh;
   width: 100vw;
   position: relative;
+  background-color: black;
 
-  & #video-highlight-thumbnails {
-    width: 25vw;
-    height: fit-content;
+  & #navbar-container {
+    position: sticky;
+    top: 0;
+    z-index: 200;
   }
 
-  & .hidden {
-    display: none;
+  & h1 {
+    margin-top: 2vh;
+    background-color: white;
+    display: inline-block;
+    width: 59.5vw;
+    height: 3vh;
+    position: absolute;
+    left: 20vw;
+    padding-left: 0.5vw;
+    padding-top: 0.5vh;
   }
 
-  & #video-container {
+  & .background-img-sides {
     margin-top: 5vh;
-    border: 1px solid lightgray;
+    width: 20vw;
+    height: 188vh;
+    position: absolute;
+  }
 
-    & img {
-      padding-top: 3vh;
-      padding-bottom: 3vh;
-      width: 25vw;
-      height: 25vh;
-      border-radius: 15px;
-      object-fit: none;
+  & .background-img-left {
+    & #image-left {
+      position: sticky;
+      top: 40vh;
+      width: 20vw;
+      margin-left: 3vw;
+      width: 12vw;
+      height: 22vh;
+      filter: grayscale(100%);
+      border-radius: 25px;
     }
   }
 
-  & .fade {
-    opacity: 0.2;
+  & .background-img-right {
+    right: 0;
+
+    & #image-right {
+      position: sticky;
+      top: 40vh;
+      width: 20vw;
+      margin-left: 5vw;
+      width: 10vw;
+      height: 20vh;
+      filter: sepia(100%);
+      filter: brightness(120%);
+      /* filter: grayscale(0%); */
+      border-radius: 25px;
+    }
   }
 
   & .video-modal {
+    background-color: white;
     width: 70vw;
     height: 73vh;
     position: absolute;
     left: 15vw;
     z-index: 100;
+    border: 3px solid orangered;
 
     & div:first-child {
       margin-top: 3vh;
@@ -46,7 +77,7 @@
     & #close-icon {
       position: absolute;
       right: 0.75vw;
-      top: -2vh;
+      top: -0.35vh;
       font-size: 1.5vw;
     }
 
@@ -55,5 +86,64 @@
       color: red;
       transform: scale(1.25);
     }
+  }
+
+  & #video-highlight-thumbnails {
+    background-color: white;
+    color: black;
+    width: 60vw;
+    height: fit-content;
+    position: relative;
+    left: 20vw;
+
+    & #video-container {
+      margin-top: 5vh;
+      margin-left: 0.25vw;
+      margin-right: 0.25vw;
+      width: 59.5vw;
+      border: 0.5px solid lightgray;
+      display: flex;
+
+      & img {
+        padding-top: 0.25vh;
+        padding-bottom: 0.25vh;
+        /* padding-left: 0.5vw; */
+        width: 25vw;
+        height: 25vh;
+        border-radius: 15px;
+        object-fit: none;
+      }
+
+      & #video-attributes {
+        margin-left: 0.5vw;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        & #video-title {
+          font-size: 1vw;
+          margin-bottom: 0.5vw;
+          margin-right: 2vw;
+        }
+        & > span:not(:first-of-type) {
+          margin-top: 0.25vw;
+          font-size: 0.5vw;
+          font-weight: 500;
+          font-style: italic;
+        }
+      }
+    }
+  }
+
+  & .hidden {
+    display: none;
+  }
+
+  & .fade {
+    opacity: 0.2;
+  }
+
+  & .youtube-video-container {
+    color: white;
   }
 }

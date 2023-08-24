@@ -107,8 +107,19 @@ function PlayerPage() {
       <Navbar />
       <div id="player-profile-content">
         <div id="player-images">
-          <img src={stats?.images?.[0].action_img_1} id="action-img" />
-          <img src={stats?.images?.[0].profile_img_1} id="profile-img" />
+          <img
+            src={stats?.images?.[0]?.images?.action_images?.[0]?.img}
+            id="action-img"
+            // alt="action_img"
+          />
+          <img
+            src={
+              stats?.images?.[0]?.images?.profile_images_no_background?.[0] ||
+              stats?.images?.[0]?.images?.profile_images_background?.[0]
+            }
+            id="profile-img"
+            alt="profile_img"
+          />
         </div>
 
         {stats?.playerAttributes?.map((el) => {

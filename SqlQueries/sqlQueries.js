@@ -725,23 +725,23 @@ module.exports = {
       logger.log(error);
     }
   },
-  getPlayerImages: async (sport, playerID) => {
-    try {
-      logger.log(sport, playerID);
-      const response = await pool.query(
-        `
-        SELECT *
-        FROM players.player_images
-        WHERE player_profile_id_fk = '${playerID}'
-        AND sport ILIKE '${sport}'
-        ORDER BY season DESC;
-        `
-      );
-      return response.rows;
-    } catch (error) {
-      logger.log(error);
-    }
-  },
+  // getPlayerImages: async (sport, playerID) => {
+  //   try {
+  //     logger.log(sport, playerID);
+  //     const response = await pool.query(
+  //       `
+  //       SELECT *
+  //       FROM players.player_images
+  //       WHERE player_profile_id_fk = '${playerID}'
+  //       AND sport ILIKE '${sport}'
+  //       ORDER BY season DESC;
+  //       `
+  //     );
+  //     return response.rows;
+  //   } catch (error) {
+  //     logger.log(error);
+  //   }
+  // },
 
   getPlayerAttributes: async (sport, playerID) => {
     try {
@@ -757,6 +757,24 @@ module.exports = {
         LIMIT 1;
         `
       );
+      return response.rows;
+    } catch (error) {
+      logger.log(error);
+    }
+  },
+
+  getPlayerImages: async (sport, playerID) => {
+    try {
+      logger.log(sport, playerID);
+      const response = await pool.query(
+        `
+        SELECT *
+        FROM players.player_imgs
+        WHERE sport ILIKE '${sport}'
+        AND player_profile_id_fk = '${playerID}'
+       `
+      );
+      logger.log(response.rows);
       return response.rows;
     } catch (error) {
       logger.log(error);

@@ -2610,7 +2610,7 @@ ALTER TABLE players.player_videos
         AND sport ILIKE 'Hockey'
 
 
-
+ 
 
 -- Adding a new element to the JSONB array
 UPDATE players.player_videos 
@@ -2683,10 +2683,10 @@ VALUES (
 
 UPDATE players.player_videos
 SET highlight_videos = highlight_videos || '{
-  "url": "https://youtu.be/odWZAprCzgo",
+  "url": "https://youtube.com/embed/sRacpI02A-g",
   "date": "2023-01-16",
-  "tags": ["save", "breakaway", "2 on 1 breakaway", "goalie", "hockey", "tournament"],
-  "title": "Hunter Valentine stops 2 on 1 breakaway on top 2010 AAA team in nation",
+  "tags": ["save", "shoulder roll save", "goalie", "hockey", "tournament"],
+  "title": "Hunter Valentine with nice shoulder roll to prevent top shelf goal on top AAA team in nation",
   "venue": "Buffalo RiverWorks",
   "venue_id": "2e8f0a4d-680d-4457-84c4-d5db1d60fc77",
   "season": "2022-2023",
@@ -2711,6 +2711,95 @@ SET highlight_videos = jsonb_set(
 WHERE player_profile_id_fk = 'd1b079e0-4776-4324-9de0-aef6abc93c2a';
 
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/odWZAprCzgo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/odWZAprCzgo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+CREATE table players.player_imgs (
+id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+season TEXT NOT NULL,
+sport TEXT NOT NULL,
+actual_team_name TEXT NOT NULL,
+first_name TEXT NOT NULL,
+last_name TEXT NOT NULL,
+team_id_fk uuid NOT NULL,
+player_profile_id_fk uuid NOT NULL,
+profile_images TEXT[],
+action_images text[]
+)
+
+INSERT INTO players.player_imgs (season, sport, actual_team_name, first_name, last_name, team_id_fk, player_profile_id_fk, profile_images, action_images)
+VALUES (
+'2022-2023',
+'Hockey',
+'OCHC',
+'Hunter',
+'Valentine',
+'11b32925-f52e-46c2-93eb-825703d05c33',
+'867b9818-c35f-4e6a-a80f-7880d2d98db8',
+ARRAY ['https://i.imgur.com/9JeHwnS.jpg','https://i.imgur.com/VDy69Ew.png'],
+ARRAY ['https://i.imgur.com/WDXWE0I.png']
+)
+
+SELECT *
+FROM players.player_imgs
+WHERE sport ILIKE 'Hockey'
+AND player_profile_id_fk = '867b9818-c35f-4e6a-a80f-7880d2d98db8'
+
+UPDATE players.player_images 
+SET profile_img_2 = 'https://i.imgur.com/VDy69Ew.png'
+WHERE player_profile_id_fk = '867b9818-c35f-4e6a-a80f-7880d2d98db8' AND season = '2022-2023'
+
+ ALTER TABLE players.player_imgs 
+ ADD COLUMN profile_images_json jsonb;
+
+UPDATE players.player_imgs 
+SET profile_images_json = jsonb_set(
+profile_images_json,
+'{0}',
+'[
+{
+"profile_images_background": "[867b9818-c35f-4e6a-a80f-7880d2d98db8]",
+"profile_images_no_background": "[https://i.imgur.com/VDy69Ew.png]",
+"action_images": "[https://i.imgur.com/WDXWE0I.png]"
+}
+]'
+) 
+
+UPDATE players.player_imgs 
+SET profile_images_json = '[{
+"profile_images_background": "[867b9818-c35f-4e6a-a80f-7880d2d98db8]",
+"profile_images_no_background": "[https://i.imgur.com/VDy69Ew.png]",
+"action_images": "[https://i.imgur.com/WDXWE0I.png]"
+}]'
+WHERE player_profile_id_fk = '867b9818-c35f-4e6a-a80f-7880d2d98db8'
+
+ALTER TABLE players.player_imgs 
+RENAME COLUMN profile_images_json TO profile_images
+
+UPDATE players.player_imgs 
+SET profile_images  = jsonb_set(
+  profile_images ,
+  '{0}',
+  '{
+"action_images": "[https://i.imgur.com/WDXWE0I.png, https://i.imgur.com/lQNyFwj.png]",
+"profile_images_background": "[https://i.imgur.com/VDy69Ew.png, https://i.imgur.com/9JeHwnS.jpg]",
+"profile_images_no_background": "[https://i.imgur.com/VDy69Ew.png]"}
+  }'
+)
+WHERE player_profile_id_fk = '867b9818-c35f-4e6a-a80f-7880d2d98db8'
+
+
+UPDATE players.player_imgs 
+SET profile_images  = jsonb_set(
+  profile_images , -- COLUMN TO be updated
+  '{0}', -- INDEX OF COLUMN that IS being updated
+  '{
+    "action_images": "[https://i.imgur.com/lQNyFwj.png, https://i.imgur.com/WDXWE0I.png]",
+    "profile_images_background": "[https://i.imgur.com/VDy69Ew.png, https://i.imgur.com/9JeHwnS.jpg]",
+    "profile_images_no_background": "[https://i.imgur.com/VDy69Ew.png]"
+  }'
+)
+WHERE player_profile_id_fk = '867b9818-c35f-4e6a-a80f-7880d2d98db8';
+
+
+ALTER TABLE  players.player_imgs 
+rename COLUMN profile_images TO images;
+
 

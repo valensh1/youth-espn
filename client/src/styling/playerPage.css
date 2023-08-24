@@ -37,7 +37,7 @@
       text-align: center;
 
       & #player-name-number {
-        font-size: 2vw;
+        font-size: 1.5vw;
 
         & span:not(:first-child)::before {
           padding-left: 1vw;
@@ -46,7 +46,7 @@
       }
 
       & #player-attributes {
-        font-size: 1.5vw;
+        font-size: 1.2vw;
         font-weight: 400;
       }
 
@@ -59,7 +59,7 @@
 
     & #player-bio {
       & p {
-        font-size: 1vw;
+        font-size: 0.85vw;
         margin-left: 2.5vw;
 
         & button {
@@ -88,15 +88,16 @@
 
     & #player-stats-container {
       & h1 {
+        font-size: 1vw;
         text-align: center;
-        margin-bottom: 0vh;
+        margin-bottom: 0.5vh;
       }
 
       & #player-stats-table {
         width: 50vw;
         margin-left: 20vw;
         text-align: center;
-        font-size: 1vw;
+        font-size: 0.85vw;
         border-collapse: collapse; /*Collapses spaces between td and th elements */
 
         & th {
@@ -120,6 +121,7 @@
       & #highlights-heading {
         display: block;
         margin-bottom: 3vh;
+        font-size: 1vw;
       }
 
       & #player-highlight-videos {
@@ -160,7 +162,7 @@
 
       & #more-highlights-link {
         text-decoration: none;
-        font-size: 0.75vw;
+        font-size: 0.7vw;
         position: relative;
         bottom: 3vh;
         left: 1.5vw;

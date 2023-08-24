@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import YouTube, { YouTubeProps } from 'react-youtube';
 import YoutubeVideo from '../components/YoutubeVideo';
-import YoutubeVideoThumbnail from '../components/YoutubeVideoThumbnail';
 
 function PlayerHighlightVideos() {
   const sportToQuery = window.location.pathname.split('/')[1];
@@ -175,7 +174,26 @@ function PlayerHighlightVideos() {
 
       <div id="video-highlight-thumbnails" className="thumbnails">
         {highlightVideos?.[0]?.highlight_videos?.map((video, index) => {
-          return <YoutubeVideoThumbnail video={video} index={index} />;
+          return (
+            <div key={index} id="video-container">
+              <img
+                src={video.videoThumbnail}
+                alt="pic"
+                video-id={video?.videoID}
+              />
+              <div id="video-attributes">
+                <span id="video-title">{`${video?.title}`}</span>
+                <span>{`Game Date: ${video?.date}`}</span>
+                <span>{`Game Type: ${video?.game_type}`}</span>
+                <span>{`Division/Level: ${video?.division} ${video?.team_level}`}</span>
+                <span>{`Opponent: ${video?.opponent_long}`}</span>
+                <span>{`Venue: ${video?.venue}`}</span>
+                <span>{`Views: ${video?.stats?.viewCount}`}</span>
+                <span>{`Likes: ${video?.stats?.likeCount}`}</span>
+                <span>{`Tags: [${video?.tags}]`}</span>
+              </div>
+            </div>
+          );
         })}
       </div>
     </div>

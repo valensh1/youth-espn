@@ -250,6 +250,13 @@ app.get('/api/:sport/player/:playerID', async (req, res) => {
   });
 });
 
+// Gets player images
+app.get('/api/:sport/player/:playerID/images', async (req, res) => {
+  const { sport, playerID } = req.params;
+  const playerImages = await sqlQueries.getPlayerImages(sport, playerID);
+  return res.json(playerImages);
+});
+
 // Gets player highlight videos
 app.get('/api/:sport/player/:playerID/highlights', async (req, res) => {
   const { sport, playerID } = req.params;

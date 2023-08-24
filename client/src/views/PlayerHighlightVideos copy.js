@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import YouTube, { YouTubeProps } from 'react-youtube';
-import YoutubeVideo from '../components/YoutubeVideo';
-import YoutubeVideoThumbnail from '../components/YoutubeVideoThumbnail';
 
 function PlayerHighlightVideos() {
   const sportToQuery = window.location.pathname.split('/')[1];
@@ -97,6 +95,7 @@ function PlayerHighlightVideos() {
 
   // Function that determines where click came from and determines state of video player whether to open or close video modal
   const videoControls = async (event) => {
+    // onPlayerStateChange(event);
     console.log(event);
     console.log(event.target);
     console.log(event.target.id);
@@ -171,11 +170,39 @@ function PlayerHighlightVideos() {
           id="image-right"
         />
       </div>
-      <YoutubeVideo videoID={videoToPlay} opts={opts} />
-
+      <div id="video-modal" className="video-modal hidden">
+        <YouTube
+          id="iframe-video"
+          videoId={videoToPlay}
+          opts={opts}
+          //   onReady={onPlayerReady}
+          //   onStateChange={onPlayerStateChange}
+          //   onEnd={onVideoEnd}
+        />
+        <span id="close-icon">X</span>
+      </div>
       <div id="video-highlight-thumbnails" className="thumbnails">
         {highlightVideos?.[0]?.highlight_videos?.map((video, index) => {
-          return <YoutubeVideoThumbnail video={video} index={index} />;
+          return (
+            <div key={index} id="video-container">
+              <img
+                src={video.videoThumbnail}
+                alt="pic"
+                video-id={video?.videoID}
+              />
+              <div id="video-attributes">
+                <span id="video-title">{`${video?.title}`}</span>
+                <span>{`Game Date: ${video?.date}`}</span>
+                <span>{`Game Type: ${video?.game_type}`}</span>
+                <span>{`Division/Level: ${video?.division} ${video?.team_level}`}</span>
+                <span>{`Opponent: ${video?.opponent_long}`}</span>
+                <span>{`Venue: ${video?.venue}`}</span>
+                <span>{`Views: ${video?.stats?.viewCount}`}</span>
+                <span>{`Likes: ${video?.stats?.likeCount}`}</span>
+                <span>{`Tags: [${video?.tags}]`}</span>
+              </div>
+            </div>
+          );
         })}
       </div>
     </div>
