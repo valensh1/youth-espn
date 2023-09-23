@@ -267,6 +267,16 @@ app.get('/api/:sport/player/:playerID/highlights', async (req, res) => {
   return res.json(playerHighlights);
 });
 
+// Gets player seasons played; Example 2021-2022, 2022-2023. This is used so only seasons in which they played are showed in dropdown menus related specifically to that player
+app.get('/api/:sport/player/:playerID/seasons-played', async (req, res) => {
+  const { sport, playerID } = req.params;
+  const playerSeasons = await sqlQueries.getPlayerSeasonsPlayed(
+    sport,
+    playerID
+  );
+  return res.json(playerSeasons);
+});
+
 //? DEPLOYMENT CODE FOR PRODUCTION - No Need to Modify This Code
 if (process.env.NODE_ENV === 'production') {
   // When .env file has NODE_ENV=production in it run this code below (we must put this in our .env file for when deploying)

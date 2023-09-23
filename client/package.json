@@ -17,7 +17,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "start-dev": "concurrently \"react-scripts start\" \"cd ../&& npm run start-dev\"",
+    "dev": "concurrently \"react-scripts start\" \"cd ../&& npm run start-dev\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

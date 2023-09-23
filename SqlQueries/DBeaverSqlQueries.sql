@@ -2798,8 +2798,50 @@ SET profile_images  = jsonb_set(
 )
 WHERE player_profile_id_fk = '867b9818-c35f-4e6a-a80f-7880d2d98db8';
 
+ALTER TABLE players.player_imgs 
+DROP COLUMN images
+
 
 ALTER TABLE  players.player_imgs 
-rename COLUMN profile_images TO images;
+add COLUMN images jsonb;
 
+   SELECT *
+        FROM players.player_imgs
+        WHERE sport ILIKE 'Hockey'
+        AND player_profile_id_fk = '867b9818-c35f-4e6a-a80f-7880d2d98db8'
+        
+ CREATE TABLE test (
+ first_name TEXT,
+ last_name TEXT,
+ date_added TIMESTAMPTZ DEFAULT current_timestamp
+ )
+ 
+ INSERT INTO test (first_name, last_name)
+ VALUES ('Kylie', 'Valentine')
+ 
+ SELECT *
+ FROM test
+ 
+ DROP TABLE test; 
+ 
+ SELECT current_time, current_timestamp
+ 
+ UPDATE players.player_videos
+SET highlight_videos = jsonb_set(
+                          highlight_videos, 
+                          '{0}', -- 0 INDEX IN ARRAY AND GET the tags KEY 
+                          '["breakaway", "save"]',
+                          true
+                       );
+                      
+UPDATE players.player_videos
+SET highlight_videos = jsonb_set(
+    highlight_videos,
+    '{0,date_added}',
+    to_jsonb(current_timestamp),
+    true
+)
+WHERE player_name = 'Cameron Karpontinis';
 
+SELECT *
+FROM players.player_images ;

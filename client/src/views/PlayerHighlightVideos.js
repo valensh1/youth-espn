@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
-import YouTube, { YouTubeProps } from 'react-youtube';
 import YoutubeVideo from '../components/YoutubeVideo';
 import YoutubeVideoThumbnail from '../components/YoutubeVideoThumbnail';
 
@@ -28,11 +27,12 @@ function PlayerHighlightVideos() {
   const [images, setImages] = useState([]);
   const [videoModalOpen, setVideoModalOpen] = useState(false);
   const [videoToPlay, setVideoToPlay] = useState('');
+  const [filters, setFilters] = useState({});
 
   //?-----------------------------------------------------------------USE EFFECT HOOKS ------------------------------------------------------------------------
   useEffect(() => {
     window.scrollTo(0, 0); // Ensure page loads with user at top of page
-    const fetchPlayerHighlights = async () => {
+    const fetchPageData = async () => {
       const response = await fetch(
         `/api/${sportToQuery}/player/${playerID}/highlights`
       );
@@ -59,11 +59,22 @@ function PlayerHighlightVideos() {
       );
       data[0].highlight_videos = videoArray;
       setHighlightVideos(data);
+      seasonsDropDownMenu(playerID);
     };
-    fetchPlayerHighlights();
+    fetchPageData();
   }, []);
 
   //?----------------------------------------------------------------- FUNCTIONS ------------------------------------------------------------------------
+
+  const seasonsDropDownMenu = async (playerID) => {
+    const response = await fetch(
+      `/api/${sportToQuery}/player/${playerID}/seasons-played`
+    );
+    const seasons = await response.json();
+    console.log(seasons);
+    setFilters({ ...filters, seasons: seasons });
+    return seasons;
+  };
 
   const fetchVideoStats = async (videoID) => {
     const response = await fetch(
@@ -149,11 +160,49 @@ function PlayerHighlightVideos() {
   return (
     <div id="player-highlights-page-container" onClick={videoControls}>
       <Navbar />
+      <div className="filters video-filters" id="video-filters">
+        <select name="seasons-filter" id="seasons-filter">
+          <option value="season" selected>
+            Filter By Season
+          </option>
+          ;
+          {filters?.seasons?.map((filter) => {
+            return (
+              <option
+                value={filter.season}
+                key={filter.season}
+                className="season-option"
+              >
+                {filter.season}
+              </option>
+            );
+          })}
+        </select>
+
+        <select name="team-filter" id="team-filter">
+          <option value="team" selected>
+            Filter By Teams
+          </option>
+          ;
+          {filters?.seasons?.map((filter) => {
+            return (
+              <option
+                value={filter.actual_team_name}
+                key={filter.season}
+                className="team-option"
+              >
+                {filter.actual_team_name}
+              </option>
+            );
+          })}
+        </select>
+      </div>
       <h1>
         {highlightVideos?.[0]?.player_name
           ? `${highlightVideos?.[0]?.player_name} Highlight Videos`
           : `Highlight Videos`}
       </h1>
+
       <div className="background-img-sides background-img-left">
         <img
           src={images?.[0]?.images?.action_images?.[0]?.img}

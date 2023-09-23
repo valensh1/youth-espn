@@ -797,4 +797,23 @@ module.exports = {
       logger.log(error);
     }
   },
+
+  getPlayerSeasonsPlayed: async (sport, playerID) => {
+    try {
+      logger.log(sport, playerID);
+      const response = await pool.query(
+        `
+        SELECT DISTINCT season, r.sport, concat(first_name, ' ', last_name) AS player_name, actual_team_name, t.team_name_short, team_id_fk , division_level_fk, player_position 
+        FROM teams.rosters r
+        LEFT JOIN teams.teams t
+        ON t.id = r.team_id_fk 
+        WHERE player_profile_id_fk = '${playerID}' AND r.sport ILIKE '${sport}'
+        ORDER BY season DESC;
+        `
+      );
+      return response.rows;
+    } catch (error) {
+      logger.log(error);
+    }
+  },
 };
