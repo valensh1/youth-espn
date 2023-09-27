@@ -725,23 +725,6 @@ module.exports = {
       logger.log(error);
     }
   },
-  // getPlayerImages: async (sport, playerID) => {
-  //   try {
-  //     logger.log(sport, playerID);
-  //     const response = await pool.query(
-  //       `
-  //       SELECT *
-  //       FROM players.player_images
-  //       WHERE player_profile_id_fk = '${playerID}'
-  //       AND sport ILIKE '${sport}'
-  //       ORDER BY season DESC;
-  //       `
-  //     );
-  //     return response.rows;
-  //   } catch (error) {
-  //     logger.log(error);
-  //   }
-  // },
 
   getPlayerAttributes: async (sport, playerID) => {
     try {
@@ -787,7 +770,7 @@ module.exports = {
       const response = await pool.query(
         `
         SELECT *
-        FROM players.player_videos pv 
+        FROM players.player_videos pv
         WHERE player_profile_id_fk = '${playerID}'
         AND sport ILIKE '${sport}'
         `
@@ -798,10 +781,75 @@ module.exports = {
     }
   },
 
-  getPlayerSeasonsPlayed: async (sport, playerID) => {
+  getPlayerHighlightVideos2: async (
+    sport,
+    playerID,
+    season = '',
+    team = '',
+    opponent = '',
+    division = '',
+    venue = ''
+  ) => {
     try {
       logger.log(sport, playerID);
+      const seasonStatement = season
+        ? `AND video->>'season' = '${season}'`
+        : '';
+      const teamStatement = team ? `AND video->>'player_team' = '${team}'` : '';
+      const opponentStatement = opponent
+        ? `AND video->>'opponent_long' = '${opponent}'`
+        : '';
+      const divisionStatement = division
+        ? `AND video->>'division' = '${division}'`
+        : '';
+      const venueStatement = venue ? `AND video->>'venue' = '${venue}'` : '';
+      const additionalFilters = `${seasonStatement} ${teamStatement} ${opponentStatement} ${divisionStatement} ${venueStatement}`;
+      logger.log(additionalFilters);
       const response = await pool.query(
+        `
+        SELECT
+        id,
+        sport,
+        player_profile_id_fk,
+        player_name,
+        jsonb_agg(video) AS highlight_videos
+      FROM
+        (
+        SELECT
+          id,
+          sport,
+          player_profile_id_fk,
+          player_name,
+          jsonb_array_elements(highlight_videos) AS video
+        FROM
+          players.player_videos
+      ) AS subquery
+      WHERE 
+      player_profile_id_fk = '${playerID}'
+      AND sport ILIKE '${sport}'
+      ${additionalFilters.trim()}
+      
+    
+      GROUP BY
+        id,
+        sport,
+        player_profile_id_fk,
+        player_name;
+        `
+      );
+      await logger.log(response);
+      return response.rows;
+    } catch (error) {
+      logger.log(error);
+    }
+  },
+
+  // Gets the filter data to display in dropdown menus
+  getHighlightVideoFilters: async (sport, playerID) => {
+    try {
+      logger.log(sport, playerID);
+
+      const seasonAndTeamFilter = await pool.query(
         `
         SELECT DISTINCT season, r.sport, concat(first_name, ' ', last_name) AS player_name, actual_team_name, t.team_name_short, team_id_fk , division_level_fk, player_position 
         FROM teams.rosters r
@@ -809,6 +857,84 @@ module.exports = {
         ON t.id = r.team_id_fk 
         WHERE player_profile_id_fk = '${playerID}' AND r.sport ILIKE '${sport}'
         ORDER BY season DESC;
+        `
+      );
+
+      const opponentFilter = await pool.query(
+        `
+        SELECT DISTINCT 
+        video ->> 'opponent_long' AS opponent
+      FROM
+        (
+        SELECT
+          id,
+          sport,
+          player_profile_id_fk,
+          player_name,
+          jsonb_array_elements(highlight_videos) AS video
+        FROM
+          players.player_videos
+        WHERE
+        player_profile_id_fk = '${playerID}' AND sport ILIKE '${sport}'
+      ) AS subquery;
+        `
+      );
+
+      const venueFilter = await pool.query(
+        `
+        SELECT DISTINCT 
+        video ->> 'venue' AS venue
+      FROM
+        (
+        SELECT
+          id,
+          sport,
+          player_profile_id_fk,
+          player_name,
+          jsonb_array_elements(highlight_videos) AS video
+        FROM
+          players.player_videos
+        WHERE
+        player_profile_id_fk = '${playerID}' AND sport ILIKE '${sport}'
+      ) AS subquery
+       WHERE video ->> 'venue' <> '' OR video->> 'venue' <> NULL 
+        `
+      );
+      return {
+        seasonAndTeamFilter: seasonAndTeamFilter.rows,
+        opponentFilter: opponentFilter.rows,
+        venueFilter: venueFilter.rows,
+      };
+    } catch (error) {
+      logger.log(error);
+    }
+  },
+
+  getHighlightVideoFilterSelections: async (
+    sport = 'Hockey',
+    playerID,
+    season = null,
+    team = null,
+    opponent = null,
+    division = null,
+    venue = null
+  ) => {
+    try {
+      logger.log(sport, playerID, season, team, opponent, division, venue);
+      const response = await pool.query(
+        `
+        SELECT
+        *
+        FROM (
+            SELECT
+                id,
+                sport,
+                player_profile_id_fk,
+                player_name,
+                jsonb_array_elements(highlight_videos) AS highlight_videos
+            FROM players.player_videos
+        ) AS expanded
+        WHERE highlight_videos->>'season' = '${season}' AND player_profile_id_fk = '${playerID}';
         `
       );
       return response.rows;

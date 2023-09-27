@@ -1,5 +1,5 @@
 #player-highlights-page-container {
-  height: 200vh;
+  height: fit-content;
   width: 100vw;
   position: relative;
   background-color: black;
@@ -10,17 +10,41 @@
     z-index: 200;
   }
 
-  & h1 {
-    margin-top: 2vh;
-    margin-bottom: 25vh;
+  #video-heading-count {
+    position: relative;
+
+    & h1 {
+      margin-top: 2vh;
+      margin-bottom: 25vh;
+      background-color: white;
+      display: inline-block;
+      width: 59.5vw;
+      height: 3vh;
+      position: absolute;
+      left: 20vw;
+      padding-left: 0.5vw;
+      padding-top: 0.5vh;
+    }
+
+    & #video-count {
+      position: absolute;
+      color: red;
+      font-size: 0.5vw;
+      font-weight: 700;
+      top: 3vh;
+      left: 77%;
+    }
+  }
+
+  #no-search-results {
+    position: relative;
+    width: fit-content;
+    color: red;
+    display: none;
+    font-size: 1.2vw;
     background-color: white;
-    display: inline-block;
-    width: 59.5vw;
-    height: 3vh;
-    position: absolute;
-    left: 20vw;
-    padding-left: 0.5vw;
-    padding-top: 0.5vh;
+    top: 25vh;
+    left: 25vw;
   }
 
   & #video-filters {
@@ -133,7 +157,7 @@
         justify-content: center;
 
         & #video-title {
-          font-size: 1vw;
+          font-size: 0.75vw;
           margin-bottom: 0.5vw;
           margin-right: 2vw;
         }

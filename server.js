@@ -258,24 +258,67 @@ app.get('/api/:sport/player/:playerID/images', async (req, res) => {
 });
 
 // Gets player highlight videos
+// app.get('/api/:sport/player/:playerID/highlights', async (req, res) => {
+//   const { sport, playerID } = req.params;
+//   const playerHighlights = await sqlQueries.getPlayerHighlightVideos(
+//     sport,
+//     playerID
+//   );
+//   logger.log(playerHighlights);
+//   return res.json(playerHighlights);
+// });
+
+// Gets player highlight videos
 app.get('/api/:sport/player/:playerID/highlights', async (req, res) => {
   const { sport, playerID } = req.params;
-  const playerHighlights = await sqlQueries.getPlayerHighlightVideos(
+  const { season, team, opponent, division, venue } = req.query;
+  const playerHighlights = await sqlQueries.getPlayerHighlightVideos2(
     sport,
-    playerID
+    playerID,
+    season,
+    team,
+    opponent,
+    division,
+    venue
   );
+  logger.log(playerHighlights);
   return res.json(playerHighlights);
 });
 
 // Gets player seasons played; Example 2021-2022, 2022-2023. This is used so only seasons in which they played are showed in dropdown menus related specifically to that player
-app.get('/api/:sport/player/:playerID/seasons-played', async (req, res) => {
-  const { sport, playerID } = req.params;
-  const playerSeasons = await sqlQueries.getPlayerSeasonsPlayed(
-    sport,
-    playerID
-  );
-  return res.json(playerSeasons);
-});
+app.get(
+  '/api/:sport/player/:playerID/highlight-video-filters',
+  async (req, res) => {
+    const { sport, playerID } = req.params;
+    const highlightVideoFilters = await sqlQueries.getHighlightVideoFilters(
+      sport,
+      playerID
+    );
+    logger.log(highlightVideoFilters);
+    return res.json(highlightVideoFilters);
+  }
+);
+
+// Queries player highlight videos for selected filters
+app.get(
+  '/api/:sport/player/:playerID/highlight-video-filters/selections',
+  async (req, res) => {
+    const { sport, playerID } = req.params;
+    const { season, team, opponent, division, venue } = req.query;
+    const highlightVideoFilterSelections =
+      await sqlQueries.getHighlightVideoFilterSelections(
+        sport,
+        playerID,
+        season,
+        team,
+        opponent,
+        division,
+        venue
+      );
+    logger.log(highlightVideoFilterSelections);
+    return res.json(highlightVideoFilterSelections);
+  }
+);
 
 //? DEPLOYMENT CODE FOR PRODUCTION - No Need to Modify This Code
 if (process.env.NODE_ENV === 'production') {

@@ -28,6 +28,13 @@ function PlayerHighlightVideos() {
   const [videoModalOpen, setVideoModalOpen] = useState(false);
   const [videoToPlay, setVideoToPlay] = useState('');
   const [filters, setFilters] = useState({});
+  const [selectedFilters, setSelectedFilters] = useState({
+    season: '',
+    team: '',
+    opponent: '',
+    division: '',
+    venue: '',
+  });
 
   //?-----------------------------------------------------------------USE EFFECT HOOKS ------------------------------------------------------------------------
   useEffect(() => {
@@ -59,21 +66,74 @@ function PlayerHighlightVideos() {
       );
       data[0].highlight_videos = videoArray;
       setHighlightVideos(data);
-      seasonsDropDownMenu(playerID);
+      filterDropDownMenus(playerID);
     };
     fetchPageData();
   }, []);
 
+  useEffect(() => {
+    console.log(`Filters have been changed`);
+    fetchPlayerHighlightVideos();
+  }, [selectedFilters]);
+
   //?----------------------------------------------------------------- FUNCTIONS ------------------------------------------------------------------------
 
-  const seasonsDropDownMenu = async (playerID) => {
+  const fetchPlayerHighlightVideos = async () => {
+    try {
+      const response = await fetch(
+        `/api/${sportToQuery}/player/${playerID}/highlights?season=${selectedFilters.season}&team=${selectedFilters.team}&opponent=${selectedFilters.opponent}&division=${selectedFilters.division}&venue=${selectedFilters.venue}`
+      );
+      console.log(
+        `/api/${sportToQuery}/player/${playerID}/highlights?season=${selectedFilters.season}&team=${selectedFilters.team}&opponent=${selectedFilters.opponent}&division=${selectedFilters.division}&venue=${selectedFilters.venue}`
+      );
+      const data = await response.json();
+      console.log(data);
+
+      // Loops through the data retrieved directly above and for each video it gets the video stats such as view count, likes, etc using the YouTube API and combines that with the data received directly above and sets the playerHighlights state
+      const videoArray = await Promise.all(
+        data[0]?.highlight_videos.map(async (video) => {
+          const videoID = extractVideoID(video.url);
+          const videoData = await fetchVideoStats(videoID);
+          const stats = videoData.stats;
+          const videoThumbnail = videoData.thumbnails;
+          return { ...video, stats, videoThumbnail, videoID };
+        })
+      );
+      data[0].highlight_videos = videoArray;
+      setHighlightVideos(data);
+    } catch (error) {
+      console.error(error);
+      setHighlightVideos([]);
+    }
+  };
+
+  // Retrieves data for dropdown filters based upon player seasons played, teams they have played on, opponents played against, etc. Purpose is so the items in dropdown are relevant to that player and not showing a team they never played for or a season they never played in
+  const filterDropDownMenus = async (playerID) => {
     const response = await fetch(
-      `/api/${sportToQuery}/player/${playerID}/seasons-played`
+      `/api/${sportToQuery}/player/${playerID}/highlight-video-filters`
     );
-    const seasons = await response.json();
-    console.log(seasons);
-    setFilters({ ...filters, seasons: seasons });
-    return seasons;
+    const filterData = await response.json();
+    console.log(filterData);
+    setFilters({ ...filters, filters: filterData });
+    return filterData;
+  };
+
+  // Function that captures the video filter selections by user
+  const filterSelections = async (event) => {
+    const selection = event.target.value;
+    const filter = event.target.name;
+    const filterCleared = selection === filter ? true : false;
+    if (!filterCleared) {
+      setSelectedFilters({ ...selectedFilters, [filter]: selection });
+    } else {
+      setSelectedFilters({
+        season: '',
+        team: '',
+        opponent: '',
+        division: '',
+        venue: '',
+      });
+    }
   };
 
   const fetchVideoStats = async (videoID) => {
@@ -146,6 +206,46 @@ function PlayerHighlightVideos() {
     }
   };
 
+  const removeDivisionDuplicates = (array) => {
+    console.log(array);
+    let divisions = array?.filters?.seasonAndTeamFilter?.map((el) => {
+      return el.division_level_fk;
+    });
+    divisions = [...new Set(divisions)];
+    console.log(divisions);
+
+    return (
+      <select name="division" id="division-filter" onChange={filterSelections}>
+        <option value="division" selected>
+          Filter By Division
+        </option>
+        ;
+        {divisions.map((filter) => {
+          return (
+            <option value={filter} key={filter} className="dropdown-options">
+              {filter}
+            </option>
+          );
+        })}
+      </select>
+    );
+  };
+
+  const videoCountToDisplay = () => {
+    const highlights = highlightVideos[0]?.highlight_videos?.length;
+    console.log(highlights);
+    if (highlights) {
+      switch (highlights) {
+        case 1:
+          return <span id="video-count">{`${highlights} Video`}</span>;
+        default:
+          return <span id="video-count">{`${highlights} Videos`}</span>;
+      }
+    } else {
+      return <span id="video-count">{`0 Videos`}</span>;
+    }
+  };
+
   //? Some methods that can be used -- DELETE IF NOT USED
   //   const onPlayerReady = (event) => {};
 
@@ -161,17 +261,19 @@ function PlayerHighlightVideos() {
     <div id="player-highlights-page-container" onClick={videoControls}>
       <Navbar />
       <div className="filters video-filters" id="video-filters">
-        <select name="seasons-filter" id="seasons-filter">
-          <option value="season" selected>
-            Filter By Season
-          </option>
-          ;
-          {filters?.seasons?.map((filter) => {
+        <select
+          name="season"
+          id="seasons-filter"
+          value={selectedFilters.season}
+          onChange={filterSelections}
+        >
+          <option value="season">Filter By Season</option>;
+          {filters?.filters?.seasonAndTeamFilter?.map((filter) => {
             return (
               <option
                 value={filter.season}
                 key={filter.season}
-                className="season-option"
+                className="dropdown-options"
               >
                 {filter.season}
               </option>
@@ -179,28 +281,78 @@ function PlayerHighlightVideos() {
           })}
         </select>
 
-        <select name="team-filter" id="team-filter">
+        <select name="team" id="team-filter" onChange={filterSelections}>
           <option value="team" selected>
             Filter By Teams
           </option>
           ;
-          {filters?.seasons?.map((filter) => {
+          {filters?.filters?.seasonAndTeamFilter?.map((filter) => {
             return (
               <option
                 value={filter.actual_team_name}
                 key={filter.season}
-                className="team-option"
+                className="dropdown-options"
               >
                 {filter.actual_team_name}
               </option>
             );
           })}
         </select>
+
+        <select
+          name="opponent"
+          id="opponent-filter"
+          onChange={filterSelections}
+        >
+          <option value="opponent" selected>
+            Filter By Opponent
+          </option>
+          ;
+          {filters?.filters?.opponentFilter?.map((filter) => {
+            return (
+              <option
+                value={filter.opponent}
+                key={filter.opponent}
+                className="dropdown-options"
+              >
+                {filter.opponent}
+              </option>
+            );
+          })}
+        </select>
+
+        {removeDivisionDuplicates(filters)}
+
+        <select name="venue" id="venue-filter" onChange={filterSelections}>
+          <option value="venue" selected>
+            Filter By Venue
+          </option>
+          ;
+          {filters?.filters?.venueFilter?.map((filter) => {
+            return (
+              <option
+                value={filter.venue}
+                key={filter.venue}
+                className="dropdown-options"
+              >
+                {filter.venue}
+              </option>
+            );
+          })}
+        </select>
       </div>
-      <h1>
-        {highlightVideos?.[0]?.player_name
-          ? `${highlightVideos?.[0]?.player_name} Highlight Videos`
-          : `Highlight Videos`}
+      <div id="video-heading-count">
+        <h1>
+          {highlightVideos?.[0]?.player_name
+            ? `${highlightVideos?.[0]?.player_name} Highlight Videos`
+            : `Highlight Videos`}
+        </h1>
+
+        {videoCountToDisplay()}
+      </div>
+
+      <h1 id="no-search-results" style={{ display: 'block' }}>
+        {highlightVideos.length ? '' : 'No videos met your search criteria'}
       </h1>
 
       <div className="background-img-sides background-img-left">

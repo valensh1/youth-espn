@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
-import YouTube, { YouTubeProps } from 'react-youtube';
+import YoutubeVideo from '../components/YoutubeVideo';
+import YoutubeVideoThumbnail from '../components/YoutubeVideoThumbnail';
 
 function PlayerHighlightVideos() {
   const sportToQuery = window.location.pathname.split('/')[1];
@@ -26,11 +27,13 @@ function PlayerHighlightVideos() {
   const [images, setImages] = useState([]);
   const [videoModalOpen, setVideoModalOpen] = useState(false);
   const [videoToPlay, setVideoToPlay] = useState('');
+  const [filters, setFilters] = useState({});
+  const [selectedFilters, setSelectedFilters] = useState({});
 
   //?-----------------------------------------------------------------USE EFFECT HOOKS ------------------------------------------------------------------------
   useEffect(() => {
     window.scrollTo(0, 0); // Ensure page loads with user at top of page
-    const fetchPlayerHighlights = async () => {
+    const fetchPageData = async () => {
       const response = await fetch(
         `/api/${sportToQuery}/player/${playerID}/highlights`
       );
@@ -57,11 +60,22 @@ function PlayerHighlightVideos() {
       );
       data[0].highlight_videos = videoArray;
       setHighlightVideos(data);
+      filterDropDownMenus(playerID);
     };
-    fetchPlayerHighlights();
+    fetchPageData();
   }, []);
 
   //?----------------------------------------------------------------- FUNCTIONS ------------------------------------------------------------------------
+
+  const filterDropDownMenus = async (playerID) => {
+    const response = await fetch(
+      `/api/${sportToQuery}/player/${playerID}/highlight-video-filters`
+    );
+    const filterData = await response.json();
+    console.log(filterData);
+    setFilters({ ...filters, filters: filterData });
+    return filterData;
+  };
 
   const fetchVideoStats = async (videoID) => {
     const response = await fetch(
@@ -95,7 +109,6 @@ function PlayerHighlightVideos() {
 
   // Function that determines where click came from and determines state of video player whether to open or close video modal
   const videoControls = async (event) => {
-    // onPlayerStateChange(event);
     console.log(event);
     console.log(event.target);
     console.log(event.target.id);
@@ -134,6 +147,50 @@ function PlayerHighlightVideos() {
     }
   };
 
+  const removeDivisionDuplicates = (array) => {
+    console.log(array);
+    let divisions = array?.filters?.seasonAndTeamFilter?.map((el) => {
+      return el.division_level_fk;
+    });
+    divisions = [...new Set(divisions)];
+    console.log(divisions);
+
+    return (
+      <select name="division-filter" id="division-filter">
+        <option value="division" selected>
+          Filter By Division
+        </option>
+        ;
+        {divisions.map((filter) => {
+          return (
+            <option value={filter} key={filter} className="dropdown-options">
+              {filter}
+            </option>
+          );
+        })}
+      </select>
+    );
+  };
+
+  const selectedSeason = async (event) => {
+    console.log(event.target.value);
+    const selectedSeason = event.target.value;
+    const response = await fetch(
+      `/api/${sportToQuery}/player/${playerID}/highlight-video-filters/selections?season=${selectedSeason}`
+    );
+    const data = await response.json();
+    console.log(data);
+
+    setSelectedFilters({ ...selectedFilters, season: selectedSeason });
+
+    console.log(highlightVideos);
+    const selectedData = [...highlightVideos];
+    console.log(selectedData);
+    selectedData[0].highlight_videos = [data];
+    console.log(selectedData);
+    setHighlightVideos(selectedData);
+  };
+
   //? Some methods that can be used -- DELETE IF NOT USED
   //   const onPlayerReady = (event) => {};
 
@@ -148,11 +205,89 @@ function PlayerHighlightVideos() {
   return (
     <div id="player-highlights-page-container" onClick={videoControls}>
       <Navbar />
+      <div className="filters video-filters" id="video-filters">
+        <select
+          name="seasons-filter"
+          id="seasons-filter"
+          value={selectedFilters.season}
+          onChange={selectedSeason}
+        >
+          <option value="season">Filter By Season</option>;
+          {filters?.filters?.seasonAndTeamFilter?.map((filter) => {
+            return (
+              <option
+                value={filter.season}
+                key={filter.season}
+                className="dropdown-options"
+              >
+                {filter.season}
+              </option>
+            );
+          })}
+        </select>
+
+        <select name="team-filter" id="team-filter">
+          <option value="team" selected>
+            Filter By Teams
+          </option>
+          ;
+          {filters?.filters?.seasonAndTeamFilter?.map((filter) => {
+            return (
+              <option
+                value={filter.actual_team_name}
+                key={filter.season}
+                className="dropdown-options"
+              >
+                {filter.actual_team_name}
+              </option>
+            );
+          })}
+        </select>
+
+        <select name="opponent-filter" id="opponent-filter">
+          <option value="opponent" selected>
+            Filter By Opponent
+          </option>
+          ;
+          {filters?.filters?.opponentFilter?.map((filter) => {
+            return (
+              <option
+                value={filter.opponent}
+                key={filter.opponent}
+                className="dropdown-options"
+              >
+                {filter.opponent}
+              </option>
+            );
+          })}
+        </select>
+
+        {removeDivisionDuplicates(filters)}
+
+        <select name="venue-filter" id="venue-filter">
+          <option value="venue" selected>
+            Filter By Venue
+          </option>
+          ;
+          {filters?.filters?.venueFilter?.map((filter) => {
+            return (
+              <option
+                value={filter.venue}
+                key={filter.venue}
+                className="dropdown-options"
+              >
+                {filter.venue}
+              </option>
+            );
+          })}
+        </select>
+      </div>
       <h1>
         {highlightVideos?.[0]?.player_name
           ? `${highlightVideos?.[0]?.player_name} Highlight Videos`
           : `Highlight Videos`}
       </h1>
+
       <div className="background-img-sides background-img-left">
         <img
           src={images?.[0]?.images?.action_images?.[0]?.img}
@@ -170,39 +305,11 @@ function PlayerHighlightVideos() {
           id="image-right"
         />
       </div>
-      <div id="video-modal" className="video-modal hidden">
-        <YouTube
-          id="iframe-video"
-          videoId={videoToPlay}
-          opts={opts}
-          //   onReady={onPlayerReady}
-          //   onStateChange={onPlayerStateChange}
-          //   onEnd={onVideoEnd}
-        />
-        <span id="close-icon">X</span>
-      </div>
+      <YoutubeVideo videoID={videoToPlay} opts={opts} />
+
       <div id="video-highlight-thumbnails" className="thumbnails">
         {highlightVideos?.[0]?.highlight_videos?.map((video, index) => {
-          return (
-            <div key={index} id="video-container">
-              <img
-                src={video.videoThumbnail}
-                alt="pic"
-                video-id={video?.videoID}
-              />
-              <div id="video-attributes">
-                <span id="video-title">{`${video?.title}`}</span>
-                <span>{`Game Date: ${video?.date}`}</span>
-                <span>{`Game Type: ${video?.game_type}`}</span>
-                <span>{`Division/Level: ${video?.division} ${video?.team_level}`}</span>
-                <span>{`Opponent: ${video?.opponent_long}`}</span>
-                <span>{`Venue: ${video?.venue}`}</span>
-                <span>{`Views: ${video?.stats?.viewCount}`}</span>
-                <span>{`Likes: ${video?.stats?.likeCount}`}</span>
-                <span>{`Tags: [${video?.tags}]`}</span>
-              </div>
-            </div>
-          );
+          return <YoutubeVideoThumbnail video={video} index={index} />;
         })}
       </div>
     </div>
