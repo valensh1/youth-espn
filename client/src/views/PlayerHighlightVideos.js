@@ -168,12 +168,14 @@ function PlayerHighlightVideos() {
 
   // Function that determines where click came from and determines state of video player whether to open or close video modal
   const videoControls = async (event) => {
-    console.log(event);
-    console.log(event.target);
-    console.log(event.target.id);
-    console.log(event.target.alt);
-    console.log(event.target.tagName);
-    console.log(event.target.nodeName);
+    // console.log(event);
+    // console.log(event.target);
+    // console.log(event.target.id);
+    // console.log(event.target.alt);
+    // console.log(event.target.tagName);
+    // console.log(event.target.nodeName);
+    changeOpacity('hide');
+
     const coordinates = [event.clientX, event.clientY];
     console.log(coordinates);
     if (event.target.nodeName !== 'IMG' && videoModalOpen === false) {
@@ -187,6 +189,7 @@ function PlayerHighlightVideos() {
       setVideoToPlay('');
       toggleVideoPlayer();
       setVideoModalOpen(!videoModalOpen);
+      changeOpacity('show');
     } else {
       toggleVideoPlayer();
       setVideoModalOpen(!videoModalOpen);
@@ -202,6 +205,24 @@ function PlayerHighlightVideos() {
       window.scrollTo({
         top: 0,
         behavior: 'instant',
+      });
+    }
+  };
+
+  const changeOpacity = (status) => {
+    const container = document.getElementById('video-highlight-thumbnails');
+    const backgroundSides = document.querySelectorAll('.background-img-sides');
+    if (status === 'hide') {
+      container.style.opacity = 0;
+
+      backgroundSides.forEach((el) => {
+        el.style.opacity = 0;
+      });
+    } else {
+      container.style.opacity = 1;
+
+      backgroundSides.forEach((el) => {
+        el.style.opacity = 1;
       });
     }
   };

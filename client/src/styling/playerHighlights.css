@@ -169,6 +169,10 @@
         }
       }
     }
+
+    #video-container > img:hover {
+      cursor: pointer;
+    }
   }
 
   & .hidden {
