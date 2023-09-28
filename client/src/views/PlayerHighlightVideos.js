@@ -170,42 +170,49 @@ function PlayerHighlightVideos() {
   const videoControls = async (event) => {
     // console.log(event);
     // console.log(event.target);
+    // console.log(event.target.parentNode);
+    // console.log(event.target.parentNode.id);
+    // console.log(event.target.value)
     // console.log(event.target.id);
     // console.log(event.target.alt);
     // console.log(event.target.tagName);
     // console.log(event.target.nodeName);
-    changeOpacity('hide');
 
-    const coordinates = [event.clientX, event.clientY];
-    console.log(coordinates);
-    if (event.target.nodeName !== 'IMG' && videoModalOpen === false) {
-      return;
-    } else if (event.target.nodeName === 'IFRAME' && videoModalOpen === true) {
-      return;
-    } else if (
-      (event.target.id === 'close-icon' && videoModalOpen === true) ||
-      (event.target.nodeName !== 'IFRAME' && videoModalOpen === true)
-    ) {
-      setVideoToPlay('');
-      toggleVideoPlayer();
-      setVideoModalOpen(!videoModalOpen);
-      changeOpacity('show');
-    } else {
-      toggleVideoPlayer();
-      setVideoModalOpen(!videoModalOpen);
-      const videoURL = event.target.getAttribute('video-id');
-      const videoID = extractVideoID(videoURL);
-      setVideoToPlay(videoID);
+    if(event.target.parentNode.id === 'video-container') {
 
-      // Coordinates of img thumbnail clicked. User will need to be scrolled back to here after watching video
-      const positioning = videoPlacement(coordinates);
-      console.log(positioning);
-
-      // Displays video at top of screen
-      window.scrollTo({
-        top: 0,
-        behavior: 'instant',
-      });
+      changeOpacity('hide');
+  
+      const coordinates = [event.clientX, event.clientY];
+      console.log(coordinates);
+      if (event.target.nodeName !== 'IMG' && videoModalOpen === false) {
+        return;
+      } else if (event.target.nodeName === 'IFRAME' && videoModalOpen === true) {
+        return;
+      } else if (
+        (event.target.id === 'close-icon' && videoModalOpen === true) ||
+        (event.target.nodeName !== 'IFRAME' && videoModalOpen === true)
+      ) {
+        setVideoToPlay('');
+        toggleVideoPlayer();
+        setVideoModalOpen(!videoModalOpen);
+        changeOpacity('show');
+      } else {
+        toggleVideoPlayer();
+        setVideoModalOpen(!videoModalOpen);
+        const videoURL = event.target.getAttribute('video-id');
+        const videoID = extractVideoID(videoURL);
+        setVideoToPlay(videoID);
+  
+        // Coordinates of img thumbnail clicked. User will need to be scrolled back to here after watching video
+        const positioning = videoPlacement(coordinates);
+        console.log(positioning);
+  
+        // Displays video at top of screen
+        window.scrollTo({
+          top: 0,
+          behavior: 'instant',
+        });
+      }
     }
   };
 
