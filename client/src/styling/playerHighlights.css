@@ -1,5 +1,5 @@
 #player-highlights-page-container {
-  height: fit-content;
+  min-height: 100vh;
   width: 100vw;
   position: relative;
   background-color: black;
@@ -10,29 +10,34 @@
     z-index: 200;
   }
 
-  #video-heading-count {
-    position: relative;
+  & #video-content-container {
+    height: fit-content;
+    width: fit-content;
 
-    & h1 {
-      margin-top: 2vh;
-      margin-bottom: 25vh;
+    #video-heading-count {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: black;
       background-color: white;
-      display: inline-block;
-      width: 59.5vw;
-      height: 3vh;
-      position: absolute;
+      width: 60vw;
+      position: relative;
       left: 20vw;
-      padding-left: 0.5vw;
-      padding-top: 0.5vh;
-    }
+      top: 5vh;
+      border-radius: 5px 5px 0 0;
 
-    & #video-count {
-      position: absolute;
-      color: red;
-      font-size: 0.5vw;
-      font-weight: 700;
-      top: 3vh;
-      left: 77%;
+      & h1 {
+        display: inline-block;
+        margin-left: 1vw;
+      }
+
+      & #video-count {
+        display: inline-block;
+        margin-right: 1vw;
+        font-size: 0.6vw;
+        color: red;
+        font-weight: 600;
+      }
     }
   }
 
@@ -49,25 +54,30 @@
 
   & #video-filters {
     display: flex;
-    flex-direction: column;
-    background-color: lightgray;
-    width: fit-content;
+    justify-content: space-evenly;
+    width: 60vw;
+    height: fit-content;
+    margin-left: 20vw;
 
-    & label {
-      /* color: red; */
+    & .filter-dropdown {
+      position: relative;
+      top: 5vh;
+      text-align: center;
+      background-color: white;
+      color: red;
     }
   }
 
   & .background-img-sides {
     margin-top: 5vh;
     width: 20vw;
-    height: 188vh;
+    min-height: 100vh;
     position: absolute;
   }
 
   & .background-img-left {
     & #image-left {
-      position: sticky;
+      position: fixed;
       top: 40vh;
       width: 20vw;
       margin-left: 3vw;
@@ -82,7 +92,7 @@
     right: 0;
 
     & #image-right {
-      position: sticky;
+      position: fixed;
       top: 40vh;
       width: 20vw;
       margin-left: 5vw;
@@ -90,7 +100,6 @@
       height: 20vh;
       filter: sepia(100%);
       filter: brightness(120%);
-      /* filter: grayscale(0%); */
       border-radius: 25px;
     }
   }
@@ -120,7 +129,7 @@
     & #close-icon:hover {
       cursor: pointer;
       color: red;
-      transform: scale(1.25);
+      transform: scale(1.15);
     }
   }
 
@@ -131,6 +140,7 @@
     height: fit-content;
     position: relative;
     left: 20vw;
+    border-radius: 0 0 5px 5px;
 
     & #video-container {
       margin-top: 5vh;
@@ -143,7 +153,6 @@
       & img {
         padding-top: 0.25vh;
         padding-bottom: 0.25vh;
-        /* padding-left: 0.5vw; */
         width: 25vw;
         height: 25vh;
         border-radius: 15px;
@@ -173,6 +182,10 @@
     #video-container > img:hover {
       cursor: pointer;
     }
+  }
+
+  & #extra-space {
+    height: 5vh;
   }
 
   & .hidden {

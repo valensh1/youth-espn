@@ -2845,3 +2845,26 @@ WHERE player_name = 'Cameron Karpontinis';
 
 SELECT *
 FROM players.player_images ;
+
+
+SELECT
+*
+FROM (
+    SELECT
+        id,
+        sport,
+        player_profile_id_fk,
+        player_name,
+        jsonb_array_elements(highlight_videos) AS video
+    FROM players.player_videos
+) AS expanded
+WHERE video->>'date' = '03-10-2023' AND player_name = 'Hunter Valentine';
+
+SELECT player_name ,jsonb_array_elements(highlight_videos) AS video
+FROM players.player_videos 
+
+
+
+
+
+

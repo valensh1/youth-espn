@@ -168,51 +168,50 @@ function PlayerHighlightVideos() {
 
   // Function that determines where click came from and determines state of video player whether to open or close video modal
   const videoControls = async (event) => {
-    // console.log(event);
-    // console.log(event.target);
-    // console.log(event.target.parentNode);
-    // console.log(event.target.parentNode.id);
-    // console.log(event.target.value)
-    // console.log(event.target.id);
-    // console.log(event.target.alt);
-    // console.log(event.target.tagName);
-    // console.log(event.target.nodeName);
+    console.log(event);
+    console.log(event.target);
+    console.log(event.target.parentNode);
+    console.log(event.target.parentNode.id);
+    console.log(event.target.value);
+    console.log(event.target.id);
+    console.log(event.target.alt);
+    console.log(event.target.tagName);
+    console.log(event.target.nodeName);
 
-    if(event.target.parentNode.id === 'video-container') {
-
+    if (event.target.parentNode.id === 'video-container') {
       changeOpacity('hide');
-  
-      const coordinates = [event.clientX, event.clientY];
-      console.log(coordinates);
-      if (event.target.nodeName !== 'IMG' && videoModalOpen === false) {
-        return;
-      } else if (event.target.nodeName === 'IFRAME' && videoModalOpen === true) {
-        return;
-      } else if (
-        (event.target.id === 'close-icon' && videoModalOpen === true) ||
-        (event.target.nodeName !== 'IFRAME' && videoModalOpen === true)
-      ) {
-        setVideoToPlay('');
-        toggleVideoPlayer();
-        setVideoModalOpen(!videoModalOpen);
-        changeOpacity('show');
-      } else {
-        toggleVideoPlayer();
-        setVideoModalOpen(!videoModalOpen);
-        const videoURL = event.target.getAttribute('video-id');
-        const videoID = extractVideoID(videoURL);
-        setVideoToPlay(videoID);
-  
-        // Coordinates of img thumbnail clicked. User will need to be scrolled back to here after watching video
-        const positioning = videoPlacement(coordinates);
-        console.log(positioning);
-  
-        // Displays video at top of screen
-        window.scrollTo({
-          top: 0,
-          behavior: 'instant',
-        });
-      }
+    }
+
+    const coordinates = [event.clientX, event.clientY];
+    console.log(coordinates);
+    if (event.target.nodeName !== 'IMG' && videoModalOpen === false) {
+      return;
+    } else if (event.target.nodeName === 'IFRAME' && videoModalOpen === true) {
+      return;
+    } else if (
+      (event.target.id === 'close-icon' && videoModalOpen === true) ||
+      (event.target.nodeName !== 'IFRAME' && videoModalOpen === true)
+    ) {
+      setVideoToPlay('');
+      toggleVideoPlayer();
+      setVideoModalOpen(!videoModalOpen);
+      changeOpacity('show');
+    } else {
+      toggleVideoPlayer();
+      setVideoModalOpen(!videoModalOpen);
+      const videoURL = event.target.getAttribute('video-id');
+      const videoID = extractVideoID(videoURL);
+      setVideoToPlay(videoID);
+
+      // Coordinates of img thumbnail clicked. User will need to be scrolled back to here after watching video
+      const positioning = videoPlacement(coordinates);
+      console.log(positioning);
+
+      // Displays video at top of screen
+      window.scrollTo({
+        top: 0,
+        behavior: 'instant',
+      });
     }
   };
 
@@ -243,7 +242,12 @@ function PlayerHighlightVideos() {
     console.log(divisions);
 
     return (
-      <select name="division" id="division-filter" onChange={filterSelections}>
+      <select
+        name="division"
+        id="division-filter"
+        className="filter-dropdown"
+        onChange={filterSelections}
+      >
         <option value="division" selected>
           Filter By Division
         </option>
@@ -292,6 +296,7 @@ function PlayerHighlightVideos() {
         <select
           name="season"
           id="seasons-filter"
+          className="filter-dropdown"
           value={selectedFilters.season}
           onChange={filterSelections}
         >
@@ -309,7 +314,12 @@ function PlayerHighlightVideos() {
           })}
         </select>
 
-        <select name="team" id="team-filter" onChange={filterSelections}>
+        <select
+          name="team"
+          id="team-filter"
+          className="filter-dropdown"
+          onChange={filterSelections}
+        >
           <option value="team" selected>
             Filter By Teams
           </option>
@@ -330,6 +340,7 @@ function PlayerHighlightVideos() {
         <select
           name="opponent"
           id="opponent-filter"
+          className="filter-dropdown"
           onChange={filterSelections}
         >
           <option value="opponent" selected>
@@ -351,7 +362,12 @@ function PlayerHighlightVideos() {
 
         {removeDivisionDuplicates(filters)}
 
-        <select name="venue" id="venue-filter" onChange={filterSelections}>
+        <select
+          name="venue"
+          id="venue-filter"
+          className="filter-dropdown"
+          onChange={filterSelections}
+        >
           <option value="venue" selected>
             Filter By Venue
           </option>
@@ -368,15 +384,6 @@ function PlayerHighlightVideos() {
             );
           })}
         </select>
-      </div>
-      <div id="video-heading-count">
-        <h1>
-          {highlightVideos?.[0]?.player_name
-            ? `${highlightVideos?.[0]?.player_name} Highlight Videos`
-            : `Highlight Videos`}
-        </h1>
-
-        {videoCountToDisplay()}
       </div>
 
       <h1 id="no-search-results" style={{ display: 'block' }}>
@@ -401,12 +408,23 @@ function PlayerHighlightVideos() {
         />
       </div>
       <YoutubeVideo videoID={videoToPlay} opts={opts} />
+      <div id="video-content-container">
+        <div id="video-heading-count">
+          <h1>
+            {highlightVideos?.[0]?.player_name
+              ? `${highlightVideos?.[0]?.player_name} Highlight Videos`
+              : `Highlight Videos`}
+          </h1>
 
-      <div id="video-highlight-thumbnails" className="thumbnails">
-        {highlightVideos?.[0]?.highlight_videos?.map((video, index) => {
-          return <YoutubeVideoThumbnail video={video} index={index} />;
-        })}
+          {videoCountToDisplay()}
+        </div>
+        <div id="video-highlight-thumbnails" className="thumbnails">
+          {highlightVideos?.[0]?.highlight_videos?.map((video, index) => {
+            return <YoutubeVideoThumbnail video={video} index={index} />;
+          })}
+        </div>
       </div>
+      <div id="extra-space"></div>
     </div>
   );
 }
