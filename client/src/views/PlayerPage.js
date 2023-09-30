@@ -41,8 +41,9 @@ function PlayerPage() {
     fetchPlayerStats();
 
     const fetchPlayerHighlights = async () => {
+      const videosToFetch = 6;
       const response = await fetch(
-        `/api/${sportToQuery}/player/${playerID}/highlights`
+        `/api/${sportToQuery}/player/${playerID}/highlights?number=${videosToFetch}`
       );
       const data = await response.json();
       console.log(data);

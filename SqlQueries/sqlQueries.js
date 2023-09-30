@@ -788,23 +788,43 @@ module.exports = {
     team = '',
     opponent = '',
     division = '',
-    venue = ''
+    venue = '',
+    number = 0
   ) => {
     try {
       logger.log(sport, playerID);
-      const seasonStatement = season
-        ? `AND video->>'season' = '${season}'`
-        : '';
-      const teamStatement = team ? `AND video->>'player_team' = '${team}'` : '';
+      const seasonStatement = season ? `video->>'season' = '${season}'` : '';
+      const teamStatement = team ? `video->>'player_team' = '${team}'` : '';
       const opponentStatement = opponent
-        ? `AND video->>'opponent_long' = '${opponent}'`
+        ? `video->>'opponent_long' = '${opponent}'`
         : '';
       const divisionStatement = division
-        ? `AND video->>'division' = '${division}'`
+        ? `video->>'division' = '${division}'`
         : '';
-      const venueStatement = venue ? `AND video->>'venue' = '${venue}'` : '';
-      const additionalFilters = `${seasonStatement} ${teamStatement} ${opponentStatement} ${divisionStatement} ${venueStatement}`;
-      logger.log(additionalFilters);
+      const venueStatement = venue ? `video->>'venue' = '${venue}'` : '';
+
+      const limit = number ? `LIMIT ${number}` : ``;
+      logger.log(limit);
+
+      const filters = [
+        season ? seasonStatement : '',
+        team ? teamStatement : '',
+        opponent ? opponentStatement : '',
+        division ? divisionStatement : '',
+        venue ? venueStatement : '',
+      ];
+
+      const filteredArray = [];
+      filters.forEach((filter) => {
+        if (filter && !filteredArray.length) {
+          filteredArray.push(`WHERE ${filter}`);
+        } else if (filter && filteredArray.length) {
+          filteredArray.push(`AND ${filter}`);
+        }
+      });
+      logger.log(filteredArray);
+      const filtersApplied = filteredArray.join(' ');
+
       const response = await pool.query(
         `
         SELECT
@@ -823,18 +843,17 @@ module.exports = {
           jsonb_array_elements(highlight_videos) AS video
         FROM
           players.player_videos
+          WHERE 
+          player_profile_id_fk = '${playerID}'
+          AND sport ILIKE '${sport}'
+          ${limit}
       ) AS subquery
-      WHERE 
-      player_profile_id_fk = '${playerID}'
-      AND sport ILIKE '${sport}'
-      ${additionalFilters.trim()}
-      
-    
+      ${filtersApplied.trim()}
       GROUP BY
         id,
         sport,
         player_profile_id_fk,
-        player_name;
+        player_name
         `
       );
       await logger.log(response);

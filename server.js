@@ -271,7 +271,8 @@ app.get('/api/:sport/player/:playerID/images', async (req, res) => {
 // Gets player highlight videos
 app.get('/api/:sport/player/:playerID/highlights', async (req, res) => {
   const { sport, playerID } = req.params;
-  const { season, team, opponent, division, venue } = req.query;
+  const { season, team, opponent, division, venue, number } = req.query;
+  logger.log(number);
   const playerHighlights = await sqlQueries.getPlayerHighlightVideos2(
     sport,
     playerID,
@@ -279,7 +280,8 @@ app.get('/api/:sport/player/:playerID/highlights', async (req, res) => {
     team,
     opponent,
     division,
-    venue
+    venue,
+    number
   );
   logger.log(playerHighlights);
   return res.json(playerHighlights);

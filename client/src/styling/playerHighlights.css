@@ -53,19 +53,36 @@
   }
 
   & #video-filters {
-    display: flex;
+    /* display: flex; */
+    display: none;
     justify-content: space-evenly;
-    width: 60vw;
+    width: 55vw;
     height: fit-content;
     margin-left: 20vw;
+    margin-bottom: -3vh;
 
     & .filter-dropdown {
       position: relative;
       top: 5vh;
       text-align: center;
-      background-color: white;
-      color: red;
+      background-color: lightgray;
+      font-weight: 500;
+      font-style: italic;
+      color: black;
+      width: 8.5vw;
+      height: 2.5vh;
     }
+  }
+
+  & svg {
+    position: relative;
+    top: 5.5vh;
+    left: 75vw;
+    height: 2.5vh;
+    width: 5vw;
+    color: red;
+    z-index: 100;
+    cursor: pointer;
   }
 
   & .background-img-sides {

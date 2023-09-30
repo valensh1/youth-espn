@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import YoutubeVideo from '../components/YoutubeVideo';
 import YoutubeVideoThumbnail from '../components/YoutubeVideoThumbnail';
+import { BiFilterAlt } from 'react-icons/bi';
 
 function PlayerHighlightVideos() {
   const sportToQuery = window.location.pathname.split('/')[1];
@@ -35,13 +36,16 @@ function PlayerHighlightVideos() {
     division: '',
     venue: '',
   });
+  const [filtersDisplayed, setFiltersDisplayed] = useState(false);
+  const [paginationNumber, setPaginationNumber] = useState(10);
 
   //?-----------------------------------------------------------------USE EFFECT HOOKS ------------------------------------------------------------------------
   useEffect(() => {
     window.scrollTo(0, 0); // Ensure page loads with user at top of page
     const fetchPageData = async () => {
+      console.log(paginationNumber);
       const response = await fetch(
-        `/api/${sportToQuery}/player/${playerID}/highlights`
+        `/api/${sportToQuery}/player/${playerID}/highlights?number=${paginationNumber}`
       );
       const data = await response.json();
       console.log(data);
@@ -125,6 +129,8 @@ function PlayerHighlightVideos() {
     const filterCleared = selection === filter ? true : false;
     if (!filterCleared) {
       setSelectedFilters({ ...selectedFilters, [filter]: selection });
+    } else if (filterCleared) {
+      setSelectedFilters({ ...selectedFilters, [filter]: '' });
     } else {
       setSelectedFilters({
         season: '',
@@ -134,6 +140,15 @@ function PlayerHighlightVideos() {
         venue: '',
       });
     }
+  };
+
+  // Show Filters when filter icon is clicked
+  const showFilters = () => {
+    setFiltersDisplayed(!filtersDisplayed);
+    const filters = document.getElementById('video-filters');
+    filtersDisplayed
+      ? (filters.style.display = 'none')
+      : (filters.style.display = 'flex');
   };
 
   const fetchVideoStats = async (videoID) => {
@@ -292,99 +307,102 @@ function PlayerHighlightVideos() {
   return (
     <div id="player-highlights-page-container" onClick={videoControls}>
       <Navbar />
-      <div className="filters video-filters" id="video-filters">
-        <select
-          name="season"
-          id="seasons-filter"
-          className="filter-dropdown"
-          value={selectedFilters.season}
-          onChange={filterSelections}
-        >
-          <option value="season">Filter By Season</option>;
-          {filters?.filters?.seasonAndTeamFilter?.map((filter) => {
-            return (
-              <option
-                value={filter.season}
-                key={filter.season}
-                className="dropdown-options"
-              >
-                {filter.season}
-              </option>
-            );
-          })}
-        </select>
+      <div id="filters-container">
+        <div className="filters video-filters" id="video-filters">
+          <select
+            name="season"
+            id="seasons-filter"
+            className="filter-dropdown"
+            value={selectedFilters.season}
+            onChange={filterSelections}
+          >
+            <option value="season">Filter By Season</option>;
+            {filters?.filters?.seasonAndTeamFilter?.map((filter) => {
+              return (
+                <option
+                  value={filter.season}
+                  key={filter.season}
+                  className="dropdown-options"
+                >
+                  {filter.season}
+                </option>
+              );
+            })}
+          </select>
 
-        <select
-          name="team"
-          id="team-filter"
-          className="filter-dropdown"
-          onChange={filterSelections}
-        >
-          <option value="team" selected>
-            Filter By Teams
-          </option>
-          ;
-          {filters?.filters?.seasonAndTeamFilter?.map((filter) => {
-            return (
-              <option
-                value={filter.actual_team_name}
-                key={filter.season}
-                className="dropdown-options"
-              >
-                {filter.actual_team_name}
-              </option>
-            );
-          })}
-        </select>
+          <select
+            name="team"
+            id="team-filter"
+            className="filter-dropdown"
+            onChange={filterSelections}
+          >
+            <option value="team" selected>
+              Filter By Teams
+            </option>
+            ;
+            {filters?.filters?.seasonAndTeamFilter?.map((filter) => {
+              return (
+                <option
+                  value={filter.actual_team_name}
+                  key={filter.season}
+                  className="dropdown-options"
+                >
+                  {filter.actual_team_name}
+                </option>
+              );
+            })}
+          </select>
 
-        <select
-          name="opponent"
-          id="opponent-filter"
-          className="filter-dropdown"
-          onChange={filterSelections}
-        >
-          <option value="opponent" selected>
-            Filter By Opponent
-          </option>
-          ;
-          {filters?.filters?.opponentFilter?.map((filter) => {
-            return (
-              <option
-                value={filter.opponent}
-                key={filter.opponent}
-                className="dropdown-options"
-              >
-                {filter.opponent}
-              </option>
-            );
-          })}
-        </select>
+          <select
+            name="opponent"
+            id="opponent-filter"
+            className="filter-dropdown"
+            onChange={filterSelections}
+          >
+            <option value="opponent" selected>
+              Filter By Opponent
+            </option>
+            ;
+            {filters?.filters?.opponentFilter?.map((filter) => {
+              return (
+                <option
+                  value={filter.opponent}
+                  key={filter.opponent}
+                  className="dropdown-options"
+                >
+                  {filter.opponent}
+                </option>
+              );
+            })}
+          </select>
 
-        {removeDivisionDuplicates(filters)}
+          {removeDivisionDuplicates(filters)}
 
-        <select
-          name="venue"
-          id="venue-filter"
-          className="filter-dropdown"
-          onChange={filterSelections}
-        >
-          <option value="venue" selected>
-            Filter By Venue
-          </option>
-          ;
-          {filters?.filters?.venueFilter?.map((filter) => {
-            return (
-              <option
-                value={filter.venue}
-                key={filter.venue}
-                className="dropdown-options"
-              >
-                {filter.venue}
-              </option>
-            );
-          })}
-        </select>
+          <select
+            name="venue"
+            id="venue-filter"
+            className="filter-dropdown"
+            onChange={filterSelections}
+          >
+            <option value="venue" selected>
+              Filter By Venue
+            </option>
+            ;
+            {filters?.filters?.venueFilter?.map((filter) => {
+              return (
+                <option
+                  value={filter.venue}
+                  key={filter.venue}
+                  className="dropdown-options"
+                >
+                  {filter.venue}
+                </option>
+              );
+            })}
+          </select>
+        </div>
       </div>
+      <BiFilterAlt onClick={showFilters} />
 
       <h1 id="no-search-results" style={{ display: 'block' }}>
         {highlightVideos.length ? '' : 'No videos met your search criteria'}
