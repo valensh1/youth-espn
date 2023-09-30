@@ -52,31 +52,47 @@
     left: 25vw;
   }
 
-  & #video-filters {
-    /* display: flex; */
-    display: none;
-    justify-content: space-evenly;
+  & #filters-container {
     width: 55vw;
-    height: fit-content;
     margin-left: 20vw;
-    margin-bottom: -3vh;
+    display: flex;
+    align-items: center;
 
-    & .filter-dropdown {
-      position: relative;
-      top: 5vh;
-      text-align: center;
-      background-color: lightgray;
-      font-weight: 500;
-      font-style: italic;
-      color: black;
-      width: 8.5vw;
+    & #video-filters {
+      visibility: hidden;
+      display: flex;
+      justify-content: space-evenly;
+      width: 55vw;
+      height: fit-content;
+      margin-bottom: -3vh;
+
+      & .filter-dropdown {
+        position: relative;
+        top: 5vh;
+        text-align: center;
+        background-color: lightgray;
+        font-weight: 500;
+        font-style: italic;
+        color: black;
+        width: 7vw;
+        height: 2.5vh;
+      }
+    }
+
+    & #clear {
+      background-color: red;
+      font-weight: 600;
+      margin-bottom: -13vh;
+      width: 7vw;
       height: 2.5vh;
+      cursor: pointer;
+      visibility: hidden;
     }
   }
 
   & svg {
     position: relative;
-    top: 5.5vh;
+    top: 5.25vh;
     left: 75vw;
     height: 2.5vh;
     width: 5vw;

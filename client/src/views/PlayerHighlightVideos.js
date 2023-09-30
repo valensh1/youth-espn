@@ -142,13 +142,32 @@ function PlayerHighlightVideos() {
     }
   };
 
-  // Show Filters when filter icon is clicked
+  // Show Filters when filter icon is clicked and remove when filter icon is clicked again
   const showFilters = () => {
     setFiltersDisplayed(!filtersDisplayed);
     const filters = document.getElementById('video-filters');
-    filtersDisplayed
-      ? (filters.style.display = 'none')
-      : (filters.style.display = 'flex');
+    const clearButton = document.getElementById('clear');
+    if (filtersDisplayed) {
+      filters.style.visibility = 'hidden';
+      clearButton.style.visibility = 'hidden';
+    } else {
+      filters.style.visibility = 'visible';
+      clearButton.style.visibility = 'visible';
+    }
+  };
+
+  const clearFilters = () => {
+    const filterDropdowns = document.querySelectorAll('.filter-dropdown');
+    filterDropdowns.forEach((filter) => {
+      filter.selectedIndex = 0;
+    });
+    setSelectedFilters({
+      season: '',
+      team: '',
+      opponent: '',
+      division: '',
+      venue: '',
+    });
   };
 
   const fetchVideoStats = async (videoID) => {
@@ -401,6 +420,9 @@ function PlayerHighlightVideos() {
             })}
           </select>
         </div>
+        <button id="clear" className="button" onClick={clearFilters}>
+          Clear Filters
+        </button>
       </div>
       <BiFilterAlt onClick={showFilters} />
 
