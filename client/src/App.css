@@ -8,6 +8,7 @@
 @import './styling/standings.css';
 @import './styling/playerPage.css';
 @import './styling/playerHighlights.css';
+/* @import 'bootstrap/dist/css/bootstrap.min.css'; */
 
 *::before,
 *::after {

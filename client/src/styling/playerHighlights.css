@@ -80,7 +80,9 @@
     }
 
     & #clear {
-      background-color: red;
+      background-color: #3b71ca;
+      border: none;
+      color: white;
       font-weight: 600;
       margin-bottom: -13vh;
       width: 7vw;
@@ -96,9 +98,19 @@
     left: 75vw;
     height: 2.5vh;
     width: 5vw;
-    color: red;
+    color: #3b71ca;
     z-index: 100;
     cursor: pointer;
+  }
+
+  #dropdown-basic-button {
+    background-color: #3b71ca;
+    border: none;
+    position: relative;
+    left: 81vw;
+    top: 3.1vh;
+    font-size: 0.5vw;
+    font-weight: 600;
   }
 
   & .background-img-sides {

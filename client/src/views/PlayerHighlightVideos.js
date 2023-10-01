@@ -3,6 +3,8 @@ import Navbar from '../components/Navbar';
 import YoutubeVideo from '../components/YoutubeVideo';
 import YoutubeVideoThumbnail from '../components/YoutubeVideoThumbnail';
 import { BiFilterAlt } from 'react-icons/bi';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 
 function PlayerHighlightVideos() {
   const sportToQuery = window.location.pathname.split('/')[1];
@@ -17,9 +19,16 @@ function PlayerHighlightVideos() {
     height: viewportHeight * 0.7,
     width: viewportWidth * 0.7,
     playerVars: {
-      // https://developers.google.com/youtube/player_parameters
       autoplay: 1,
     },
+  };
+
+  const selectedFiltersClearedState = {
+    season: '',
+    team: '',
+    opponent: '',
+    division: '',
+    venue: '',
   };
 
   //?-----------------------------------------------------------------USE STATE HOOKS ------------------------------------------------------------------------
@@ -29,26 +38,31 @@ function PlayerHighlightVideos() {
   const [videoModalOpen, setVideoModalOpen] = useState(false);
   const [videoToPlay, setVideoToPlay] = useState('');
   const [filters, setFilters] = useState({});
-  const [selectedFilters, setSelectedFilters] = useState({
-    season: '',
-    team: '',
-    opponent: '',
-    division: '',
-    venue: '',
-  });
+  const [selectedFilters, setSelectedFilters] = useState(
+    selectedFiltersClearedState
+  );
   const [filtersDisplayed, setFiltersDisplayed] = useState(false);
-  const [paginationNumber, setPaginationNumber] = useState(10);
+  const [paginationNumber, setPaginationNumber] = useState('10 per page');
 
   //?-----------------------------------------------------------------USE EFFECT HOOKS ------------------------------------------------------------------------
   useEffect(() => {
     window.scrollTo(0, 0); // Ensure page loads with user at top of page
     const fetchPageData = async () => {
-      console.log(paginationNumber);
-      const response = await fetch(
-        `/api/${sportToQuery}/player/${playerID}/highlights?number=${paginationNumber}`
+      let pagination = 0;
+      if (paginationNumber === 'View All') {
+        pagination = 0;
+      } else {
+        pagination = parseInt(paginationNumber);
+      }
+
+      const data = await apiHighlightVideoCall(
+        selectedFilters.season,
+        selectedFilters.team,
+        selectedFilters.opponent,
+        selectedFilters.division,
+        selectedFilters.venue,
+        pagination
       );
-      const data = await response.json();
-      console.log(data);
 
       const imageResponse = await fetch(
         `/api/${sportToQuery}/player/${playerID}/images`
@@ -58,18 +72,7 @@ function PlayerHighlightVideos() {
       console.log(playerImages);
       console.log(playerImages?.[0]?.images?.action_images?.[0]);
 
-      // Loops through the data retrieved directly above and for each video it gets the video stats such as view count, likes, etc using the YouTube API and combines that with the data received directly above and sets the playerHighlights state
-      const videoArray = await Promise.all(
-        data[0]?.highlight_videos.map(async (video) => {
-          const videoID = extractVideoID(video.url);
-          const videoData = await fetchVideoStats(videoID);
-          const stats = videoData.stats;
-          const videoThumbnail = videoData.thumbnails;
-          return { ...video, stats, videoThumbnail, videoID };
-        })
-      );
-      data[0].highlight_videos = videoArray;
-      setHighlightVideos(data);
+      await getVideoStats(data);
       filterDropDownMenus(playerID);
     };
     fetchPageData();
@@ -84,31 +87,53 @@ function PlayerHighlightVideos() {
 
   const fetchPlayerHighlightVideos = async () => {
     try {
-      const response = await fetch(
-        `/api/${sportToQuery}/player/${playerID}/highlights?season=${selectedFilters.season}&team=${selectedFilters.team}&opponent=${selectedFilters.opponent}&division=${selectedFilters.division}&venue=${selectedFilters.venue}`
+      const data = await apiHighlightVideoCall(
+        selectedFilters.season,
+        selectedFilters.team,
+        selectedFilters.opponent,
+        selectedFilters.division,
+        selectedFilters.venue,
+        10
       );
-      console.log(
-        `/api/${sportToQuery}/player/${playerID}/highlights?season=${selectedFilters.season}&team=${selectedFilters.team}&opponent=${selectedFilters.opponent}&division=${selectedFilters.division}&venue=${selectedFilters.venue}`
-      );
-      const data = await response.json();
-      console.log(data);
 
-      // Loops through the data retrieved directly above and for each video it gets the video stats such as view count, likes, etc using the YouTube API and combines that with the data received directly above and sets the playerHighlights state
-      const videoArray = await Promise.all(
-        data[0]?.highlight_videos.map(async (video) => {
-          const videoID = extractVideoID(video.url);
-          const videoData = await fetchVideoStats(videoID);
-          const stats = videoData.stats;
-          const videoThumbnail = videoData.thumbnails;
-          return { ...video, stats, videoThumbnail, videoID };
-        })
-      );
-      data[0].highlight_videos = videoArray;
-      setHighlightVideos(data);
+      await getVideoStats(data);
     } catch (error) {
       console.error(error);
       setHighlightVideos([]);
     }
+  };
+
+  // Makes call to endpoint to retrieve player highlight videos from database
+  const apiHighlightVideoCall = async (
+    season = '',
+    team = '',
+    opponent = '',
+    division = '',
+    venue = '',
+    pagination = 10
+  ) => {
+    const response = await fetch(
+      `/api/${sportToQuery}/player/${playerID}/highlights?season=${season}&team=${team}&opponent=${opponent}&division=${division}&venue=${venue}&number=${pagination}`
+    );
+
+    const data = await response.json();
+    console.log(data);
+    return data;
+  };
+
+  // Loops through the data retrieved directly above and for each video it gets the video stats such as view count, likes, etc using the YouTube API and combines that with the data received directly above and sets the playerHighlights state
+  const getVideoStats = async (data) => {
+    const videoArray = await Promise.all(
+      data[0]?.highlight_videos.map(async (video) => {
+        const videoID = extractVideoID(video.url);
+        const videoData = await fetchVideoStats(videoID);
+        const stats = videoData.stats;
+        const videoThumbnail = videoData.thumbnails;
+        return { ...video, stats, videoThumbnail, videoID };
+      })
+    );
+    data[0].highlight_videos = videoArray;
+    setHighlightVideos(data);
   };
 
   // Retrieves data for dropdown filters based upon player seasons played, teams they have played on, opponents played against, etc. Purpose is so the items in dropdown are relevant to that player and not showing a team they never played for or a season they never played in
@@ -132,13 +157,7 @@ function PlayerHighlightVideos() {
     } else if (filterCleared) {
       setSelectedFilters({ ...selectedFilters, [filter]: '' });
     } else {
-      setSelectedFilters({
-        season: '',
-        team: '',
-        opponent: '',
-        division: '',
-        venue: '',
-      });
+      setSelectedFilters(selectedFiltersClearedState);
     }
   };
 
@@ -161,13 +180,13 @@ function PlayerHighlightVideos() {
     filterDropdowns.forEach((filter) => {
       filter.selectedIndex = 0;
     });
-    setSelectedFilters({
-      season: '',
-      team: '',
-      opponent: '',
-      division: '',
-      venue: '',
-    });
+    setSelectedFilters(selectedFiltersClearedState);
+  };
+
+  const paginationSelection = (event) => {
+    console.log('Clicked on pagination');
+    console.log(event.target);
+    setPaginationNumber(Number(event.target.value));
   };
 
   const fetchVideoStats = async (videoID) => {
@@ -212,10 +231,6 @@ function PlayerHighlightVideos() {
     console.log(event.target.tagName);
     console.log(event.target.nodeName);
 
-    if (event.target.parentNode.id === 'video-container') {
-      changeOpacity('hide');
-    }
-
     const coordinates = [event.clientX, event.clientY];
     console.log(coordinates);
     if (event.target.nodeName !== 'IMG' && videoModalOpen === false) {
@@ -231,6 +246,7 @@ function PlayerHighlightVideos() {
       setVideoModalOpen(!videoModalOpen);
       changeOpacity('show');
     } else {
+      changeOpacity('hide');
       toggleVideoPlayer();
       setVideoModalOpen(!videoModalOpen);
       const videoURL = event.target.getAttribute('video-id');
@@ -251,15 +267,21 @@ function PlayerHighlightVideos() {
 
   const changeOpacity = (status) => {
     const container = document.getElementById('video-highlight-thumbnails');
+    const filters = document.getElementById('filters-container');
+    const filterIcon = document.getElementById('filter-icon');
     const backgroundSides = document.querySelectorAll('.background-img-sides');
     if (status === 'hide') {
       container.style.opacity = 0;
+      filters.style.opacity = 0;
+      filterIcon.style.opacity = 0;
 
       backgroundSides.forEach((el) => {
         el.style.opacity = 0;
       });
     } else {
       container.style.opacity = 1;
+      filters.style.opacity = 1;
+      filterIcon.style.opacity = 1;
 
       backgroundSides.forEach((el) => {
         el.style.opacity = 1;
@@ -424,7 +446,23 @@ function PlayerHighlightVideos() {
           Clear Filters
         </button>
       </div>
-      <BiFilterAlt onClick={showFilters} />
+      <BiFilterAlt id="filter-icon" onClick={showFilters} />
+
+      <DropdownButton
+        id="dropdown-basic-button"
+        title={paginationNumber} // This drives what displays in dropdown
+        onSelect={paginationSelection}
+      >
+        <Dropdown.Item href="#/action-1" value="10">
+          10 per page
+        </Dropdown.Item>
+        <Dropdown.Item href="#/action-2" value="25">
+          25 per page
+        </Dropdown.Item>
+        <Dropdown.Item href="#/action-3" value="view all">
+          View All
+        </Dropdown.Item>
+      </DropdownButton>
 
       <h1 id="no-search-results" style={{ display: 'block' }}>
         {highlightVideos.length ? '' : 'No videos met your search criteria'}
