@@ -764,24 +764,7 @@ module.exports = {
     }
   },
 
-  getPlayerHighlightVideos: async (sport, playerID) => {
-    try {
-      logger.log(sport, playerID);
-      const response = await pool.query(
-        `
-        SELECT *
-        FROM players.player_videos pv
-        WHERE player_profile_id_fk = '${playerID}'
-        AND sport ILIKE '${sport}'
-        `
-      );
-      return response.rows;
-    } catch (error) {
-      logger.log(error);
-    }
-  },
-
-  getPlayerHighlightVideos2: async (
+  getPlayerHighlightVideos: async (
     sport,
     playerID,
     season = '',
