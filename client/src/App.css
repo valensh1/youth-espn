@@ -1,3 +1,6 @@
+/* DELETE THIS */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
 @import './styling/home.css';
 @import './styling/gameCard.css';
 @import './styling/hockey/hockeyHome.css';
@@ -8,7 +11,6 @@
 @import './styling/standings.css';
 @import './styling/playerPage.css';
 @import './styling/playerHighlights.css';
-/* @import 'bootstrap/dist/css/bootstrap.min.css'; */
 
 *::before,
 *::after {
@@ -30,9 +32,9 @@
 html {
   box-sizing: border-box;
   font-size: 62.5%; /* Everything is based upon 10px with this. 10px / 16px = .625. With this 1rem will = 10px. */
-  background-color: var(--color-lightGray);
 }
 
 body {
   position: relative;
+  background-color: var(--color-lightGray);
 }

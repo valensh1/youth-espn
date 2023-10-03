@@ -8,9 +8,3 @@
   height: fit-content;
   background-color: var(--color-lightGray);
 }
-
-.home-headlines-container {
-  position: relative;
-  left: 70vw;
-  width: fit-content;
-}

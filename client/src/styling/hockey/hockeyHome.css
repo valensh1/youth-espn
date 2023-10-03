@@ -1,26 +1,37 @@
 @import '../headlineGame.css';
 
-.hockey-home-container .game-card-container {
-  position: absolute;
-  left: 5vw;
-}
-
-.hockey-home-topHeadlines-container {
+.hockey-home-container {
   position: relative;
-  left: 70vw;
-  width: fit-content;
-  height: 35vh;
-  background-color: var(--color-whiteBackground);
-  border-radius: 8px;
-  margin-left: 0.5vw;
-  box-shadow: 5px 5px 15px 2px var(--color-grayText);
-}
+  width: 100vw;
 
-.hockey-home-headlineGame-container {
-  width: fit-content;
-  position: relative;
-  bottom: 41vh;
-  left: 29vw;
-  margin-top: 1vh;
-  z-index: -1;
+  & .game-card-container {
+    position: absolute;
+    left: 5vw;
+  }
+
+  & .headline-game-container {
+    position: absolute;
+    left: 28vw;
+    height: fit-content;
+    width: fit-content;
+
+    & .hockey-home-headlineGame-container {
+      width: fit-content;
+      position: relative;
+      left: -0.33vw;
+      margin-top: 1vh;
+    }
+  }
+
+  & .hockey-home-topHeadlines-container {
+    position: absolute;
+    left: 68.5vw;
+    top: 7vh;
+    width: fit-content;
+    background-color: var(--color-whiteBackground);
+    border-radius: 8px;
+    margin-left: 0.5vw;
+    box-shadow: 5px 5px 15px 2px var(--color-grayText);
+    line-height: 1.5vh;
+  }
 }

@@ -1,34 +1,37 @@
-.topHeadlines-container {
-  width: 23vw;
-  height: 35vh;
-  background-color: var(--color-whiteBackground);
-  border-radius: 8px;
-  margin-left: 0.5vw;
-}
+.hockey-home-topHeadlines-container {
+  & .topHeadlines-container {
+    width: 23vw;
+    height: fit-content;
+    background-color: var(--color-whiteBackground);
+    border-radius: 8px;
+    margin-left: 0.5vw;
+    margin-bottom: 2vh;
+  }
 
-.topHeadlines-container > h1 {
-  padding-top: 1vh;
-  padding-left: 1vw;
-  font-size: 0.8vw;
-  font-weight: 400;
-}
+  & .topHeadlines-container > h1 {
+    padding-top: 1vh;
+    padding-left: 1vw;
+    font-size: 0.8vw;
+    font-weight: 400;
+  }
 
-.topHeadlines {
-  padding-left: 1vw;
-  margin-top: 0.5vh;
-}
+  & .topHeadlines {
+    padding-left: 1vw;
+    margin-top: 0.525vh;
+  }
 
-.topHeadlines > li > a {
-  font-size: 0.8vw;
-  text-decoration: none;
-  color: var(--color-greyText);
-  font-weight: 300;
-}
+  & .topHeadlines > li > a {
+    font-size: 0.65vw;
+    text-decoration: none;
+    color: var(--color-greyText);
+    font-weight: 300;
+  }
 
-.topHeadlines > li {
-  list-style: disc;
-}
+  & .topHeadlines > li {
+    list-style: disc;
+  }
 
-li::marker {
-  font-size: 1vw;
+  & li::marker {
+    font-size: 0.8vw;
+  }
 }

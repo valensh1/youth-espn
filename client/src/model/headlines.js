@@ -31,6 +31,22 @@ const headlines = [
     url: 'https://www.espn.com/college-sports/story/_/id/35566054/cal-fires-swim-coach-teri-mckeever-investigating-bullying-claims',
     title: 'Cal fires swim coach McKeever after investigation',
   },
+  {
+    url: 'https://www.espn.com/nba/story/_/id/38551383/lebron-james-says-anthony-davis-face-lakers-franchise',
+    title: 'Franchise player: LeBron says AD face of Lakers',
+  },
+  {
+    url: 'https://www.espn.com/nba/story/_/id/38549589/kawhi-leonard-new-rest-rules-no-league-policy-helping-play-more',
+    title: 'Kawhi Leonard on new rest rules',
+  },
+  {
+    url: 'https://www.espn.com/nba/story/_/id/38551383/lebron-james-says-anthony-davis-face-lakers-franchise',
+    title: 'Franchise player: LeBron says AD face of Lakers',
+  },
+  {
+    url: 'https://www.espn.com/nba/story/_/id/38551383/lebron-james-says-anthony-davis-face-lakers-franchise',
+    title: 'Franchise player: LeBron says AD face of Lakers',
+  },
 ];
 
 export { headlines };
