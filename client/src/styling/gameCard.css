@@ -3,9 +3,6 @@
   width: 26.25vw;
   height: 68vh;
   border-radius: 10px;
-  position: absolute;
-  top: 7vh;
-  left: 1vw;
 }
 
 .game-card-content {

@@ -18,7 +18,6 @@ function VideoCard() {
       {homePageVideos.map((video) => {
         return (
           <div className="outer-container" key={video.title}>
-            <div className="video-card-space"></div>
             <div className="video-card">
               <div className="video-content">{video.url}</div>
               <h1>{video.title}</h1>

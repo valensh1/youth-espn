@@ -7,4 +7,67 @@
   width: 100vw;
   height: fit-content;
   background-color: var(--color-lightGray);
+
+  & .home-content-container {
+    display: flex;
+    justify-content: center;
+    width: 80vw;
+    margin-left: 10vw;
+
+    & .home-gameCard-container {
+      margin-top: 1vh;
+      margin-right: 1vw;
+    }
+
+    & .video-container {
+      margin-top: 0.5vh;
+    }
+
+    & .home-headlines-container {
+      background-color: var(--color-whiteBackground);
+      border-radius: 8px;
+      margin-left: 1vw;
+      box-shadow: 5px 5px 15px 2px var(--color-grayText);
+      line-height: 1.5vh;
+      height: fit-content;
+      width: fit-content;
+      margin-top: 1vh;
+
+      & .topHeadlines-container {
+        background-color: var(--color-whiteBackground);
+        border-radius: 8px;
+        margin-right: 0.6vw;
+        margin-left: 0.5vw;
+        margin-bottom: 2vh;
+        width: 18vw;
+      }
+
+      & .topHeadlines-container > h1 {
+        padding-top: 1vh;
+        padding-left: 1vw;
+        font-size: 0.8vw;
+        font-weight: 400;
+      }
+
+      & .topHeadlines {
+        padding-left: 1vw;
+        margin-top: 0.525vh;
+      }
+
+      & .topHeadlines > li > a {
+        font-size: 0.65vw;
+        text-decoration: none;
+        color: var(--color-greyText);
+        font-weight: 300;
+      }
+
+      & .topHeadlines > li {
+        list-style: disc;
+      }
+
+      & li::marker {
+        font-size: 0.8vw;
+      }
+    }
+  }
 }

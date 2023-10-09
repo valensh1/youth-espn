@@ -8,16 +8,18 @@ function hockeyHome() {
   return (
     <div className="hockey-home-container">
       <Navbar />
-      <GameCard nameforClass={'hockey-home-gameCard-container'} />
-      <div className="headline-game-container">
-        <HeadlineGame nameForClass={'hockey-home-headlineGame-container'} />
-        <HeadlineGame nameForClass={'hockey-home-headlineGame-container'} />
-        <HeadlineGame nameForClass={'hockey-home-headlineGame-container'} />
-        <HeadlineGame nameForClass={'hockey-home-headlineGame-container'} />
-        <HeadlineGame nameForClass={'hockey-home-headlineGame-container'} />
-      </div>
+      <div className="hockey-home-content-container">
+        <GameCard nameForClass={'hockey-home-gameCard-container'} />
+        <div className="headline-game-container">
+          <HeadlineGame nameForClass={'hockey-home-headlineGame-container'} />
+          <HeadlineGame nameForClass={'hockey-home-headlineGame-container'} />
+          <HeadlineGame nameForClass={'hockey-home-headlineGame-container'} />
+          <HeadlineGame nameForClass={'hockey-home-headlineGame-container'} />
+          <HeadlineGame nameForClass={'hockey-home-headlineGame-container'} />
+        </div>
 
-      <TopHeadlines nameforClass={'hockey-home-topHeadlines-container'} />
+        <TopHeadlines nameForClass={'hockey-home-topHeadlines-container'} />
+      </div>
     </div>
   );
 }

@@ -1,11 +1,10 @@
 .news-card-container {
   width: 35vw;
   height: 46vh;
-  position: relative;
-  left: 5vw;
   background-color: var(--color-whiteBackground);
   border-radius: 15px;
   box-shadow: 5px 5px 15px 2px var(--color-grayText);
+  margin-bottom: 1vh;
   /* border: 3px solid green; */
 }
 

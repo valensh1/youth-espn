@@ -1,30 +1,31 @@
 .video-container {
-  position: relative;
-  top: -36vh;
-  left: 28.25vw;
   width: fit-content;
-}
 
-.video-card-space {
-  height: 0.5vh;
-  background-color: var(--color-lightGray);
-}
+  & h1 {
+    font-size: 0.75vw;
+  }
 
-.video-card {
-  width: 675px;
-  padding: 3vh 1vw 3vh 1vw;
-  border: 1px solid var(--color-lightGray);
-  border-radius: 25px;
-  background-color: var(--color-whiteBackground);
-}
+  & .outer-container {
+    margin-bottom: 0.5vh;
+    width: 34.25vw;
 
-.video-content {
-  border-radius: 10px;
-  overflow: hidden;
-}
+    & .video-card {
+      width: 34.25vw;
+      padding: 3vh 1vw 3vh 1vw;
+      border: 1px solid var(--color-lightGray);
+      border-radius: 25px;
+      background-color: var(--color-whiteBackground);
 
-/* Height and width of iframes elements */
-.video-content iframe {
-  width: 700px;
-  height: 350px;
+      & .video-content {
+        border-radius: 10px;
+        overflow: hidden;
+        width: 32vw;
+
+        & iframe {
+          width: 32vw;
+          height: 35vh;
+        }
+      }
+    }
+  }
 }

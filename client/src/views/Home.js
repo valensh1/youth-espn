@@ -7,9 +7,11 @@ function Home() {
   return (
     <div className="home-container">
       <Navbar />
-      <TopHeadlines nameforClass={'home-headlines-container'} />
-      <VideoCard />
-      <GameCard />
+      <div className="home-content-container">
+        <GameCard nameForClass={'home-gameCard-container'} />
+        <VideoCard />
+        <TopHeadlines nameForClass={'home-headlines-container'} />
+      </div>
     </div>
   );
 }
