@@ -75,6 +75,7 @@
 #standings-container thead {
   background-color: black;
   color: white;
+  text-align: center;
 }
 
 #standings-container table td {

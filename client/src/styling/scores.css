@@ -128,10 +128,6 @@
   text-align: center;
 }
 
-#game-time {
-  /* text-align: center; */
-}
-
 .scores-button-container {
   position: absolute;
   left: 13vw;
@@ -169,13 +165,11 @@
   font-weight: 600;
   position: relative;
   right: 4vw;
-  /* margin-left: -2vw; */
 }
 
 .scoreboard-top-players-container {
   display: flex;
   flex-direction: column;
-  /* align-items: center; */
   width: 12vw;
   position: absolute;
   top: 5.2%;
@@ -188,8 +182,6 @@
 }
 
 #scoreboard-container .player-profile-pic {
-  /* width: 2.75vw; */
-  /* height: 4vh; */
   width: 2.5vw;
   height: 5vh;
   border: 2px solid orangered;

@@ -46,7 +46,12 @@ function PlayerHighlightVideos() {
 
   //?-----------------------------------------------------------------USE EFFECT HOOKS ------------------------------------------------------------------------
   useEffect(() => {
-    window.scrollTo(0, 0); // Ensure page loads with user at top of page
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "instant",
+    });
+     // Ensure page loads with user at top of page
     const fetchPageData = async () => {
       let pagination = 0;
       if (paginationNumber === 'View All') {

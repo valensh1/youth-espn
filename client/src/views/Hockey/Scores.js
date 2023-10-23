@@ -374,10 +374,10 @@ function Scores() {
 
                   <div className="scores-button-container">
                     <Link to={'/hockey/scores/boxscore'}>
-                      <p className="scores-button">BOX SCORE</p>
+                      <span className="scores-button">BOX SCORE</span>
                     </Link>
                     <Link to={''}>
-                      <p className="scores-button">HIGHLIGHTS</p>
+                      <span className="scores-button">HIGHLIGHTS</span>
                     </Link>
                   </div>
                 </div>
