@@ -30,7 +30,12 @@ function PlayerPage() {
 
   //?----------------------------------------------------------------- USE EFFECT HOOKS ------------------------------------------------------------------------
   useEffect(() => {
-    window.scrollTo(0, 0); // Ensure page loads with user at top of page
+    // Ensure page loads with user at top of page
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'instant',
+    });
 
     const fetchPlayerStats = async () => {
       const response = await fetch(`/api/${sportToQuery}/player/${playerID}`);

@@ -49,9 +49,9 @@ function PlayerHighlightVideos() {
     window.scrollTo({
       top: 0,
       left: 0,
-      behavior: "instant",
+      behavior: 'instant',
     });
-     // Ensure page loads with user at top of page
+    // Ensure page loads with user at top of page
     const fetchPageData = async () => {
       let pagination = 0;
       if (paginationNumber === 'View All') {
@@ -188,10 +188,10 @@ function PlayerHighlightVideos() {
     setSelectedFilters(selectedFiltersClearedState);
   };
 
-  const paginationSelection = (event) => {
+  const paginationSelection = (eventKey) => {
     console.log('Clicked on pagination');
-    console.log(event.target);
-    setPaginationNumber(Number(event.target.value));
+    console.log(eventKey);
+    setPaginationNumber(Number(eventKey.target.value));
   };
 
   const fetchVideoStats = async (videoID) => {
@@ -359,10 +359,12 @@ function PlayerHighlightVideos() {
             name="season"
             id="seasons-filter"
             className="filter-dropdown"
-            value={selectedFilters.season}
             onChange={filterSelections}
           >
-            <option value="season">Filter By Season</option>;
+            <option value="season" selected>
+              Filter By Season
+            </option>
+            ;
             {filters?.filters?.seasonAndTeamFilter?.map((filter) => {
               return (
                 <option
@@ -390,7 +392,7 @@ function PlayerHighlightVideos() {
               return (
                 <option
                   value={filter.actual_team_name}
-                  key={filter.season}
+                  key={filter.actual_team_name}
                   className="dropdown-options"
                 >
                   {filter.actual_team_name}
@@ -458,13 +460,13 @@ function PlayerHighlightVideos() {
         title={paginationNumber} // This drives what displays in dropdown
         onSelect={paginationSelection}
       >
-        <Dropdown.Item href="#/action-1" value="10">
+        <Dropdown.Item href="#/action-1" eventKey="10">
           10 per page
         </Dropdown.Item>
-        <Dropdown.Item href="#/action-2" value="25">
+        <Dropdown.Item href="#/action-2" eventKey="25">
           25 per page
         </Dropdown.Item>
-        <Dropdown.Item href="#/action-3" value="view all">
+        <Dropdown.Item href="#/action-3" eventKey="view all">
           View All
         </Dropdown.Item>
       </DropdownButton>
