@@ -13,6 +13,7 @@ import HockeyStandings from './views/Hockey/Standings';
 import { globalVariables } from './model/globalVariables';
 import PlayerPage from './views/PlayerPage';
 import PlayerHighlightVideos from './views/PlayerHighlightVideos';
+import AddPlayer from './views/Hockey/AddPlayer';
 
 const router = createBrowserRouter([
   {
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
   {
     path: 'hockey/player/:playerId',
     element: <PlayerPage />,
+  },
+  {
+    path: 'hockey/player/new-player',
+    element:<AddPlayer/>
   },
   {
     path: 'hockey/player/:playerId/highlights',
