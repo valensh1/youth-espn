@@ -1,0 +1,48 @@
+#add-player {
+  width: 50vw;
+  height: 100vh;
+  margin-top: 10vh;
+  margin-left: 25vw;
+  background-color: white;
+  color: blue;
+  border: 3px solid black;
+
+  & #form-heading {
+    display: flex;
+    height: 5vh;
+    width: 49.76vw;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(85, 185, 243);
+    margin-bottom: 5vh;
+  }
+
+  /* Form label and box formatting */
+  & .form-input-box {
+    width: 15vw;
+    margin-left: 5vw;
+    margin-bottom: 4vh;
+    font-size: 0.5vw;
+  }
+
+  /* Actual input formatting */
+  & .form-inputs {
+    font-size: 0.7vw;
+    height: 4.5vh;
+    color: blue;
+  }
+
+  & #form-date-container {
+    display: flex;
+    flex-direction: column;
+    /* margin-left: 8vw; */
+  }
+
+  & #date-label {
+    font-size: 0.5vw;
+  }
+
+  & #date-input {
+    font-size: 10vw;
+  }
+}

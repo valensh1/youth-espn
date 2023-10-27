@@ -11,6 +11,7 @@
 @import './styling/standings.css';
 @import './styling/playerPage.css';
 @import './styling/playerHighlights.css';
+@import './styling/addPlayer.css';
 
 *::before,
 *::after {
