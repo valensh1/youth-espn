@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -10,9 +10,34 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Navbar from '../../components/Navbar';
 
 function AddPlayer() {
+  const [formData, setFormData] = useState({});
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setFormData({ ...formData, firstName: event.target.value });
+    console.log(formData);
+  };
+
   const submitForm = (event) => {
     event.preventDefault();
     console.log(`Submitted Form`);
+
+    const data = formData;
+
+    fetch('/api/player/new-player', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data); // Handle the response data
+      })
+      .catch((error) => {
+        console.error('Error:', error); // Handle errors
+      });
   };
 
   return (
@@ -38,6 +63,7 @@ function AddPlayer() {
                   placeholder="First Name"
                   id="first-name-input"
                   className="form-inputs"
+                  onChange={handleSubmit}
                 />
               </FloatingLabel>
             </Form.Group>
@@ -110,17 +136,23 @@ function AddPlayer() {
           </Col>
         </Row>
 
-        <Form.Group as={Col} controlId="formGridHand">
-          <FloatingLabel
-            controlId="floatingInput"
-            label="Hand"
-            className="mb-3"
-          >
-            <Form.Control placeholder="Hand" />
-          </FloatingLabel>
+        <Form.Group
+          as={Col}
+          controlId="formGridGender"
+          className="form-input-box"
+        >
+          <Form.Select aria-label="gender-selection">
+            <option>Select Hand</option>
+            <option value="1">Right</option>
+            <option value="2">Left</option>
+          </Form.Select>
         </Form.Group>
 
-        <Form.Group as={Col} controlId="formGridGender">
+        <Form.Group
+          as={Col}
+          controlId="formGridGender"
+          className="form-input-box"
+        >
           <Form.Select aria-label="gender-selection">
             <option>Select Gender</option>
             <option value="1">Male</option>
@@ -128,7 +160,11 @@ function AddPlayer() {
           </Form.Select>
         </Form.Group>
 
-        <Form.Group as={Col} controlId="formGridShareContact">
+        <Form.Group
+          as={Col}
+          controlId="formGridShareContact"
+          className="form-input-box"
+        >
           <Form.Select aria-label="gender-selection">
             <Form.Label>Share Contact</Form.Label>
             <option>Share Contact?</option>
@@ -137,12 +173,20 @@ function AddPlayer() {
           </Form.Select>
         </Form.Group>
 
-        <Form.Group as={Col} controlId="formGridEmail">
+        <Form.Group
+          as={Col}
+          controlId="formGridEmail"
+          className="form-input-box"
+        >
           <Form.Label>Email</Form.Label>
           <Form.Control type="email" placeholder="name@yahoo.com" />
         </Form.Group>
 
-        <Form.Group as={Col} controlId="formGridPhoneNumber">
+        <Form.Group
+          as={Col}
+          controlId="formGridPhoneNumber"
+          className="form-input-box"
+        >
           <FloatingLabel
             controlId="floatingInput"
             label="Phone Number"
@@ -152,7 +196,11 @@ function AddPlayer() {
           </FloatingLabel>
         </Form.Group>
 
-        <Form.Group as={Col} controlId="formGridContactNames">
+        <Form.Group
+          as={Col}
+          controlId="formGridContactNames"
+          className="form-input-box"
+        >
           <FloatingLabel
             controlId="floatingInput"
             label="Contact Names"

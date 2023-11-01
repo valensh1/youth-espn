@@ -311,6 +311,13 @@ app.get(
   }
 );
 
+app.post('/api/player/new-player', (req, res) => {
+  const data = req.body; // Access the data sent in the request body
+  // Process the data as needed
+  logger.log('Received data:', data);
+  res.json({ message: 'Data received successfully' });
+});
+
 //? DEPLOYMENT CODE FOR PRODUCTION - No Need to Modify This Code
 if (process.env.NODE_ENV === 'production') {
   // When .env file has NODE_ENV=production in it run this code below (we must put this in our .env file for when deploying)
