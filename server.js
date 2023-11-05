@@ -8,6 +8,7 @@ var cors = require('cors');
 app.use(cors());
 const url = require('url');
 const sqlQueries = require('./SqlQueries/sqlQueries');
+app.use(express.json());
 
 const port = process.env.PORT || 3000;
 logger.log(port);
@@ -311,10 +312,12 @@ app.get(
   }
 );
 
-app.post('/api/player/new-player', (req, res) => {
+app.post('/api/player/new-player', async (req, res) => {
   const data = req.body; // Access the data sent in the request body
+
   // Process the data as needed
   logger.log('Received data:', data);
+  await sqlQueries.createNewPlayer(data);
   res.json({ message: 'Data received successfully' });
 });
 

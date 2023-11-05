@@ -944,4 +944,18 @@ module.exports = {
       logger.log(error);
     }
   },
+
+  createNewPlayer: async (data) => {
+    try {
+      logger.log(data);
+      const response = await pool.query(
+        `INSERT INTO players.player_profiles (first_name, last_name, date_of_birth, hand)
+        values('${data.firstName}', '${data.lastName}', '${data.dateOfBirth}', '${data.hand}');
+        `
+      );
+      return response.rows;
+    } catch (error) {
+      logger.log(error);
+    }
+  },
 };
