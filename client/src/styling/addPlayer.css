@@ -1,48 +1,98 @@
-#add-player {
-  width: 50vw;
-  height: 100vh;
-  margin-top: 10vh;
-  margin-left: 25vw;
-  background-color: white;
-  color: blue;
-  border: 3px solid black;
+#form-container {
+  background-color: black;
 
-  & #form-heading {
-    display: flex;
-    height: 5vh;
-    width: 49.76vw;
-    justify-content: center;
-    align-items: center;
-    background-color: rgb(85, 185, 243);
+  & #new-player-form {
+    border-radius: 15px;
+    width: 50vw;
+    margin-left: 25vw;
+    background-color: white;
+
+    & #form-heading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 6vh;
+      margin-top: 4vh;
+
+      & h1 {
+        text-align: center;
+        font-size: 1.3vw;
+      }
+    }
+
+    & img {
+      height: 45vh;
+      width: 40vw;
+      margin-left: 5vw;
+    }
+
+    & #add-player {
+      height: fit-content;
+      width: 49.76vw;
+      color: blue;
+      margin-top: 2vh;
+
+      & .row {
+        width: 40vw;
+        margin-left: 5vw;
+
+        & .column {
+          width: 20vw;
+          height: 5vh;
+          /* border: 3px solid red; */
+
+          /* Form label and box formatting */
+          & .form-input-box {
+            width: 15vw;
+            /* margin-left: 5vw; */
+            margin-bottom: 4vh;
+            font-size: 0.5vw;
+          }
+
+          /* Actual input formatting */
+          & .form-inputs {
+            font-size: 0.7vw;
+            height: 4.5vh;
+            color: blue;
+          }
+
+          & .left-column {
+            margin-left: 2.5vw;
+          }
+
+          & .right-column {
+            margin-left: 2.5vw;
+          }
+        }
+      }
+
+      & #form-date-container {
+        display: flex;
+        flex-direction: column;
+      }
+
+      & #date-label {
+        font-size: 0.5vw;
+      }
+
+      & #date-input {
+        font-size: 10vw;
+      }
+    }
+  }
+
+  & .empty-row {
+    height: 10vh;
+    width: 100vw;
+    background-color: black;
+  }
+
+  & #submit-button {
+    margin-top: 3vh;
     margin-bottom: 5vh;
-  }
-
-  /* Form label and box formatting */
-  & .form-input-box {
-    width: 15vw;
-    margin-left: 5vw;
-    margin-bottom: 4vh;
-    font-size: 0.5vw;
-  }
-
-  /* Actual input formatting */
-  & .form-inputs {
+    width: 7.5vw;
+    height: 3vh;
+    margin-left: 21.5vw;
     font-size: 0.7vw;
-    height: 4.5vh;
-    color: blue;
-  }
-
-  & #form-date-container {
-    display: flex;
-    flex-direction: column;
-    /* margin-left: 8vw; */
-  }
-
-  & #date-label {
-    font-size: 0.5vw;
-  }
-
-  & #date-input {
-    font-size: 10vw;
   }
 }
