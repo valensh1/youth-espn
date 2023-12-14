@@ -154,29 +154,39 @@ function AddPlayer() {
             </Col>
           </Row>
 
-          <Form.Group
-            as={Col}
-            controlId="formGridGender"
-            className="form-input-box"
-          >
-            <Form.Select aria-label="gender-selection">
-              <option>Select Hand</option>
-              <option value="1">Right</option>
-              <option value="2">Left</option>
-            </Form.Select>
-          </Form.Group>
+          <div className="radio-buttons ">
+            <div id="radio-left">
+              <Form.Label className="radio-button-heading">Gender</Form.Label>
+              <Form.Check
+                type="radio"
+                label="Male"
+                name="formRadios"
+                id="formRadios1"
+              />
+              <Form.Check
+                type="radio"
+                label="Female"
+                name="formRadios"
+                id="formRadios2"
+              />
+            </div>
 
-          <Form.Group
-            as={Col}
-            controlId="formGridGender"
-            className="form-input-box"
-          >
-            <Form.Select aria-label="gender-selection">
-              <option>Select Gender</option>
-              <option value="1">Male</option>
-              <option value="2">Female</option>
-            </Form.Select>
-          </Form.Group>
+            <div id="radio-right">
+              <Form.Label className="radio-button-heading">Hand</Form.Label>
+              <Form.Check
+                type="radio"
+                label="Right"
+                name="formRadios"
+                id="formRadios1"
+              />
+              <Form.Check
+                type="radio"
+                label="Left"
+                name="formRadios"
+                id="formRadios2"
+              />
+            </div>
+          </div>
 
           <Form.Group
             as={Col}

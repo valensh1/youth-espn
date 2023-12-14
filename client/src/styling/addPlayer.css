@@ -39,20 +39,19 @@
         & .column {
           width: 20vw;
           height: 5vh;
-          /* border: 3px solid red; */
 
           /* Form label and box formatting */
           & .form-input-box {
             width: 15vw;
-            /* margin-left: 5vw; */
             margin-bottom: 4vh;
             font-size: 0.5vw;
+            /* border: 2px solid red; */
           }
 
           /* Actual input formatting */
           & .form-inputs {
             font-size: 0.7vw;
-            height: 4.5vh;
+            height: 4vh;
             color: blue;
           }
 
@@ -69,14 +68,42 @@
       & #form-date-container {
         display: flex;
         flex-direction: column;
+        width: 10vw;
+        margin-left: 10vw;
+        margin-top: 0.25vh;
+        margin-bottom: 1vh;
       }
 
       & #date-label {
         font-size: 0.5vw;
       }
 
-      & #date-input {
-        font-size: 10vw;
+      & .MuiInputBase-input {
+        font-size: 0.7vw; /* Adjust this value as needed */
+        color: blue;
+      }
+
+      & .radio-buttons {
+        margin-top: 2vh;
+        margin-left: 8vw;
+        margin-bottom: 2vh;
+        width: 70%;
+        display: flex;
+        font-size: 0.7vw;
+
+        & .radio-button-heading {
+          text-decoration: underline;
+        }
+
+        & #radio-left {
+          position: relative;
+          left: 12vw;
+        }
+
+        & #radio-right {
+          position: relative;
+          left: 17vw;
+        }
       }
     }
   }
