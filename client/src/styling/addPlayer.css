@@ -29,83 +29,69 @@
     & #add-player {
       height: fit-content;
       width: 49.76vw;
+      border: 4px solid orange;
       color: blue;
       margin-top: 2vh;
 
       & #player-information {
-        & .three-input-row {
-          width: 35vw;
-          margin-left: 8vw;
+        & .row {
+          margin-left: 5vw;
+          width: 40vw;
+          border: 3px solid green;
+        }
+
+        & .flex {
+          display: flex;
+          align-items: end;
+          justify-content: space-around;
         }
 
         & #city-state-zip {
           display: flex;
           justify-content: space-between;
 
-          & .three-row-input {
-            width: 7vw;
-          }
-
           & #city-input {
             width: 10vw;
           }
         }
 
-        & .row {
-          width: 40vw;
-          margin-left: 5vw;
-          margin-bottom: 1vh;
+        /* Form label and box formatting */
+        & .form-input-box {
+          width: 15vw;
+          margin-bottom: 4vh;
+          font-size: 0.4vw;
+        }
 
-          & .full-row-inputs {
-            margin-left: 2.5vw;
-            width: 35vw;
-          }
+        /* Actual input formatting */
+        & .form-inputs {
+          font-size: 0.7vw;
+          height: 4vh;
+          color: blue;
+        }
 
-          & .column {
-            width: 20vw;
-            height: 5vh;
+        & .long-input {
+          width: 35vw;
+        }
 
-            /* Form label and box formatting */
-            & .form-input-box {
-              width: 15vw;
-              margin-bottom: 4vh;
-              font-size: 0.5vw;
-              /* border: 2px solid red; */
-            }
-
-            /* Actual input formatting */
-            & .form-inputs {
-              font-size: 0.7vw;
-              height: 4vh;
-              color: blue;
-            }
-
-            & .left-column {
-              margin-left: 2.5vw;
-            }
-
-            & .right-column {
-              margin-left: 2.5vw;
-            }
-          }
+        & .short-input {
+          width: 5vw;
         }
 
         & #form-date-container {
           display: flex;
           flex-direction: column;
-          width: 10vw;
-          margin-left: 10vw;
+          /* width: 10vw;
           margin-top: 0.25vh;
-          margin-bottom: 1vh;
+          margin-bottom: 1vh; */
 
           & #date-label {
-            font-size: 0.5vw;
+            /* font-size: 0.5vw; */
           }
 
           & .MuiInputBase-input {
-            font-size: 0.7vw; /* Adjust this value as needed */
-            color: blue;
-            height: 1vh;
+            /* font-size: 0.7vw; Adjust this value as needed */
+            /* color: blue;
+            height: 1vh; */
           }
         }
 
@@ -116,9 +102,6 @@
           width: 70%;
           display: flex;
           font-size: 0.7vw;
-
-          & .radio-button-heading {
-          }
 
           & #radio-left {
             position: relative;

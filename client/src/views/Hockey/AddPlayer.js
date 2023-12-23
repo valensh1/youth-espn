@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -60,103 +58,98 @@ function AddPlayer() {
         <img src="https://i.imgur.com/CAsVwce.png" alt="" />
         <Form onSubmit={submitForm} id="add-player">
           <div id="player-information">
-            <Row className="row">
-              <Col className="column">
-                <Form.Group
-                  controlId="formGridFirstName"
-                  id="first-name-input-box"
-                  className="form-input-box left-column"
-                >
-                  <FloatingLabel
-                    controlId="floatingInput"
-                    label="* First Name"
-                    className="mb-3"
-                  >
-                    <Form.Control
-                      placeholder="First Name"
-                      id="first-name-input"
-                      className="form-inputs"
-                      onChange={handleSubmit}
-                    />
-                  </FloatingLabel>
-                </Form.Group>
-              </Col>
-
-              <Col className="column">
-                <Form.Group
-                  controlId="formGridLastName"
-                  className="form-input-box right-column"
-                >
-                  <FloatingLabel
-                    controlId="floatingInput"
-                    label="* Last Name"
-                    className="mb-3"
-                  >
-                    <Form.Control
-                      placeholder="Last Name"
-                      className="form-inputs"
-                    />
-                  </FloatingLabel>
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <div id="form-date-container">
+            <div className="row flex">
               <Form.Group
-                as={Col}
-                controlId="formGridDateOfBirth"
-                className="form-input-box"
-                id="form-date-container"
+                controlId="formGridFirstName"
+                id="first-name-input-box"
+                className="form-input-box left-margin"
               >
-                <Form.Label id="date-label">* Date of Birth</Form.Label>
-                <LocalizationProvider
-                  dateAdapter={AdapterDayjs}
-                  id="date-input"
+                <FloatingLabel
+                  controlId="floatingInput"
+                  label="* First Name"
+                  className="mb-3"
                 >
-                  <DatePicker />
-                </LocalizationProvider>
+                  <Form.Control
+                    placeholder="First Name"
+                    id="first-name-input"
+                    className="form-inputs"
+                    onChange={handleSubmit}
+                  />
+                </FloatingLabel>
+              </Form.Group>
+
+              <Form.Group
+                controlId="formGridLastName"
+                className="form-input-box left-margin"
+              >
+                <FloatingLabel
+                  controlId="floatingInput"
+                  label="* Last Name"
+                  className="mb-3"
+                >
+                  <Form.Control
+                    placeholder="Last Name"
+                    className="form-inputs"
+                  />
+                </FloatingLabel>
               </Form.Group>
             </div>
 
-            <Row className="row">
-              <Col className="column">
+            <div className="flex">
+              <div id="form-date-container">
                 <Form.Group
-                  as={Col}
-                  controlId="formGridHeight"
-                  className="form-input-box left-column"
+                  controlId="formGridDateOfBirth"
+                  className="form-input-box"
+                  id="form-date-container"
                 >
-                  <FloatingLabel
-                    controlId="floatingInput"
-                    label="Height (Inches)"
-                    className="mb-3"
+                  <Form.Label id="date-label">* Date of Birth</Form.Label>
+                  <LocalizationProvider
+                    dateAdapter={AdapterDayjs}
+                    id="date-input"
                   >
-                    <Form.Control
-                      placeholder="Height (Inches)"
-                      className="form-inputs"
-                    />
-                  </FloatingLabel>
+                    <DatePicker />
+                  </LocalizationProvider>
                 </Form.Group>
-              </Col>
+              </div>
 
-              <Col className="column">
-                <Form.Group
-                  as={Col}
-                  controlId="formGridWeight"
-                  className="form-input-box left-column"
-                >
-                  <FloatingLabel
-                    controlId="floatingInput"
-                    label="Weight (lbs)"
-                    className="mb-3"
+              <div className="flex">
+                <div>
+                  <Form.Group
+                    controlId="formGridHeight"
+                    className="form-input-box left-margin short-input"
                   >
-                    <Form.Control
-                      placeholder="Weight (lbs)"
-                      className="form-inputs"
-                    />
-                  </FloatingLabel>
-                </Form.Group>
-              </Col>
-            </Row>
+                    <FloatingLabel
+                      controlId="floatingInput"
+                      label="Height (Inches)"
+                      className="mb-3"
+                    >
+                      <Form.Control
+                        placeholder="Height (Inches)"
+                        className="form-inputs"
+                      />
+                    </FloatingLabel>
+                  </Form.Group>
+                </div>
+
+                <div>
+                  <Form.Group
+                    controlId="formGridWeight"
+                    className="form-input-box left-margin short-input"
+                  >
+                    <FloatingLabel
+                      controlId="floatingInput"
+                      label="Weight (lbs)"
+                      className="mb-3"
+                    >
+                      <Form.Control
+                        placeholder="Weight (lbs)"
+                        className="form-inputs"
+                      />
+                    </FloatingLabel>
+                  </Form.Group>
+                </div>
+              </div>
+            </div>
 
             <div className="radio-buttons ">
               <div id="radio-left">
@@ -182,106 +175,94 @@ function AddPlayer() {
                 <Form.Check
                   type="radio"
                   label="Right"
-                  name="formRadios"
-                  id="formRadios1"
+                  name="formRadios2"
+                  id="formRadios3"
                 />
                 <Form.Check
                   type="radio"
                   label="Left"
-                  name="formRadios"
-                  id="formRadios2"
+                  name="formRadios2"
+                  id="formRadios4"
                 />
               </div>
             </div>
 
-            <Row className="row">
-              <Col className="column">
-                <Form.Group
-                  controlId="formGridAddress"
-                  className="full-row-inputs"
-                >
-                  <FloatingLabel
-                    controlId="floatingInput"
-                    label="* Address"
-                    className="mb-3"
-                  >
-                    <Form.Control
-                      placeholder="Address"
-                      className="form-inputs"
-                    />
-                  </FloatingLabel>
-                </Form.Group>
-              </Col>
-            </Row>
+            <Form.Group
+              controlId="formGridAddress"
+              className="form-input-box long-input"
+            >
+              <FloatingLabel
+                controlId="floatingInput"
+                label="* Address"
+                className="mb-3"
+              >
+                <Form.Control placeholder="Address" className="form-inputs" />
+              </FloatingLabel>
+            </Form.Group>
 
-            <div className="three-input-row">
+            <div className="flex">
               <div id="city-state-zip">
                 <div>
-                  <Col className="column">
-                    <Form.Group
-                      controlId="formGridCity"
-                      id="city-input-box"
-                      className="three-row-input"
+                  <Form.Group
+                    controlId="formGridCity"
+                    id="city-input-box"
+                    className="three-row-input"
+                  >
+                    <FloatingLabel
+                      controlId="floatingInput"
+                      label="* City"
+                      className="mb-3"
                     >
-                      <FloatingLabel
-                        controlId="floatingInput"
-                        label="* City"
-                        className="mb-3"
-                      >
-                        <Form.Control
-                          placeholder="City"
-                          id="city-input"
-                          className="form-inputs"
-                          onChange={handleSubmit}
-                        />
-                      </FloatingLabel>
-                    </Form.Group>
-                  </Col>
+                      <Form.Control
+                        placeholder="City"
+                        id="city-input"
+                        className="form-inputs"
+                        onChange={handleSubmit}
+                      />
+                    </FloatingLabel>
+                  </Form.Group>
                 </div>
 
                 <div>
-                  <Col className="column">
-                    <Form.Group
-                      controlId="formGridState"
-                      id="state-input-box"
-                      className="three-row-input"
+                  <Form.Group
+                    controlId="formGridState"
+                    id="state-input-box"
+                    className="three-row-input"
+                  >
+                    <FloatingLabel
+                      controlId="floatingInput"
+                      label="* State"
+                      className="mb-3"
                     >
-                      <FloatingLabel
-                        controlId="floatingInput"
-                        label="* State"
-                        className="mb-3"
-                      >
-                        <Form.Control
-                          placeholder="State"
-                          id="state-input"
-                          className="form-inputs"
-                          onChange={handleSubmit}
-                        />
-                      </FloatingLabel>
-                    </Form.Group>
-                  </Col>
+                      <Form.Control
+                        placeholder="State"
+                        id="state-input"
+                        className="form-inputs"
+                        onChange={handleSubmit}
+                      />
+                    </FloatingLabel>
+                  </Form.Group>
                 </div>
+
                 <div>
-                  <Col className="column">
-                    <Form.Group
-                      controlId="formGridZip"
-                      id="zip-input-box"
-                      className="three-row-input"
+                  <Form.Group
+                    controlId="formGridZip"
+                    id="zip-input-box"
+                    className="three-row-input"
+                  >
+                    <FloatingLabel
+                      controlId="floatingInput"
+                      label="* Zip Code"
+                      className="mb-3"
                     >
-                      <FloatingLabel
-                        controlId="floatingInput"
-                        label="* Zip Code"
-                        className="mb-3"
-                      >
-                        <Form.Control
-                          placeholder="Zip Code"
-                          id="zip-code-input"
-                          className="form-inputs"
-                          onChange={handleSubmit}
-                        />
-                      </FloatingLabel>
-                    </Form.Group>
-                  </Col>
+                      <Form.Control
+                        placeholder="Zip Code"
+                        id="zip-code-input"
+                        className="form-inputs"
+                        onChange={handleSubmit}
+                      />
+                    </FloatingLabel>
+                  </Form.Group>
                 </div>
               </div>
             </div>
@@ -289,70 +270,52 @@ function AddPlayer() {
 
           <div className="contact-information">
             <h3>Contact 1</h3>
-            <Row className="row">
-              <Col className="column">
-                <Form.Group
-                  controlId="formGridFirstName"
-                  id="first-name-input-box"
-                  className="form-input-box left-column"
-                >
-                  <FloatingLabel
-                    controlId="floatingInput"
-                    label="* First Name"
-                    className="mb-3"
-                  >
-                    <Form.Control
-                      placeholder="First Name"
-                      id="first-name-input"
-                      className="form-inputs"
-                      onChange={handleSubmit}
-                    />
-                  </FloatingLabel>
-                </Form.Group>
-              </Col>
+            <Form.Group
+              controlId="formGridFirstName"
+              id="first-name-input-box"
+              className="form-input-box left-column"
+            >
+              <FloatingLabel
+                controlId="floatingInput"
+                label="* First Name"
+                className="mb-3"
+              >
+                <Form.Control
+                  placeholder="First Name"
+                  id="first-name-input"
+                  className="form-inputs"
+                  onChange={handleSubmit}
+                />
+              </FloatingLabel>
+            </Form.Group>
 
-              <Col className="column">
-                <Form.Group
-                  controlId="formGridLasttName"
-                  id="first-name-input-box"
-                  className="form-input-box right-column"
-                >
-                  <FloatingLabel
-                    controlId="floatingInput"
-                    label="* Last Name"
-                    className="mb-3"
-                  >
-                    <Form.Control
-                      placeholder="Last Name"
-                      id="first-name-input"
-                      className="form-inputs"
-                      onChange={handleSubmit}
-                    />
-                  </FloatingLabel>
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <Form.Group
-                  className="mb-3"
-                  controlId="exampleForm.ControlInput1"
-                >
-                  <Form.Label>* Email address</Form.Label>
-                  <Form.Control type="email" placeholder="name@example.com" />
-                </Form.Group>
-              </Col>
+            <Form.Group
+              controlId="formGridLasttName"
+              id="first-name-input-box"
+              className="form-input-box right-column"
+            >
+              <FloatingLabel
+                controlId="floatingInput"
+                label="* Last Name"
+                className="mb-3"
+              >
+                <Form.Control
+                  placeholder="Last Name"
+                  id="first-name-input"
+                  className="form-inputs"
+                  onChange={handleSubmit}
+                />
+              </FloatingLabel>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+              <Form.Label>* Email address</Form.Label>
+              <Form.Control type="email" placeholder="name@example.com" />
+            </Form.Group>
 
-              <Col>
-                <Form.Group
-                  className="mb-3"
-                  controlId="exampleForm.ControlInput1"
-                >
-                  <Form.Label>* Phone</Form.Label>
-                  <Form.Control type="email" placeholder="(xxx) xxx-xxxx" />
-                </Form.Group>
-              </Col>
-            </Row>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+              <Form.Label>* Phone</Form.Label>
+              <Form.Control type="email" placeholder="(xxx) xxx-xxxx" />
+            </Form.Group>
 
             <Form.Select>
               <option>* Relationship To Player</option>
