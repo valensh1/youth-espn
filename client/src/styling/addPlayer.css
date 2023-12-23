@@ -32,79 +32,112 @@
       color: blue;
       margin-top: 2vh;
 
-      & .row {
-        width: 40vw;
-        margin-left: 5vw;
+      & #player-information {
+        & .three-input-row {
+          width: 35vw;
+          margin-left: 8vw;
+        }
 
-        & .column {
-          width: 20vw;
-          height: 5vh;
+        & #city-state-zip {
+          display: flex;
+          justify-content: space-between;
 
-          /* Form label and box formatting */
-          & .form-input-box {
-            width: 15vw;
-            margin-bottom: 4vh;
+          & .three-row-input {
+            width: 7vw;
+          }
+
+          & #city-input {
+            width: 10vw;
+          }
+        }
+
+        & .row {
+          width: 40vw;
+          margin-left: 5vw;
+          margin-bottom: 1vh;
+
+          & .full-row-inputs {
+            margin-left: 2.5vw;
+            width: 35vw;
+          }
+
+          & .column {
+            width: 20vw;
+            height: 5vh;
+
+            /* Form label and box formatting */
+            & .form-input-box {
+              width: 15vw;
+              margin-bottom: 4vh;
+              font-size: 0.5vw;
+              /* border: 2px solid red; */
+            }
+
+            /* Actual input formatting */
+            & .form-inputs {
+              font-size: 0.7vw;
+              height: 4vh;
+              color: blue;
+            }
+
+            & .left-column {
+              margin-left: 2.5vw;
+            }
+
+            & .right-column {
+              margin-left: 2.5vw;
+            }
+          }
+        }
+
+        & #form-date-container {
+          display: flex;
+          flex-direction: column;
+          width: 10vw;
+          margin-left: 10vw;
+          margin-top: 0.25vh;
+          margin-bottom: 1vh;
+
+          & #date-label {
             font-size: 0.5vw;
-            /* border: 2px solid red; */
           }
 
-          /* Actual input formatting */
-          & .form-inputs {
-            font-size: 0.7vw;
-            height: 4vh;
+          & .MuiInputBase-input {
+            font-size: 0.7vw; /* Adjust this value as needed */
             color: blue;
-          }
-
-          & .left-column {
-            margin-left: 2.5vw;
-          }
-
-          & .right-column {
-            margin-left: 2.5vw;
+            height: 1vh;
           }
         }
-      }
 
-      & #form-date-container {
-        display: flex;
-        flex-direction: column;
-        width: 10vw;
-        margin-left: 10vw;
-        margin-top: 0.25vh;
-        margin-bottom: 1vh;
-      }
+        & .radio-buttons {
+          margin-top: 2vh;
+          margin-left: 8vw;
+          margin-bottom: 2vh;
+          width: 70%;
+          display: flex;
+          font-size: 0.7vw;
 
-      & #date-label {
-        font-size: 0.5vw;
-      }
+          & .radio-button-heading {
+          }
 
-      & .MuiInputBase-input {
-        font-size: 0.7vw; /* Adjust this value as needed */
-        color: blue;
-      }
+          & #radio-left {
+            position: relative;
+            left: 12vw;
+          }
 
-      & .radio-buttons {
-        margin-top: 2vh;
-        margin-left: 8vw;
-        margin-bottom: 2vh;
-        width: 70%;
-        display: flex;
-        font-size: 0.7vw;
-
-        & .radio-button-heading {
-          text-decoration: underline;
-        }
-
-        & #radio-left {
-          position: relative;
-          left: 12vw;
-        }
-
-        & #radio-right {
-          position: relative;
-          left: 17vw;
+          & #radio-right {
+            position: relative;
+            left: 17vw;
+          }
         }
       }
+    }
+
+    & .contact-information {
+      margin-top: 2vh;
+      width: 40vw;
+      border: 4px solid purple;
+      margin-left: 5vw;
     }
   }
 
@@ -119,7 +152,7 @@
     margin-bottom: 5vh;
     width: 7.5vw;
     height: 3vh;
-    margin-left: 21.5vw;
+    margin-left: 18vw;
     font-size: 0.7vw;
   }
 }
