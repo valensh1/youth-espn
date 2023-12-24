@@ -2,10 +2,13 @@
   background-color: black;
 
   & #new-player-form {
+    position: relative;
     border-radius: 15px;
     width: 50vw;
     margin-left: 25vw;
     background-color: white;
+
+  
 
     & #form-heading {
       display: flex;
@@ -29,21 +32,90 @@
     & #add-player {
       height: fit-content;
       width: 49.76vw;
-      border: 4px solid orange;
+      /* border: 4px solid orange; */
       color: blue;
       margin-top: 2vh;
 
-      & #player-information {
-        & .row {
-          margin-left: 5vw;
-          width: 40vw;
-          border: 3px solid green;
-        }
+      & .row {
+        margin-left: 5vw;
+        margin-bottom: 1.25vh;
+        width: 40vw;
+        height: 5vh;
+        border: 3px solid green;
+      }
+  
+      & .flex {
+        display: flex;
+        flex-direction: row;
+        align-items: end;
+        justify-content: space-around;
+      }
 
-        & .flex {
+           /* Form label and box formatting */
+           & .form-input-box {
+            width: 15vw;
+            margin-bottom: 4vh;
+            font-size: 0.4vw;
+  
+            @media only screen and (min-width: 1024px) and (max-width: 1728px) {
+              font-size: 0.65vw;
+            }  
+          }
+  
+          /* Actual input formatting */
+          & .form-inputs {
+            font-size: 0.7vw;
+            height: 4vh;
+            color: blue;
+  
+            @media only screen and (min-width: 1024px) and (max-width: 1728px) {
+              font-size: 0.8vw;
+            }
+          }
+  
+          & .long-input {
+            width: 35vw;
+          }
+  
+          & .short-input {
+            width: 5vw;
+          }
+
+      & #player-information {
+        border: 5px solid purple;
+
+
+        & #date-row {
+          width: 40vw;
+          height: 8vh;
           display: flex;
-          align-items: end;
-          justify-content: space-around;
+          margin-left: 5vw;
+          margin-top: 2vh;
+
+          & #form-date-container {
+            display: flex;
+            flex-direction: column;
+           
+  
+            & #date-label {
+              /* font-size: 0.5vw; */
+            }
+  
+            & .MuiInputBase-input {
+              /* font-size: 0.7vw; Adjust this value as needed */
+              color: blue;
+            }
+          }
+
+          & #height-weight {
+            height: 8vh;
+           width: 30vw;
+           display: flex;
+           justify-content: space-around;
+           align-items: end;
+           margin: 0;
+           padding: 0;
+          }
         }
 
         & #city-state-zip {
@@ -55,51 +127,11 @@
           }
         }
 
-        /* Form label and box formatting */
-        & .form-input-box {
-          width: 15vw;
-          margin-bottom: 4vh;
-          font-size: 0.4vw;
-        }
-
-        /* Actual input formatting */
-        & .form-inputs {
-          font-size: 0.7vw;
-          height: 4vh;
-          color: blue;
-        }
-
-        & .long-input {
-          width: 35vw;
-        }
-
-        & .short-input {
-          width: 5vw;
-        }
-
-        & #form-date-container {
-          display: flex;
-          flex-direction: column;
-          /* width: 10vw;
-          margin-top: 0.25vh;
-          margin-bottom: 1vh; */
-
-          & #date-label {
-            /* font-size: 0.5vw; */
-          }
-
-          & .MuiInputBase-input {
-            /* font-size: 0.7vw; Adjust this value as needed */
-            /* color: blue;
-            height: 1vh; */
-          }
-        }
-
         & .radio-buttons {
           margin-top: 2vh;
-          margin-left: 8vw;
+          margin-left: 5vw;
           margin-bottom: 2vh;
-          width: 70%;
+          width: 40vw;
           display: flex;
           font-size: 0.7vw;
 
@@ -114,14 +146,30 @@
           }
         }
       }
-    }
 
-    & .contact-information {
-      margin-top: 2vh;
-      width: 40vw;
-      border: 4px solid purple;
-      margin-left: 5vw;
+      & .contact-information {
+        border: 4px solid blue;
+       
+
+      & #relationship-contactShare {
+        margin-left: 5vw;
+        width: 40vw;
+        display: flex;
+        justify-content: space-around;
+
+        & #relationship-dropdown {
+          color: blue;
+          width: 15vw;
+        }
+      }
+  
+      }
     }
+  }
+
+  & #add-contact-button {
+    position: relative;
+    left: 43vw;
   }
 
   & .empty-row {
@@ -135,7 +183,7 @@
     margin-bottom: 5vh;
     width: 7.5vw;
     height: 3vh;
-    margin-left: 18vw;
+    margin-left: 22vw;
     font-size: 0.7vw;
   }
 }

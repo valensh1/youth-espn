@@ -61,8 +61,7 @@ function AddPlayer() {
             <div className="row flex">
               <Form.Group
                 controlId="formGridFirstName"
-                id="first-name-input-box"
-                className="form-input-box left-margin"
+                className="form-input-box"
               >
                 <FloatingLabel
                   controlId="floatingInput"
@@ -71,7 +70,6 @@ function AddPlayer() {
                 >
                   <Form.Control
                     placeholder="First Name"
-                    id="first-name-input"
                     className="form-inputs"
                     onChange={handleSubmit}
                   />
@@ -80,7 +78,7 @@ function AddPlayer() {
 
               <Form.Group
                 controlId="formGridLastName"
-                className="form-input-box left-margin"
+                className="form-input-box"
               >
                 <FloatingLabel
                   controlId="floatingInput"
@@ -95,7 +93,7 @@ function AddPlayer() {
               </Form.Group>
             </div>
 
-            <div className="flex">
+            <div id="date-row">
               <div id="form-date-container">
                 <Form.Group
                   controlId="formGridDateOfBirth"
@@ -112,12 +110,9 @@ function AddPlayer() {
                 </Form.Group>
               </div>
 
-              <div className="flex">
+              <div id="height-weight">
                 <div>
-                  <Form.Group
-                    controlId="formGridHeight"
-                    className="form-input-box left-margin short-input"
-                  >
+                  <Form.Group controlId="formGridHeight">
                     <FloatingLabel
                       controlId="floatingInput"
                       label="Height (Inches)"
@@ -132,10 +127,7 @@ function AddPlayer() {
                 </div>
 
                 <div>
-                  <Form.Group
-                    controlId="formGridWeight"
-                    className="form-input-box left-margin short-input"
-                  >
+                  <Form.Group controlId="formGridWeight">
                     <FloatingLabel
                       controlId="floatingInput"
                       label="Weight (lbs)"
@@ -187,20 +179,22 @@ function AddPlayer() {
               </div>
             </div>
 
-            <Form.Group
-              controlId="formGridAddress"
-              className="form-input-box long-input"
-            >
-              <FloatingLabel
-                controlId="floatingInput"
-                label="* Address"
-                className="mb-3"
+            <div className="row flex">
+              <Form.Group
+                controlId="formGridAddress"
+                className="form-input-box long-input"
               >
-                <Form.Control placeholder="Address" className="form-inputs" />
-              </FloatingLabel>
-            </Form.Group>
+                <FloatingLabel
+                  controlId="floatingInput"
+                  label="* Address"
+                  className="mb-3"
+                >
+                  <Form.Control placeholder="Address" className="form-inputs" />
+                </FloatingLabel>
+              </Form.Group>
+            </div>
 
-            <div className="flex">
+            <div className="row flex">
               <div id="city-state-zip">
                 <div>
                   <Form.Group
@@ -270,91 +264,112 @@ function AddPlayer() {
 
           <div className="contact-information">
             <h3>Contact 1</h3>
-            <Form.Group
-              controlId="formGridFirstName"
-              id="first-name-input-box"
-              className="form-input-box left-column"
-            >
-              <FloatingLabel
-                controlId="floatingInput"
-                label="* First Name"
-                className="mb-3"
+
+            <div className="row flex">
+              <Form.Group
+                controlId="formGridFirstName"
+                className="form-input-box"
               >
-                <Form.Control
-                  placeholder="First Name"
-                  id="first-name-input"
-                  className="form-inputs"
-                  onChange={handleSubmit}
-                />
-              </FloatingLabel>
-            </Form.Group>
+                <FloatingLabel
+                  controlId="floatingInput"
+                  label="* First Name"
+                  className="mb-3"
+                >
+                  <Form.Control
+                    placeholder="First Name"
+                    className="form-inputs"
+                    onChange={handleSubmit}
+                  />
+                </FloatingLabel>
+              </Form.Group>
 
-            <Form.Group
-              controlId="formGridLasttName"
-              id="first-name-input-box"
-              className="form-input-box right-column"
-            >
-              <FloatingLabel
-                controlId="floatingInput"
-                label="* Last Name"
-                className="mb-3"
+              <Form.Group
+                controlId="formGridLastName"
+                className="form-input-box"
               >
-                <Form.Control
-                  placeholder="Last Name"
-                  id="first-name-input"
-                  className="form-inputs"
-                  onChange={handleSubmit}
+                <FloatingLabel
+                  controlId="floatingInput"
+                  label="* Last Name"
+                  className="mb-3"
+                >
+                  <Form.Control
+                    placeholder="Last Name"
+                    className="form-inputs"
+                  />
+                </FloatingLabel>
+              </Form.Group>
+            </div>
+
+            <div className="row flex">
+              <Form.Group controlId="formGridEmail" className="form-input-box">
+                <FloatingLabel
+                  controlId="floatingInput"
+                  label="* Email"
+                  className="mb-3"
+                >
+                  <Form.Control
+                    placeholder="name@example.com"
+                    className="form-inputs"
+                    onChange={handleSubmit}
+                  />
+                </FloatingLabel>
+              </Form.Group>
+
+              <Form.Group controlId="formGridPhone" className="form-input-box">
+                <FloatingLabel
+                  controlId="floatingInput"
+                  label="* Phone"
+                  className="mb-3"
+                >
+                  <Form.Control
+                    placeholder="(XXX) XXX-XXXX"
+                    className="form-inputs"
+                  />
+                </FloatingLabel>
+              </Form.Group>
+            </div>
+
+            <div id="relationship-contactShare">
+              <div>
+                <Form.Select id="relationship-dropdown">
+                  <option>* Relationship To Player</option>
+                  <option value="mom">Mother</option>
+                  <option value="dad">Father</option>
+                  <option value="grandparent">Grandparent</option>
+                  <option value="aunt">Aunt</option>
+                  <option value="uncle">Uncle</option>
+                  <option value="brother">Brother</option>
+                  <option value="sister">Sister</option>
+                  <option value="other">Other</option>
+                </Form.Select>
+              </div>
+
+              <div>
+                <Form.Label className="radio-button-heading">
+                  * Share Contact
+                </Form.Label>
+                <Form.Check
+                  type="radio"
+                  label="Yes"
+                  name="formRadios"
+                  id="formRadios1"
+                  checked
                 />
-              </FloatingLabel>
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label>* Email address</Form.Label>
-              <Form.Control type="email" placeholder="name@example.com" />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label>* Phone</Form.Label>
-              <Form.Control type="email" placeholder="(xxx) xxx-xxxx" />
-            </Form.Group>
-
-            <Form.Select>
-              <option>* Relationship To Player</option>
-              <option value="mom">Mother</option>
-              <option value="dad">Father</option>
-              <option value="grandparent">Grandparent</option>
-              <option value="aunt">Aunt</option>
-              <option value="uncle">Uncle</option>
-              <option value="brother">Brother</option>
-              <option value="sister">Sister</option>
-              <option value="other">Other</option>
-            </Form.Select>
-
-            <div id="radio-right">
-              <Form.Label className="radio-button-heading">
-                * Share Contact
-              </Form.Label>
-              <Form.Check
-                type="radio"
-                label="Yes"
-                name="formRadios"
-                id="formRadios1"
-                checked
-              />
-              <Form.Check
-                type="radio"
-                label="No"
-                name="formRadios"
-                id="formRadios2"
-              />
+                <Form.Check
+                  type="radio"
+                  label="No"
+                  name="formRadios"
+                  id="formRadios2"
+                />
+              </div>
             </div>
           </div>
 
-          <button>Add Another Contact</button>
-
-          <Button variant="primary" type="submit" id="submit-button">
-            Submit
-          </Button>
+          <button id="add-contact-button">Add Another Contact</button>
         </Form>
+        <Button variant="primary" type="submit" id="submit-button">
+          Submit
+        </Button>
       </div>
       <div className="empty-row"></div>
     </div>
