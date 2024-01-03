@@ -8,8 +8,6 @@
     margin-left: 25vw;
     background-color: white;
 
-  
-
     & #form-heading {
       display: flex;
       justify-content: center;
@@ -35,15 +33,17 @@
       /* border: 4px solid orange; */
       color: blue;
       margin-top: 2vh;
+      margin-left: 0.2vw;
+      margin-right: 0.2vw;
 
       & .row {
         margin-left: 5vw;
         margin-bottom: 1.25vh;
         width: 40vw;
         height: 5vh;
-        border: 3px solid green;
+        /* border: 3px solid green; */
       }
-  
+
       & .flex {
         display: flex;
         flex-direction: row;
@@ -51,39 +51,37 @@
         justify-content: space-around;
       }
 
-           /* Form label and box formatting */
-           & .form-input-box {
-            width: 15vw;
-            margin-bottom: 4vh;
-            font-size: 0.4vw;
-  
-            @media only screen and (min-width: 1024px) and (max-width: 1728px) {
-              font-size: 0.65vw;
-            }  
-          }
-  
-          /* Actual input formatting */
-          & .form-inputs {
-            font-size: 0.7vw;
-            height: 4vh;
-            color: blue;
-  
-            @media only screen and (min-width: 1024px) and (max-width: 1728px) {
-              font-size: 0.8vw;
-            }
-          }
-  
-          & .long-input {
-            width: 35vw;
-          }
-  
-          & .short-input {
-            width: 5vw;
-          }
+      /* Form label and box formatting */
+      & .form-input-box {
+        width: 15vw;
+        font-size: 0.4vw;
+
+        @media only screen and (min-width: 1024px) and (max-width: 1728px) {
+          font-size: 0.65vw;
+        }
+      }
+
+      /* Actual input formatting */
+      & .form-inputs {
+        font-size: 0.7vw;
+        height: 4vh;
+        color: blue;
+
+        @media only screen and (min-width: 1024px) and (max-width: 1728px) {
+          font-size: 0.8vw;
+        }
+      }
+
+      & .long-input {
+        width: 40vw;
+      }
+
+      & .short-input {
+        width: 5vw;
+      }
 
       & #player-information {
-        border: 5px solid purple;
-
+        /* border: 5px solid purple; */
 
         & #date-row {
           width: 40vw;
@@ -95,81 +93,95 @@
           & #form-date-container {
             display: flex;
             flex-direction: column;
-           
-  
+
             & #date-label {
               /* font-size: 0.5vw; */
             }
-  
+
             & .MuiInputBase-input {
-              /* font-size: 0.7vw; Adjust this value as needed */
+              font-size: 0.6vw; /*Adjust this value as needed*/
               color: blue;
             }
           }
 
           & #height-weight {
-            height: 8vh;
-           width: 30vw;
-           display: flex;
-           justify-content: space-around;
-           align-items: end;
-           margin: 0;
-           padding: 0;
+            height: 6.5vh;
+            width: 30vw;
+            display: flex;
+            justify-content: space-around;
+            align-items: end;
+            margin: 0;
+            padding: 0;
           }
         }
 
         & #city-state-zip {
           display: flex;
           justify-content: space-between;
-
-          & #city-input {
-            width: 10vw;
-          }
+          width: 40vw;
         }
 
         & .radio-buttons {
-          margin-top: 2vh;
           margin-left: 5vw;
           margin-bottom: 2vh;
           width: 40vw;
           display: flex;
-          font-size: 0.7vw;
+          justify-content: center;
+          font-size: 0.6vw;
+        }
 
-          & #radio-left {
-            position: relative;
-            left: 12vw;
-          }
-
-          & #radio-right {
-            position: relative;
-            left: 17vw;
-          }
+        & #radio-left {
+          margin-right: 2vw;
         }
       }
 
       & .contact-information {
-        border: 4px solid blue;
-       
+        margin-top: 2vh;
+        margin-left: 0.2vw;
+        margin-right: 0.2vw;
+        border: 1px solid lightgray;
 
-      & #relationship-contactShare {
-        margin-left: 5vw;
-        width: 40vw;
-        display: flex;
-        justify-content: space-around;
+        & #contact-heading-delete-icon {
+          display: flex;
+          justify-content: space-between;
 
-        & #relationship-dropdown {
-          color: blue;
-          width: 15vw;
+          & #react-delete {
+            font-size: 1vw;
+            cursor: pointer;
+          }
         }
-      }
-  
+
+        & h3 {
+          display: inline;
+          margin-left: 1vw;
+          background-color: powderblue;
+        }
+
+        & #relationship-contactShare {
+          margin-top: 2vh;
+          margin-left: 5vw;
+          width: 40vw;
+          display: flex;
+          justify-content: center;
+
+          & #relationship-dropdown {
+            color: blue;
+            width: 8vw;
+            margin-right: 2vw;
+            font-size: 0.6vw;
+          }
+
+          & #share-contact {
+            font-size: 0.6vw;
+          }
+        }
       }
     }
   }
 
   & #add-contact-button {
     position: relative;
-    left: 43vw;
+    left: 44.9vw;
   }
 
   & .empty-row {
@@ -178,12 +190,15 @@
     background-color: black;
   }
 
+  & #submit-button-container {
+    display: flex;
+    justify-content: center;
+  }
   & #submit-button {
     margin-top: 3vh;
-    margin-bottom: 5vh;
-    width: 7.5vw;
+    margin-bottom: 2vh;
+    width: 6vw;
     height: 3vh;
-    margin-left: 22vw;
-    font-size: 0.7vw;
+    font-size: 0.6vw;
   }
 }

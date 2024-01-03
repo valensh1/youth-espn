@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ReactDOM from 'react-dom';
 import Button from 'react-bootstrap/Button';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
@@ -6,9 +7,15 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Navbar from '../../components/Navbar';
+import AddContact from '../../components/AddContact';
 
 function AddPlayer() {
   const [formData, setFormData] = useState({});
+  const [addAnotherContact, setAddAnotherContact] = useState(false);
+
+  const showContact = (boolean) => {
+    setAddAnotherContact(boolean);
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -262,114 +269,30 @@ function AddPlayer() {
             </div>
           </div>
 
-          <div className="contact-information">
-            <h3>Contact 1</h3>
-
-            <div className="row flex">
-              <Form.Group
-                controlId="formGridFirstName"
-                className="form-input-box"
-              >
-                <FloatingLabel
-                  controlId="floatingInput"
-                  label="* First Name"
-                  className="mb-3"
-                >
-                  <Form.Control
-                    placeholder="First Name"
-                    className="form-inputs"
-                    onChange={handleSubmit}
-                  />
-                </FloatingLabel>
-              </Form.Group>
-
-              <Form.Group
-                controlId="formGridLastName"
-                className="form-input-box"
-              >
-                <FloatingLabel
-                  controlId="floatingInput"
-                  label="* Last Name"
-                  className="mb-3"
-                >
-                  <Form.Control
-                    placeholder="Last Name"
-                    className="form-inputs"
-                  />
-                </FloatingLabel>
-              </Form.Group>
-            </div>
-
-            <div className="row flex">
-              <Form.Group controlId="formGridEmail" className="form-input-box">
-                <FloatingLabel
-                  controlId="floatingInput"
-                  label="* Email"
-                  className="mb-3"
-                >
-                  <Form.Control
-                    placeholder="name@example.com"
-                    className="form-inputs"
-                    onChange={handleSubmit}
-                  />
-                </FloatingLabel>
-              </Form.Group>
-
-              <Form.Group controlId="formGridPhone" className="form-input-box">
-                <FloatingLabel
-                  controlId="floatingInput"
-                  label="* Phone"
-                  className="mb-3"
-                >
-                  <Form.Control
-                    placeholder="(XXX) XXX-XXXX"
-                    className="form-inputs"
-                  />
-                </FloatingLabel>
-              </Form.Group>
-            </div>
-
-            <div id="relationship-contactShare">
-              <div>
-                <Form.Select id="relationship-dropdown">
-                  <option>* Relationship To Player</option>
-                  <option value="mom">Mother</option>
-                  <option value="dad">Father</option>
-                  <option value="grandparent">Grandparent</option>
-                  <option value="aunt">Aunt</option>
-                  <option value="uncle">Uncle</option>
-                  <option value="brother">Brother</option>
-                  <option value="sister">Sister</option>
-                  <option value="other">Other</option>
-                </Form.Select>
-              </div>
-
-              <div>
-                <Form.Label className="radio-button-heading">
-                  * Share Contact
-                </Form.Label>
-                <Form.Check
-                  type="radio"
-                  label="Yes"
-                  name="formRadios"
-                  id="formRadios1"
-                  checked
-                />
-                <Form.Check
-                  type="radio"
-                  label="No"
-                  name="formRadios"
-                  id="formRadios2"
-                />
-              </div>
-            </div>
-          </div>
-
-          <button id="add-contact-button">Add Another Contact</button>
+          <AddContact contactNum={1} />
+          {addAnotherContact ? (
+            <AddContact
+              contactNum={2}
+              deleteIcon={true}
+              showContact={showContact}
+            />
+          ) : (
+            ''
+          )}
+          {addAnotherContact ? (
+            ''
+          ) : (
+            <button id="add-contact-button" onClick={(el) => showContact(true)}>
+              Add Another Contact
+            </button>
+          )}
         </Form>
-        <Button variant="primary" type="submit" id="submit-button">
-          Submit
-        </Button>
+
+        <div id="submit-button-container">
+          <Button variant="primary" type="submit" id="submit-button">
+            Submit
+          </Button>
+        </div>
       </div>
       <div className="empty-row"></div>
     </div>
