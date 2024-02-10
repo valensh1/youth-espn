@@ -117,7 +117,60 @@ Features
 
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+To use the application just navigate to [youth-sports-gamerz](https://youth-sports-gamerz-bd7aacb9298e.herokuapp.com/).
+
+Welcome to Youth Sports Gamerz (YSG) where you will be exposed to the wide world of youth sports! Since this is a vast project at the moment this project is limited to hockey since that is the sport my son plays and I had valid data to use as far as scores and stats. Below will walk you through each section that is completed enough to display and show off. Improvements will be ongoing.
+
+- Home Page - The home page will display all the top recent highlights amongst our youth gamerz! Home page will also display latest game scores, top articles and headline news with regards to our youth gamerz!
+
+- Sport Home Page (i.e. hockey home page) - Home page for specific sport. Displays latest game scores, top articles and headline news with regards to a specific sport.
+
+  - **Currently limited to hockey**
+
+- Scores Page - Displays scores with ability to filter scores by date, level and division.
+
+  - **Currently scores are limited to 2021-2022 Peewee A regular season games. These scores can be found by filtering on Sunday games between Oct 2021 and Feb 2022**
+
+- Schedule Page - Under construction. Page coming soon!
+
+- Standings Page - Displays standings with ability to filter standings by season, level and division. Standings page displays stats such as the following:
+
+  > **Currently limited to hockey 2021-2022 Peewee A regular season games**
+
+  - GP - Games played
+  - W - Wins
+  - L - Losses
+  - OTL - Overtime Losses
+  - Ties - Games that ended in tie
+  - PTS - Points (usually a stat limited to sport of hockey)
+  - P% - Points Percentage (usually a stat limited to sport of hockey)
+  - RW - Regulation Wins (usually a stat most commonly displayed in hockey standings)
+  - ROW - Regulation Overtime Wins (usually a stat most commonly displayed in hockey standings)
+  - GF - Goals for or goals scored (usually a stat most commonly displayed in hockey standings. Other sports have same stat but stat is usually labeled differently)
+  - GA - Goals against or goals allowed (usually a stat most commonly displayed in hockey standings. Other sports have same stat but stat is usually labeled differently)
+  - DIFF - Difference in goals scored vs. goals allowed (GF - GA)
+  - HOME - Wins/losses when team played at home
+  - AWAY - Wins/losses when team played away
+  - S/O - Shootouts (usually a stat limited to sport of hockey)
+  - L10 - Wins/losses of a team's last 10 games
+  - STRK - Streak - Current consecutive wins/losses of a team
+
+- Teams Page - Displays all youth sports teams for a specific sport and their accompanying logos. Links available next to each team to do the following:
+
+  - Statistics - See team and player specific stats. **Under construction**
+  - Schedule - See teams schedule of upcoming games. **Under construction**
+  - Roster - See the players that construct each teams roster . **Currently limited to Jr. Ducks, Ice Dogs and OC Hockey Club teams**
+
+- Roster Page - Displays the players that make up each team's roster. Ability to filter rosters by season, team, level and division. Page also displays basic information about each player such as the following:
+  - Jersey #
+  - Shooting Hand (mostly limited to hockey rosters)
+  - Height
+  - Weight
+  - Birth Date
+
+> Clicking on any individual player from this page navigates user to player page
+
+- Player Page - Displays individual player profile such as player attributes, bio, career stats and highlight videos
 
 <!-- _For more examples, please refer to the [Documentation](https://example.com)_ -->
 
