@@ -35,6 +35,7 @@
 .hover-content > a {
   display: block;
   margin-top: 1vh;
+  margin-left: 1vw;
 }
 
 .drop-down:hover .hover-content {
@@ -43,6 +44,7 @@
   position: absolute;
   width: 8vw;
   height: 20vh;
-  background-color: red;
+  background-color: black;
+  border-radius: 10px;
   z-index: 100;
 }
