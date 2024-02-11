@@ -36,15 +36,15 @@
   </div>
 
   <p align="center">
-    <br />
+    <!-- <br />
     <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
-    <br />
+    <br /> -->
     <br />
     <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
-    ·
+    <!-- ·
     <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
     ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
+    <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a> -->
   </p>
 </div>
 
@@ -58,17 +58,17 @@
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
-    <li>
+    <!-- <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
       </ul>
-    </li>
+    </li> -->
     <li><a href="#usage">Usage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
+    <!-- <li><a href="#license">License</a></li> -->
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
@@ -91,8 +91,11 @@ Features
 - Game Stats and Scores: Stay updated with real-time game stats and scores. Never miss a moment of the action.
 - Game Schedules and Standings: Plan ahead with game schedules and keep track of your team's progress with updated standings.
 - Player Pages: Dive into individual player pages complete with images and player highlights and stats.
-- Equipment Shop: Browse and shop for equipment right within the app. We bring the sports store to your fingertips. <span style="color:red">Coming Soon!</span>
-- Coaching Lessons: Schedule coaching lessons for personalized training and skill development. <span style="color:red">Coming Soon!</span>
+- Equipment Shop: Browse and shop for equipment right within the app. We bring the sports store to your fingertips.
+  - <span style="color:red">Coming Soon!</span>
+- Coaching Lessons: Schedule coaching lessons for personalized training and skill development.
+
+  - <span style="color:red">Coming Soon!</span>
 
   Join us at Youth Sports Gamerz as we revolutionize the youth sports experience!
 
@@ -117,23 +120,33 @@ Features
 
 ## Usage
 
-To use the application just navigate to [youth-sports-gamerz](https://youth-sports-gamerz-bd7aacb9298e.herokuapp.com/).
+To use the application just navigate to site by clicking on link here -> [youth-sports-gamerz](https://youth-sports-gamerz-bd7aacb9298e.herokuapp.com/).
 
 Welcome to Youth Sports Gamerz (YSG) where you will be exposed to the wide world of youth sports! Since this is a vast project at the moment this project is limited to hockey since that is the sport my son plays and I had valid data to use as far as scores and stats. Below will walk you through each section that is completed enough to display and show off. Improvements will be ongoing.
 
-- Home Page - The home page will display all the top recent highlights amongst our youth gamerz! Home page will also display latest game scores, top articles and headline news with regards to our youth gamerz!
+### Home Page
 
-- Sport Home Page (i.e. hockey home page) - Home page for specific sport. Displays latest game scores, top articles and headline news with regards to a specific sport.
+- The home page will display all the top recent highlights amongst our youth gamerz! Home page will also display latest game scores, top articles and headline news with regards to our youth gamerz!
 
-  - **Currently limited to hockey**
+### Sport Home Page
 
-- Scores Page - Displays scores with ability to filter scores by date, level and division.
+- Home page for specific sport. Displays latest game scores, top articles and headline news with regards to a specific sport.
 
-  - **Currently scores are limited to 2021-2022 Peewee A regular season games. These scores can be found by filtering on Sunday games between Oct 2021 and Feb 2022**
+  - Currently limited to hockey
 
-- Schedule Page - Under construction. Page coming soon!
+### Scores Page
 
-- Standings Page - Displays standings with ability to filter standings by season, level and division. Standings page displays stats such as the following:
+- Displays scores with ability to filter scores by date, level and division.
+
+  - Currently scores are limited to 2021-2022 Peewee A regular season games. These scores can be found by filtering on Sunday games between Oct 2021 and Feb 2022
+
+### Schedule Page
+
+- Under construction. Page coming soon!
+
+### Standings Page
+
+- Displays standings with ability to filter standings by season, level and division. Standings page displays stats such as the following:
 
   > **Currently limited to hockey 2021-2022 Peewee A regular season games**
 
@@ -155,13 +168,24 @@ Welcome to Youth Sports Gamerz (YSG) where you will be exposed to the wide world
   - L10 - Wins/losses of a team's last 10 games
   - STRK - Streak - Current consecutive wins/losses of a team
 
-- Teams Page - Displays all youth sports teams for a specific sport and their accompanying logos. Links available next to each team to do the following:
+### Teams Page
 
-  - Statistics - See team and player specific stats. **Under construction**
-  - Schedule - See teams schedule of upcoming games. **Under construction**
-  - Roster - See the players that construct each teams roster . **Currently limited to Jr. Ducks, Ice Dogs and OC Hockey Club teams**
+- Displays all youth sports teams for a specific sport and their accompanying logos. Links available next to each team to do the following:
 
-- Roster Page - Displays the players that make up each team's roster. Ability to filter rosters by season, team, level and division. Page also displays basic information about each player such as the following:
+  - Statistics - See team and player specific stats.
+
+    - Under construction
+
+  - Schedule - See teams schedule of upcoming games.
+
+    - Under construction
+
+  - Roster - See the players that construct each teams roster .
+    - Currently limited to Jr. Ducks, Ice Dogs and OC Hockey Club teams
+
+### Roster Page
+
+- Displays the players that make up each team's roster. Ability to filter rosters by season, team, level and division. Page also displays basic information about each player such as the following:
   - Jersey #
   - Shooting Hand (mostly limited to hockey rosters)
   - Height
@@ -170,7 +194,11 @@ Welcome to Youth Sports Gamerz (YSG) where you will be exposed to the wide world
 
 > Clicking on any individual player from this page navigates user to player page
 
-- Player Page - Displays individual player profile such as player attributes, bio, career stats and highlight videos
+### Player Page
+
+- Displays individual player profile such as player attributes, bio, career stats and highlight videos
+
+> Clicking on "See more player highlight videos" from this page takes user to a player specific highlight videos page where videos can be filtered by season the player played in, teams player has played on, opponents they played against, divisions they played in and venues they played in.
 
 <!-- _For more examples, please refer to the [Documentation](https://example.com)_ -->
 
@@ -180,13 +208,14 @@ Welcome to Youth Sports Gamerz (YSG) where you will be exposed to the wide world
 
 ## Roadmap
 
-- [x] Add Changelog
-- [x] Add back to top links
-- [ ] Add Additional Templates w/ Examples
-- [ ] Add "components" document to easily copy & paste sections of the readme
-- [ ] Multi-language Support
-  - [ ] Chinese
-  - [ ] Spanish
+- [ ] Front-end form to allow users to sign-up individual players
+- [ ] Front-end form to allow team managers to register team players to a team for upcoming season
+- [ ] Team Schedules page
+- [ ] Web socket for functionality to push real-time scores
+- [ ] Equipment shop to buy and sell equipment
+- [ ] Functionality to book coaching lessons
+- [ ] Computed national player rankings with ability to upvote/downvote players rankings
+- [ ] Mobile application
 
 See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
 
@@ -217,7 +246,7 @@ Don't forget to give the project a star! Thanks again!
 
 Shaun Valentine - [LinkedIn](https://www.linkedin.com/in/shaunvalentine/) - valensh1@yahoo.com
 
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
+Project Link: [https://github.com/valensh1/youth-espn](https://github.com/valensh1/youth-espn)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

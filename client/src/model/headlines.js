@@ -43,10 +43,6 @@ const headlines = [
     url: 'https://www.espn.com/nba/story/_/id/38551383/lebron-james-says-anthony-davis-face-lakers-franchise',
     title: 'Franchise player: LeBron says AD face of Lakers',
   },
-  {
-    url: 'https://www.espn.com/nba/story/_/id/38551383/lebron-james-says-anthony-davis-face-lakers-franchise',
-    title: 'Franchise player: LeBron says AD face of Lakers',
-  },
 ];
 
 export { headlines };
