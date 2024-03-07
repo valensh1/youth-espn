@@ -32,7 +32,7 @@
 
   <h3 align="center"  style="margin-bottom: .80vh; display: inline">Youth Sports Gamerz</h3>
   <div>
-   <span>Website URL - </span><a href="http://www.youth-sports-gamerz.com">http://www.youth-sports-gamerz.com</a>
+   <span>Website URL - </span><a href="http://www.youth-sports-gamerz.com" target="_blank">http://www.youth-sports-gamerz.com</a>
   </div>
 
   <p align="center">
@@ -120,7 +120,8 @@ Features
 
 ## Usage
 
-To use the application just navigate to site by clicking on link here -> [youth-sports-gamerz](https://youth-sports-gamerz-bd7aacb9298e.herokuapp.com/).
+To use the application just navigate to site by clicking on link here ->
+<a href="https://youth-sports-gamerz-bd7aacb9298e.herokuapp.com/" target="_blank">youth-sports-gamerz</a>
 
 Welcome to Youth Sports Gamerz (YSG) where you will be exposed to the wide world of youth sports! Since this is a vast project at the moment this project is limited to hockey since that is the sport my son plays and I had valid data to use as far as scores and stats. Below will walk you through each section that is completed enough to display and show off. Improvements will be ongoing.
 
@@ -134,11 +135,15 @@ Welcome to Youth Sports Gamerz (YSG) where you will be exposed to the wide world
 
   - Currently limited to hockey
 
+  ![Hockey Home Page](/README_Contents/hockeyHomePage.gif)
+
 ### Scores Page
 
 - Displays scores with ability to filter scores by date, level and division.
 
   - Currently scores are limited to 2021-2022 Peewee A regular season games. These scores can be found by filtering on Sunday games between Oct 2021 and Feb 2022
+
+  ![Hockey Scores Page](/README_Contents/scoresPage.gif)
 
 ### Schedule Page
 
@@ -168,6 +173,8 @@ Welcome to Youth Sports Gamerz (YSG) where you will be exposed to the wide world
   - L10 - Wins/losses of a team's last 10 games
   - STRK - Streak - Current consecutive wins/losses of a team
 
+  ![Hockey Standings Page](/README_Contents/standingsPage.gif)
+
 ### Teams Page
 
 - Displays all youth sports teams for a specific sport and their accompanying logos. Links available next to each team to do the following:
@@ -183,6 +190,8 @@ Welcome to Youth Sports Gamerz (YSG) where you will be exposed to the wide world
   - Roster - See the players that construct each teams roster .
     - Currently limited to Jr. Ducks, Ice Dogs and OC Hockey Club teams
 
+  ![Hockey Teams Page](/README_Contents/teamsPage.gif)
+
 ### Roster Page
 
 - Displays the players that make up each team's roster. Ability to filter rosters by season, team, level and division. Page also displays basic information about each player such as the following:
@@ -194,11 +203,17 @@ Welcome to Youth Sports Gamerz (YSG) where you will be exposed to the wide world
 
 > Clicking on any individual player from this page navigates user to player page
 
+![Hockey Rosters Page](/README_Contents/rostersPage.gif)
+
 ### Player Page
 
 - Displays individual player profile such as player attributes, bio, career stats and highlight videos
 
+  ![Hockey Players Page](/README_Contents/playerPage.gif)
+
 > Clicking on "See more player highlight videos" from this page takes user to a player specific highlight videos page where videos can be filtered by season the player played in, teams player has played on, opponents they played against, divisions they played in and venues they played in.
+
+![Hockey Videos Page](/README_Contents/videosPage.gif)
 
 <!-- _For more examples, please refer to the [Documentation](https://example.com)_ -->
 
