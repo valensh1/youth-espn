@@ -41,7 +41,7 @@
     <br /> -->
     <br />
     <!-- <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a> -->
-[![Demo Video](https://img.youtube.com/vi/your-video-id/maxresdefault.jpg)](https://www.youtube.be/6kOTtCWgkZg)
+[![Demo Video]](https://www.youtube.com/embed/6kOTtCWgkZg)
 
     <!-- ·
     <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
