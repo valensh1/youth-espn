@@ -41,7 +41,8 @@
     <br /> -->
     <br />
     <!-- <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a> -->
- <iframe width="640" height="360" src="https://www.youtube.com/embed/6kOTtCWgkZg" frameborder="0" allowfullscreen></iframe>
+[![Demo Video](https://img.youtube.com/vi/your-video-id/maxresdefault.jpg)](https://www.youtube.be/6kOTtCWgkZg)
+
     <!-- ·
     <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
     ·
