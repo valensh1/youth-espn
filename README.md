@@ -41,12 +41,7 @@
     <br /> -->
     <br />
     <!-- <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a> -->
-[![Demo Video]](https://www.youtube.com/embed/6kOTtCWgkZg)
-
-    <!-- ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a> -->
+ Demo Video --> (https://www.youtube.com/embed/6kOTtCWgkZg)
 
   </p>
 </div>
