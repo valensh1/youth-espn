@@ -32,7 +32,7 @@
 
   <h3 align="center"  style="margin-bottom: .80vh; display: inline">Youth Sports Gamerz</h3>
   <div>
-   <span>Website URL - </span><a href="http://www.youth-sports-gamerz.com" target="_blank">http://www.youth-sports-gamerz.com</a>
+   <span>Website URL - </span><a href="https://youth-sports-gamerz-bd7aacb9298e.herokuapp.com/" target="_blank">http://www.youth-sports-gamerz.com</a>
   </div>
 
   <p align="center">
